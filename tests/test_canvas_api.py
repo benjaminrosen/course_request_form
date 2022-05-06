@@ -1,7 +1,7 @@
 from unittest.mock import patch
+
 from canvasapi.exceptions import CanvasException
 from canvasapi.user import User as CanvasUser
-
 from django.test import TestCase
 
 from canvas.canvas_api import (
