@@ -19,10 +19,11 @@ def get_cursor():
     return connection.cursor()
 
 
-def execute_query(query: str, params: Optional[dict] = None):
+def execute_query(query: str, kwargs: Optional[dict] = None):
+    kwargs = kwargs or {}
     try:
         cursor = get_cursor()
-        cursor.execute(query, **params)
+        cursor.execute(query, **kwargs)
         return cursor
     except Exception as error:
         logger.error(f"FAILED to connect to Data Warehouse: '{error}'")
