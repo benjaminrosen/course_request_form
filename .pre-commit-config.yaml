@@ -1,0 +1,60 @@
+repos:
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.9.3
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+      - id: black
+        args: [--preview]
+  - repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        args: [--max-line-length=88]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.910-1
+    hooks:
+      - id: mypy
+        args: [--ignore-missing-imports]
+        additional_dependencies:
+          - types-Markdown==3.3.6
+          - types-requests==2.25.11
+          - types-bleach==4.1.1
+  - repo: local
+    hooks:
+      - id: django-migrate
+        name: django-migrate
+        entry: make migrations
+        language: system
+        pass_filenames: false
+  - repo: local
+    hooks:
+      - id: django-collectstatic
+        name: django-collectstatic
+        entry: make static
+        language: system
+        pass_filenames: false
+  - repo: local
+    hooks:
+      - id: check
+        name: check
+        entry: make check
+        language: system
+        pass_filenames: false
+  - repo: local
+    hooks:
+      - id: django-test
+        name: django-test
+        entry: make test
+        language: system
+        pass_filenames: false
+  - repo: local
+    hooks:
+      - id: coverage
+        name: coverage
+        entry: make coverage fail-under=100
+        language: system
+        pass_filenames: false

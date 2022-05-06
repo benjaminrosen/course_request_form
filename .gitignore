@@ -1,0 +1,6 @@
+.python-version
+migrations/
+__pycache__/
+static/
+.coverage
+*.ini
