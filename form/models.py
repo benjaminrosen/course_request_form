@@ -65,6 +65,9 @@ class ScheduleType(Model):
     sched_type_code = CharField(max_length=255, unique=True, primary_key=True)
     sched_type_desc = CharField(max_length=255)
 
+    def __str__(self):
+        return f"{self.sched_type_desc} ({self.sched_type_code})"
+
     @classmethod
     def sync(cls):
         query = "SELECT sched_type_code, sched_type_desc FROM dwngss.v_sched_type"
@@ -76,6 +79,3 @@ class ScheduleType(Model):
             )
             action = "ADDED" if created else "UPDATED"
             logger.info(f"{action} {schedule_type}")
-
-    def __str__(self):
-        return f"{self.sched_type_desc} ({self.sched_type_code})"

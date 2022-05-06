@@ -25,7 +25,7 @@ class UserTest(TestCase):
 
 
 class ScheduleTypeTest(TestCase):
-    sched_type_code = "SCHE"
+    sched_type_code = "SCH"
     sched_type_desc = "Schedule Type Description"
 
     @classmethod
@@ -40,13 +40,16 @@ class ScheduleTypeTest(TestCase):
         self.assertEqual(schedule_type_string, sched_type_desc_and_code)
 
     def test_sync(self):
+        mock_schedule_types = (
+            ("ABC", f"First {self.sched_type_desc}"),
+            ("EFG", f"Second {self.sched_type_desc}"),
+            ("HIJ", f"Third {self.sched_type_desc}"),
+        )
         schedule_type_count = ScheduleType.objects.count()
         self.assertEqual(schedule_type_count, 1)
         with patch("form.models.execute_query") as mock_execute_query:
-            mock_execute_query.return_value = [
-                ("ABCD", "Description for ABCD"),
-                ("EFGH", "Description for EFGH"),
-            ]
+            mock_execute_query.return_value = mock_schedule_types
             ScheduleType.sync()
+        expected_schedule_type_count = len(mock_schedule_types) + schedule_type_count
         schedule_type_count = ScheduleType.objects.count()
-        self.assertEqual(schedule_type_count, 3)
+        self.assertEqual(schedule_type_count, expected_schedule_type_count)
