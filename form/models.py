@@ -35,13 +35,15 @@ class User(AbstractUser):
         cursor = execute_query(query, {"username": self.username})
         for first_name, last_name, penn_id, email_address in cursor:
             self.log_field(self.username, "first name", first_name)
-            self.first_name = first_name
+            self.first_name = first_name.title() if first_name else ""
             self.log_field(self.username, "last name", last_name)
-            self.last_name = last_name
+            self.last_name = last_name.title() if last_name else ""
             self.log_field(self.username, "Penn id", penn_id)
             self.penn_id = penn_id
             self.log_field(self.username, "email address", email_address)
-            self.email_address = email_address
+            self.email_address = (
+                email_address.strip().lower() if email_address else None
+            )
         if save:
             self.save()
 

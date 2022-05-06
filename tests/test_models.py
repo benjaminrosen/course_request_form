@@ -18,19 +18,29 @@ class UserTest(TestCase):
     new_first_name = "New"
     new_last_name = "User"
     new_penn_id = 1234568
+    new_email_address = "testuser@upenn.edu"
     new_canvas_id = 7654322
 
     @classmethod
-    def get_mock_data_warehouse_response(cls, new=False):
+    def get_mock_data_warehouse_response(cls, new=False, blank=False):
         if new:
-            return ((cls.new_first_name, cls.new_last_name, cls.new_penn_id, None),)
+            return (
+                (
+                    cls.new_first_name.upper(),
+                    cls.new_last_name.upper(),
+                    cls.new_penn_id,
+                    f"{cls.new_email_address}    ",
+                ),
+            )
+        elif blank:
+            return ((None, None, None, None),)
         else:
             return (
                 (
-                    cls.first_name,
-                    cls.last_name,
+                    cls.first_name.upper(),
+                    cls.last_name.upper(),
                     cls.penn_id,
-                    cls.email_address,
+                    f"{cls.email_address}    ",
                 ),
             )
 
@@ -82,11 +92,18 @@ class UserTest(TestCase):
         mock_execute_query.return_value = self.get_mock_data_warehouse_response(
             new=True
         )
-        mock_get_canvas_user_id_by_pennkey.return_value = self.new_canvas_id
         user.sync_dw_info()
         self.assertEqual(user.first_name, self.new_first_name)
         self.assertEqual(user.last_name, self.new_last_name)
         self.assertEqual(user.penn_id, self.new_penn_id)
+        self.assertEqual(user.email_address, self.new_email_address)
+        mock_execute_query.return_value = self.get_mock_data_warehouse_response(
+            blank=True
+        )
+        user.sync_dw_info()
+        self.assertFalse(user.first_name)
+        self.assertFalse(user.last_name)
+        self.assertIsNone(user.penn_id)
         self.assertIsNone(user.email_address)
 
     @patch(EXECUTE_QUERY)

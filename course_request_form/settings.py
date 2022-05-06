@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+from platform import system
+
+from cx_Oracle import init_oracle_client
+
+from config.config import LIB_DIR
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -127,3 +132,7 @@ STATIC_ROOT = BASE_DIR / "static/"
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+if DEBUG and system() == "Darwin":
+    lib_dir = Path.home() / LIB_DIR
+    init_oracle_client(lib_dir=str(lib_dir))
