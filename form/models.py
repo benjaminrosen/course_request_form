@@ -3,6 +3,7 @@ from logging import getLogger
 from django.contrib.auth.models import AbstractUser
 from django.db.models import CharField, EmailField, IntegerField, Model
 
+from canvas.canvas_api import get_canvas_user_id_by_pennkey
 from data_warehouse.data_warehouse import execute_query
 
 logger = getLogger(__name__)
@@ -16,49 +17,48 @@ class User(AbstractUser):
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.username})"
 
-    # @staticmethod
-    # def log_field(username: str, field: str, value):
-    #     if value:
-    #         logger.info(f"FOUND {field} '{value}' for {username}")
-    #     else:
-    #         logger.warning(f"{field} NOT FOUND for {username}")
+    @staticmethod
+    def log_field(username: str, field: str, value):
+        if value:
+            logger.info(f"FOUND {field} '{value}' for {username}")
+        else:
+            logger.warning(f"{field} NOT FOUND for {username}")
 
-    # def get_dw_info(self):
-    #     logger.info(f"Getting {self.username}'s info from Data Warehouse...")
-    #     cursor = get_cursor()
-    #     if not cursor:
-    #         return
-    #     query = """
-    #             SELECT
-    #                 first_name, last_name, penn_id, email_address
-    #             FROM employee_general
-    #             WHERE pennkey = :username
-    #             """
-    #     cursor.execute(query, username=self.username)
-    #     for first_name, last_name, penn_id, email_address in cursor:
-    #         self.log_field(self.username, "first name", first_name)
-    #         self.first_name = first_name
-    #         self.log_field(self.username, "last name", last_name)
-    #         self.last_name = last_name
-    #         self.log_field(self.username, "Penn id", penn_id)
-    #         self.penn_id = penn_id
-    #         self.log_field(self.username, "email address", email_address)
-    #         self.email_address = email_address
-    #     self.save()
+    def sync_dw_info(self, save=True):
+        logger.info(f"Getting {self.username}'s info from Data Warehouse...")
+        query = """
+                SELECT
+                    first_name, last_name, penn_id, email_address
+                FROM employee_general
+                WHERE pennkey = :username
+                """
+        cursor = execute_query(query, {"username": self.username})
+        for first_name, last_name, penn_id, email_address in cursor:
+            self.log_field(self.username, "first name", first_name)
+            self.first_name = first_name
+            self.log_field(self.username, "last name", last_name)
+            self.last_name = last_name
+            self.log_field(self.username, "Penn id", penn_id)
+            self.penn_id = penn_id
+            self.log_field(self.username, "email address", email_address)
+            self.email_address = email_address
+        if save:
+            self.save()
 
-    # def get_canvas_id(self):
-    #     logger.info(f"Getting {self.username}'s Canvas user id...")
-    #     canvas_user_id = get_canvas_user_id_by_pennkey(self.username)
-    #     self.log_field(self.username, "Canvas user id", canvas_user_id)
-    #     if canvas_user_id:
-    #         self.canvas_id = canvas_user_id
-    #         self.save()
+    def sync_canvas_id(self, save=True):
+        logger.info(f"Getting {self.username}'s Canvas user id...")
+        canvas_user_id = get_canvas_user_id_by_pennkey(self.username)
+        self.log_field(self.username, "Canvas user id", canvas_user_id)
+        if canvas_user_id:
+            self.canvas_id = canvas_user_id
+            if save:
+                self.save()
 
-    # def save(self, *args, **kwargs):
-    #     if self._state.adding:
-    #         self.get_dw_info()
-    #         self.get_canvas_id()
-    #     super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        if self._state.adding:
+            self.sync_dw_info(save=False)
+            self.sync_canvas_id(save=False)
+        super().save(*args, **kwargs)
 
 
 class ScheduleType(Model):
