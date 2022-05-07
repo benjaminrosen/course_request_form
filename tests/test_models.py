@@ -8,6 +8,8 @@ from form.models import ScheduleType, School, Subject, User
 EXECUTE_QUERY = "form.models.execute_query"
 GET_CANVAS_USER_ID_BY_PENNKEY = "form.models.get_canvas_user_id_by_pennkey"
 GET_ALL_CANVAS_ACCOUNTS = "form.models.get_all_canvas_accounts"
+SCHOOL_DESC_LONG = "School Description"
+SCHOOL_CODE = "SCHL"
 
 
 def get_mock_code_and_description(model: str):
@@ -27,9 +29,9 @@ class UserTest(TestCase):
     email_address = "testuser@upenn.edu"
     canvas_id = 7654321
     new_first_name = "New"
-    new_last_name = "User"
+    new_last_name = "Name"
     new_penn_id = 1234568
-    new_email_address = "testuser@upenn.edu"
+    new_email_address = "newname@upenn.edu"
     new_canvas_id = 7654322
 
     @classmethod
@@ -167,18 +169,15 @@ class MockAccount:
 
 
 class SchoolTest(TestCase):
-    school_code = "SCHL"
-    school_desc_long = "School Description"
-
     @classmethod
     def setUpTestData(cls):
         cls.school = School.objects.create(
-            school_code=cls.school_code, school_desc_long=cls.school_desc_long
+            school_code=SCHOOL_CODE, school_desc_long=SCHOOL_DESC_LONG
         )
 
     def test_str(self):
         school_string = str(self.school)
-        school_desc_and_code = f"{self.school_desc_long} ({self.school_code})"
+        school_desc_and_code = f"{SCHOOL_DESC_LONG} ({SCHOOL_CODE})"
         self.assertEqual(school_string, school_desc_and_code)
 
     def test_save(self):
@@ -200,7 +199,7 @@ class SchoolTest(TestCase):
         mock_schools = get_mock_code_and_description("School")
         mock_execute_query.return_value = mock_schools
         mock_get_all_canvas_accounts.return_value = [
-            MockAccount(id=1, name=f"First {self.school_desc_long}")
+            MockAccount(id=1, name=f"First {SCHOOL_DESC_LONG}")
         ]
         School.sync()
         expected_school_count = len(mock_schools) + school_count
@@ -223,25 +222,20 @@ class SubjectTest(TestCase):
         subject_desc_and_code = f"{self.subject_desc_long} ({self.subject_code})"
         self.assertEqual(subject_string, subject_desc_and_code)
 
-    # @patch(EXECUTE_QUERY)
-    # @patch(GET_ALL_CANVAS_ACCOUNTS)
-    # def test_sync(self, mock_get_all_canvas_accounts, mock_execute_query):
-    #     subject_count = Subject.objects.count()
-    #     self.assertEqual(subject_count, 1)
-    #     school_code = "SCHL"
-    #     mock_subjects = (
-    #         ("ABCD", f"First {self.subject_desc_long}", school_code),
-    #         ("EFGH", f"Second {self.subject_desc_long}", school_code),
-    #         ("IJKL", f"Third {self.subject_desc_long}", school_code),
-    #     )
-    #     mock_schools = get_mock_code_and_description("School")
-    #     mock_execute_query.return_value = mock_schools
-    #     mock_execute_query.side_effects = [mock_subjects, mock_schools]
-    #     mock_get_all_canvas_accounts.return_value = [
-    #         MockAccount(1, "School Description")
-    #     ]
-    #     Subject.sync()
-    #     self.assertTrue(mock_execute_query.called)
-    #     expected_subject_count = len(mock_subjects) + subject_count
-    #     subject_count = Subject.objects.count()
-    #     self.assertEqual(subject_count, expected_subject_count)
+    @patch(EXECUTE_QUERY)
+    @patch(GET_ALL_CANVAS_ACCOUNTS)
+    def test_sync(self, mock_get_all_canvas_accounts, mock_execute_query):
+        subject_count = Subject.objects.count()
+        self.assertEqual(subject_count, 1)
+        mock_subjects = (
+            ("ABCD", f"First {self.subject_desc_long}", SCHOOL_CODE),
+            ("EFGH", f"Second {self.subject_desc_long}", SCHOOL_CODE),
+            ("IJKL", f"Third {self.subject_desc_long}", SCHOOL_CODE),
+        )
+        mock_school = ((SCHOOL_CODE, SCHOOL_DESC_LONG),)
+        mock_execute_query.side_effect = [mock_subjects, mock_school]
+        mock_get_all_canvas_accounts.return_value = [MockAccount(1, SCHOOL_DESC_LONG)]
+        Subject.sync()
+        expected_subject_count = len(mock_subjects) + subject_count
+        subject_count = Subject.objects.count()
+        self.assertEqual(subject_count, expected_subject_count)

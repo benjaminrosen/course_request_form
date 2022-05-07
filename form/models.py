@@ -141,16 +141,16 @@ class School(Model):
         for school_code, school_desc_long in cursor:
             cls.create_school(school_code, school_desc_long)
 
-    # @classmethod
-    # def sync_school(cls, school_code: str):
-    #     query = """
-    #             SELECT school_code, school_desc_long
-    #             FROM dwngss.v_school
-    #             WHERE school_code := school_code
-    #             """
-    #     cursor = execute_query(query, {"school_code": school_code})
-    #     for school_code, school_desc_long in cursor:
-    #         cls.create_school(school_code, school_desc_long)
+    @classmethod
+    def sync_school(cls, school_code: str):
+        query = """
+                SELECT school_code, school_desc_long
+                FROM dwngss.v_school
+                WHERE school_code := school_code
+                """
+        cursor = execute_query(query, {"school_code": school_code})
+        for school_code, school_desc_long in cursor:
+            cls.create_school(school_code, school_desc_long)
 
 
 class Subject(Model):
@@ -167,22 +167,22 @@ class Subject(Model):
     def __str__(self):
         return f"{self.subject_desc_long} ({self.subject_code})"
 
-    # @classmethod
-    # def sync(cls):
-    #     query = """
-    #             SELECT subject_code, subject_desc_long, school_code
-    #             FROM dwngss.v_subject
-    #             """
-    #     cursor = execute_query(query)
-    #     for subject_code, subject_desc_long, school_code in cursor:
-    #         try:
-    #             school = School.objects.get(school_code=school_code)
-    #         except Exception:
-    #             school = None
-    #             School.sync_school(school_code)
-    #         subject, created = cls.objects.update_or_create(
-    #             subject_code=subject_code,
-    #             defaults={"subject_desc_long": subject_desc_long, "school": school},
-    #         )
-    #         action = "ADDED" if created else "UPDATED"
-    #         logger.info(f"{action} {subject}")
+    @classmethod
+    def sync(cls):
+        query = """
+                SELECT subject_code, subject_desc_long, school_code
+                FROM dwngss.v_subject
+                """
+        cursor = execute_query(query)
+        for subject_code, subject_desc_long, school_code in cursor:
+            try:
+                school = School.objects.get(school_code=school_code)
+            except Exception:
+                school = None
+                School.sync_school(school_code)
+            subject, created = cls.objects.update_or_create(
+                subject_code=subject_code,
+                defaults={"subject_desc_long": subject_desc_long, "school": school},
+            )
+            action = "ADDED" if created else "UPDATED"
+            logger.info(f"{action} {subject}")
