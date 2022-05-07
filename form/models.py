@@ -1,9 +1,17 @@
 from logging import getLogger
 
 from django.contrib.auth.models import AbstractUser
-from django.db.models import CharField, EmailField, IntegerField, Model
+from django.db.models import (
+    CASCADE,
+    BooleanField,
+    CharField,
+    EmailField,
+    ForeignKey,
+    IntegerField,
+    Model,
+)
 
-from canvas.canvas_api import get_canvas_user_id_by_pennkey
+from canvas.canvas_api import get_all_canvas_accounts, get_canvas_user_id_by_pennkey
 from data_warehouse.data_warehouse import execute_query
 
 logger = getLogger(__name__)
@@ -16,6 +24,12 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.username})"
+
+    def save(self, *args, **kwargs):
+        if self._state.adding:
+            self.sync_dw_info(save=False)
+            self.sync_canvas_id(save=False)
+        super().save(*args, **kwargs)
 
     @staticmethod
     def log_field(username: str, field: str, value):
@@ -56,12 +70,6 @@ class User(AbstractUser):
             if save:
                 self.save()
 
-    def save(self, *args, **kwargs):
-        if self._state.adding:
-            self.sync_dw_info(save=False)
-            self.sync_canvas_id(save=False)
-        super().save(*args, **kwargs)
-
 
 class ScheduleType(Model):
     sched_type_code = CharField(max_length=255, unique=True, primary_key=True)
@@ -81,3 +89,100 @@ class ScheduleType(Model):
             )
             action = "ADDED" if created else "UPDATED"
             logger.info(f"{action} {schedule_type}")
+
+
+class School(Model):
+    school_code = CharField(max_length=10, unique=True, primary_key=True)
+    school_desc_long = CharField(max_length=50, unique=True)
+    visible = BooleanField(default=True)
+    canvas_sub_account_id = IntegerField(null=True)
+    form_additional_enrollments = BooleanField(
+        default=True, verbose_name="Additional Enrollments Form Field"
+    )
+
+    class Meta:
+        ordering = ["school_desc_long"]
+
+    def __str__(self):
+        return f"{self.school_desc_long} ({self.school_code})"
+
+    def save(self, *args, **kwargs):
+        for subject in self.get_subjects():
+            subject.visible = self.visible
+            subject.save()
+        super().save(*args, **kwargs)
+
+    def get_subjects(self):
+        return Subject.objects.filter(school=self)
+
+    def get_canvas_sub_account(self):
+        accounts = get_all_canvas_accounts()
+        account_ids = (
+            account.id for account in accounts if self.school_desc_long == account.name
+        )
+        account_id = next(account_ids, None)
+        if account_id:
+            self.canvas_sub_account_id = account_id
+            self.save()
+
+    @classmethod
+    def create_school(cls, school_code: str, school_desc_long: str):
+        school, created = cls.objects.update_or_create(
+            school_code=school_code, defaults={"school_desc_long": school_desc_long}
+        )
+        school.get_canvas_sub_account()
+        action = "ADDED" if created else "UPDATED"
+        logger.info(f"{action} {school}")
+
+    @classmethod
+    def sync(cls):
+        query = "SELECT school_code, school_desc_long FROM dwngss.v_school"
+        cursor = execute_query(query)
+        for school_code, school_desc_long in cursor:
+            cls.create_school(school_code, school_desc_long)
+
+    # @classmethod
+    # def sync_school(cls, school_code: str):
+    #     query = """
+    #             SELECT school_code, school_desc_long
+    #             FROM dwngss.v_school
+    #             WHERE school_code := school_code
+    #             """
+    #     cursor = execute_query(query, {"school_code": school_code})
+    #     for school_code, school_desc_long in cursor:
+    #         cls.create_school(school_code, school_desc_long)
+
+
+class Subject(Model):
+    subject_code = CharField(max_length=10, unique=True, primary_key=True)
+    subject_desc_long = CharField(max_length=255)
+    visible = BooleanField(default=True)
+    school = ForeignKey(
+        School, related_name="subjects", on_delete=CASCADE, blank=True, null=True
+    )
+
+    class Meta:
+        ordering = ["subject_desc_long"]
+
+    def __str__(self):
+        return f"{self.subject_desc_long} ({self.subject_code})"
+
+    # @classmethod
+    # def sync(cls):
+    #     query = """
+    #             SELECT subject_code, subject_desc_long, school_code
+    #             FROM dwngss.v_subject
+    #             """
+    #     cursor = execute_query(query)
+    #     for subject_code, subject_desc_long, school_code in cursor:
+    #         try:
+    #             school = School.objects.get(school_code=school_code)
+    #         except Exception:
+    #             school = None
+    #             School.sync_school(school_code)
+    #         subject, created = cls.objects.update_or_create(
+    #             subject_code=subject_code,
+    #             defaults={"subject_desc_long": subject_desc_long, "school": school},
+    #         )
+    #         action = "ADDED" if created else "UPDATED"
+    #         logger.info(f"{action} {subject}")

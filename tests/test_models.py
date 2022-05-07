@@ -1,11 +1,22 @@
+from dataclasses import dataclass
 from unittest.mock import patch
 
 from django.test import TestCase
 
-from form.models import ScheduleType, User
+from form.models import ScheduleType, School, Subject, User
 
 EXECUTE_QUERY = "form.models.execute_query"
 GET_CANVAS_USER_ID_BY_PENNKEY = "form.models.get_canvas_user_id_by_pennkey"
+GET_ALL_CANVAS_ACCOUNTS = "form.models.get_all_canvas_accounts"
+
+
+def get_mock_code_and_description(model: str):
+    description = "Description"
+    return (
+        ("ABCD", f"First {model} {description}"),
+        ("EFGH", f"Second {model} {description}"),
+        ("IJKL", f"Third {model} {description}"),
+    )
 
 
 class UserTest(TestCase):
@@ -137,17 +148,100 @@ class ScheduleTypeTest(TestCase):
         sched_type_desc_and_code = f"{self.sched_type_desc} ({self.sched_type_code})"
         self.assertEqual(schedule_type_string, sched_type_desc_and_code)
 
-    def test_sync(self):
-        mock_schedule_types = (
-            ("ABC", f"First {self.sched_type_desc}"),
-            ("EFG", f"Second {self.sched_type_desc}"),
-            ("HIJ", f"Third {self.sched_type_desc}"),
-        )
+    @patch(EXECUTE_QUERY)
+    def test_sync(self, mock_execute_query):
         schedule_type_count = ScheduleType.objects.count()
         self.assertEqual(schedule_type_count, 1)
-        with patch("form.models.execute_query") as mock_execute_query:
-            mock_execute_query.return_value = mock_schedule_types
-            ScheduleType.sync()
+        mock_schedule_types = get_mock_code_and_description("Schedule Type")
+        mock_execute_query.return_value = mock_schedule_types
+        ScheduleType.sync()
         expected_schedule_type_count = len(mock_schedule_types) + schedule_type_count
         schedule_type_count = ScheduleType.objects.count()
         self.assertEqual(schedule_type_count, expected_schedule_type_count)
+
+
+@dataclass
+class MockAccount:
+    id: int
+    name: str
+
+
+class SchoolTest(TestCase):
+    school_code = "SCHL"
+    school_desc_long = "School Description"
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.school = School.objects.create(
+            school_code=cls.school_code, school_desc_long=cls.school_desc_long
+        )
+
+    def test_str(self):
+        school_string = str(self.school)
+        school_desc_and_code = f"{self.school_desc_long} ({self.school_code})"
+        self.assertEqual(school_string, school_desc_and_code)
+
+    def test_save(self):
+        school = self.school
+        self.assertFalse(school.get_subjects())
+        Subject.objects.create(
+            subject_code="SUBJ",
+            subject_desc_long="Subject Description",
+            school=school,
+        )
+        self.school.save()
+        self.assertTrue(school.get_subjects())
+
+    @patch(EXECUTE_QUERY)
+    @patch(GET_ALL_CANVAS_ACCOUNTS)
+    def test_sync(self, mock_get_all_canvas_accounts, mock_execute_query):
+        school_count = School.objects.count()
+        self.assertEqual(school_count, 1)
+        mock_schools = get_mock_code_and_description("School")
+        mock_execute_query.return_value = mock_schools
+        mock_get_all_canvas_accounts.return_value = [
+            MockAccount(id=1, name=f"First {self.school_desc_long}")
+        ]
+        School.sync()
+        expected_school_count = len(mock_schools) + school_count
+        school_count = School.objects.count()
+        self.assertEqual(school_count, expected_school_count)
+
+
+class SubjectTest(TestCase):
+    subject_code = "SUBJ"
+    subject_desc_long = "Subject Description"
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.subject = Subject.objects.create(
+            subject_code=cls.subject_code, subject_desc_long=cls.subject_desc_long
+        )
+
+    def test_str(self):
+        subject_string = str(self.subject)
+        subject_desc_and_code = f"{self.subject_desc_long} ({self.subject_code})"
+        self.assertEqual(subject_string, subject_desc_and_code)
+
+    # @patch(EXECUTE_QUERY)
+    # @patch(GET_ALL_CANVAS_ACCOUNTS)
+    # def test_sync(self, mock_get_all_canvas_accounts, mock_execute_query):
+    #     subject_count = Subject.objects.count()
+    #     self.assertEqual(subject_count, 1)
+    #     school_code = "SCHL"
+    #     mock_subjects = (
+    #         ("ABCD", f"First {self.subject_desc_long}", school_code),
+    #         ("EFGH", f"Second {self.subject_desc_long}", school_code),
+    #         ("IJKL", f"Third {self.subject_desc_long}", school_code),
+    #     )
+    #     mock_schools = get_mock_code_and_description("School")
+    #     mock_execute_query.return_value = mock_schools
+    #     mock_execute_query.side_effects = [mock_subjects, mock_schools]
+    #     mock_get_all_canvas_accounts.return_value = [
+    #         MockAccount(1, "School Description")
+    #     ]
+    #     Subject.sync()
+    #     self.assertTrue(mock_execute_query.called)
+    #     expected_subject_count = len(mock_subjects) + subject_count
+    #     subject_count = Subject.objects.count()
+    #     self.assertEqual(subject_count, expected_subject_count)
