@@ -41,8 +41,7 @@ class User(AbstractUser):
     def sync_dw_info(self, save=True):
         logger.info(f"Getting {self.username}'s info from Data Warehouse...")
         query = """
-                SELECT
-                    first_name, last_name, penn_id, email_address
+                SELECT first_name, last_name, penn_id, email_address
                 FROM employee_general
                 WHERE pennkey = :username
                 """
@@ -80,7 +79,10 @@ class ScheduleType(Model):
 
     @classmethod
     def sync(cls):
-        query = "SELECT sched_type_code, sched_type_desc FROM dwngss.v_sched_type"
+        query = """
+                SELECT sched_type_code, sched_type_desc
+                FROM dwngss.v_sched_type
+                """
         cursor = execute_query(query)
         for sched_type_code, sched_type_desc in cursor:
             schedule_type, created = cls.objects.update_or_create(
@@ -137,7 +139,10 @@ class School(Model):
 
     @classmethod
     def sync(cls):
-        query = "SELECT school_code, school_desc_long FROM dwngss.v_school"
+        query = """
+                SELECT school_code, school_desc_long
+                FROM dwngss.v_school
+                """
         cursor = execute_query(query)
         for school_code, school_desc_long in cursor:
             cls.create_school(school_code, school_desc_long)
