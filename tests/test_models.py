@@ -233,7 +233,7 @@ class SubjectTest(TestCase):
         mock_subjects = (
             ("ABCD", f"First {SUBJECT_DESC_LONG}", SCHOOL_CODE),
             ("EFGH", f"Second {SUBJECT_DESC_LONG}", SCHOOL_CODE),
-            ("IJKL", f"Third {SUBJECT_DESC_LONG}", SCHOOL_CODE),
+            ("IJKL", f"Third {SUBJECT_DESC_LONG}", None),
         )
         mock_school = ((SCHOOL_CODE, SCHOOL_DESC_LONG),)
         mock_execute_query.side_effect = [mock_subjects, mock_school]

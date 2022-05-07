@@ -133,6 +133,7 @@ class School(Model):
         school.get_canvas_sub_account()
         action = "ADDED" if created else "UPDATED"
         logger.info(f"{action} {school}")
+        return school
 
     @classmethod
     def sync(cls):
@@ -146,16 +147,18 @@ class School(Model):
         query = """
                 SELECT school_code, school_desc_long
                 FROM dwngss.v_school
-                WHERE school_code := school_code
+                WHERE school_code = :school_code
                 """
         cursor = execute_query(query, {"school_code": school_code})
+        school = None
         for school_code, school_desc_long in cursor:
-            cls.create_school(school_code, school_desc_long)
+            school = cls.create_school(school_code, school_desc_long)
+        return school
 
 
 class Subject(Model):
     subject_code = CharField(max_length=10, unique=True, primary_key=True)
-    subject_desc_long = CharField(max_length=255)
+    subject_desc_long = CharField(max_length=255, null=True)
     visible = BooleanField(default=True)
     school = ForeignKey(
         School, related_name="subjects", on_delete=CASCADE, blank=True, null=True
@@ -178,8 +181,10 @@ class Subject(Model):
             try:
                 school = School.objects.get(school_code=school_code)
             except Exception:
-                school = None
-                School.sync_school(school_code)
+                if school_code:
+                    school = School.sync_school(school_code)
+                else:
+                    school = None
             subject, created = cls.objects.update_or_create(
                 subject_code=subject_code,
                 defaults={"subject_desc_long": subject_desc_long, "school": school},
