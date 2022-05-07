@@ -8,8 +8,10 @@ from form.models import ScheduleType, School, Subject, User
 EXECUTE_QUERY = "form.models.execute_query"
 GET_CANVAS_USER_ID_BY_PENNKEY = "form.models.get_canvas_user_id_by_pennkey"
 GET_ALL_CANVAS_ACCOUNTS = "form.models.get_all_canvas_accounts"
-SCHOOL_DESC_LONG = "School Description"
 SCHOOL_CODE = "SCHL"
+SCHOOL_DESC_LONG = "School Description"
+SUBJECT_CODE = "SUBJ"
+SUBJECT_DESC_LONG = "Subject Description"
 
 
 def get_mock_code_and_description(model: str):
@@ -184,12 +186,16 @@ class SchoolTest(TestCase):
         school = self.school
         self.assertFalse(school.get_subjects())
         Subject.objects.create(
-            subject_code="SUBJ",
-            subject_desc_long="Subject Description",
+            subject_code=SUBJECT_CODE,
+            subject_desc_long=SUBJECT_DESC_LONG,
             school=school,
         )
-        self.school.save()
-        self.assertTrue(school.get_subjects())
+        school.save()
+        subjects = school.get_subjects()
+        subject = next(subject for subject in subjects)
+        self.assertTrue(subjects)
+        self.assertTrue(len(subjects), 1)
+        self.assertEqual(subject.subject_code, SUBJECT_CODE)
 
     @patch(EXECUTE_QUERY)
     @patch(GET_ALL_CANVAS_ACCOUNTS)
@@ -208,18 +214,15 @@ class SchoolTest(TestCase):
 
 
 class SubjectTest(TestCase):
-    subject_code = "SUBJ"
-    subject_desc_long = "Subject Description"
-
     @classmethod
     def setUpTestData(cls):
         cls.subject = Subject.objects.create(
-            subject_code=cls.subject_code, subject_desc_long=cls.subject_desc_long
+            subject_code=SUBJECT_CODE, subject_desc_long=SUBJECT_DESC_LONG
         )
 
     def test_str(self):
         subject_string = str(self.subject)
-        subject_desc_and_code = f"{self.subject_desc_long} ({self.subject_code})"
+        subject_desc_and_code = f"{SUBJECT_DESC_LONG} ({SUBJECT_CODE})"
         self.assertEqual(subject_string, subject_desc_and_code)
 
     @patch(EXECUTE_QUERY)
@@ -228,9 +231,9 @@ class SubjectTest(TestCase):
         subject_count = Subject.objects.count()
         self.assertEqual(subject_count, 1)
         mock_subjects = (
-            ("ABCD", f"First {self.subject_desc_long}", SCHOOL_CODE),
-            ("EFGH", f"Second {self.subject_desc_long}", SCHOOL_CODE),
-            ("IJKL", f"Third {self.subject_desc_long}", SCHOOL_CODE),
+            ("ABCD", f"First {SUBJECT_DESC_LONG}", SCHOOL_CODE),
+            ("EFGH", f"Second {SUBJECT_DESC_LONG}", SCHOOL_CODE),
+            ("IJKL", f"Third {SUBJECT_DESC_LONG}", SCHOOL_CODE),
         )
         mock_school = ((SCHOOL_CODE, SCHOOL_DESC_LONG),)
         mock_execute_query.side_effect = [mock_subjects, mock_school]
