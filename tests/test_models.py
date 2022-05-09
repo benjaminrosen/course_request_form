@@ -153,12 +153,12 @@ class ScheduleTypeTest(TestCase):
         self.assertEqual(schedule_type_string, sched_type_desc_and_code)
 
     @patch(EXECUTE_QUERY)
-    def test_sync(self, mock_execute_query):
+    def test_sync_all(self, mock_execute_query):
         schedule_type_count = ScheduleType.objects.count()
         self.assertEqual(schedule_type_count, 1)
         mock_schedule_types = get_mock_code_and_description("Schedule Type")
         mock_execute_query.return_value = mock_schedule_types
-        ScheduleType.sync()
+        ScheduleType.sync_all()
         expected_schedule_type_count = len(mock_schedule_types) + schedule_type_count
         schedule_type_count = ScheduleType.objects.count()
         self.assertEqual(schedule_type_count, expected_schedule_type_count)
@@ -199,7 +199,7 @@ class SchoolTest(TestCase):
 
     @patch(EXECUTE_QUERY)
     @patch(GET_ALL_CANVAS_ACCOUNTS)
-    def test_sync(self, mock_get_all_canvas_accounts, mock_execute_query):
+    def test_sync_all(self, mock_get_all_canvas_accounts, mock_execute_query):
         school_count = School.objects.count()
         self.assertEqual(school_count, 1)
         mock_schools = get_mock_code_and_description("School")
@@ -207,7 +207,7 @@ class SchoolTest(TestCase):
         mock_get_all_canvas_accounts.return_value = [
             MockAccount(id=1, name=f"First {SCHOOL_DESC_LONG}")
         ]
-        School.sync()
+        School.sync_all()
         expected_school_count = len(mock_schools) + school_count
         school_count = School.objects.count()
         self.assertEqual(school_count, expected_school_count)
@@ -227,18 +227,23 @@ class SubjectTest(TestCase):
 
     @patch(EXECUTE_QUERY)
     @patch(GET_ALL_CANVAS_ACCOUNTS)
-    def test_sync(self, mock_get_all_canvas_accounts, mock_execute_query):
+    def test_sync_all(self, mock_get_all_canvas_accounts, mock_execute_query):
         subject_count = Subject.objects.count()
         self.assertEqual(subject_count, 1)
         mock_subjects = (
             ("ABCD", f"First {SUBJECT_DESC_LONG}", SCHOOL_CODE),
             ("EFGH", f"Second {SUBJECT_DESC_LONG}", SCHOOL_CODE),
-            ("IJKL", f"Third {SUBJECT_DESC_LONG}", None),
+            ("IJKL", f"Third {SUBJECT_DESC_LONG}", ()),
         )
         mock_school = ((SCHOOL_CODE, SCHOOL_DESC_LONG),)
-        mock_execute_query.side_effect = [mock_subjects, mock_school]
+        mock_school_not_found = ((None, None),)
+        mock_execute_query.side_effect = [
+            mock_subjects,
+            mock_school,
+            mock_school_not_found,
+        ]
         mock_get_all_canvas_accounts.return_value = [MockAccount(1, SCHOOL_DESC_LONG)]
-        Subject.sync()
+        Subject.sync_all()
         expected_subject_count = len(mock_subjects) + subject_count
         subject_count = Subject.objects.count()
         self.assertEqual(subject_count, expected_subject_count)

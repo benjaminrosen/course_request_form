@@ -1,4 +1,5 @@
 from logging import getLogger
+from typing import Optional
 
 from django.contrib.auth.models import AbstractUser
 from django.db.models import (
@@ -10,6 +11,8 @@ from django.db.models import (
     IntegerField,
     Model,
 )
+from django.db.models.fields import DateTimeField, TextField
+from django.db.models.fields.related import ManyToManyField, OneToOneField
 
 from canvas.canvas_api import get_all_canvas_accounts, get_canvas_user_id_by_pennkey
 from data_warehouse.data_warehouse import execute_query
@@ -34,9 +37,9 @@ class User(AbstractUser):
     @staticmethod
     def log_field(username: str, field: str, value):
         if value:
-            logger.info(f"FOUND {field} '{value}' for {username}")
+            logger.info(f"FOUND {field} '{value}' for '{username}'")
         else:
-            logger.warning(f"{field} NOT FOUND for {username}")
+            logger.warning(f"{field} NOT FOUND for '{username}'")
 
     def sync_dw_info(self, save=True):
         logger.info(f"Getting {self.username}'s info from Data Warehouse...")
@@ -61,7 +64,7 @@ class User(AbstractUser):
             self.save()
 
     def sync_canvas_id(self, save=True):
-        logger.info(f"Getting {self.username}'s Canvas user id...")
+        logger.info(f"Getting Canvas user id for '{self.username}'...")
         canvas_user_id = get_canvas_user_id_by_pennkey(self.username)
         self.log_field(self.username, "Canvas user id", canvas_user_id)
         if canvas_user_id:
@@ -71,6 +74,10 @@ class User(AbstractUser):
 
 
 class ScheduleType(Model):
+    QUERY = """
+            SELECT sched_type_code, sched_type_desc
+            FROM dwngss.v_sched_type
+            """
     sched_type_code = CharField(max_length=255, unique=True, primary_key=True)
     sched_type_desc = CharField(max_length=255)
 
@@ -78,22 +85,47 @@ class ScheduleType(Model):
         return f"{self.sched_type_desc} ({self.sched_type_code})"
 
     @classmethod
-    def sync(cls):
-        query = """
-                SELECT sched_type_code, sched_type_desc
-                FROM dwngss.v_sched_type
-                """
-        cursor = execute_query(query)
+    def update_or_create(cls, query: str, kwargs: Optional[dict] = None):
+        cursor = execute_query(query, kwargs)
+        schedule_type = None
         for sched_type_code, sched_type_desc in cursor:
-            schedule_type, created = cls.objects.update_or_create(
-                sched_type_code=sched_type_code,
-                defaults={"sched_type_desc": sched_type_desc},
-            )
-            action = "ADDED" if created else "UPDATED"
-            logger.info(f"{action} {schedule_type}")
+            try:
+                schedule_type, created = cls.objects.update_or_create(
+                    sched_type_code=sched_type_code,
+                    defaults={"sched_type_desc": sched_type_desc},
+                )
+                action = "ADDED" if created else "UPDATED"
+                logger.info(f"{action} {schedule_type}")
+            except Exception as error:
+                logger.error(
+                    f"FAILED to update or create schedule type '{sched_type_code}':"
+                    f" {error}"
+                )
+        return schedule_type
+
+    @classmethod
+    def sync_all(cls):
+        cls.update_or_create(cls.QUERY)
+
+    @classmethod
+    def sync_schedule_type(cls, sched_type_code: str):
+        query = f"{cls.QUERY} WHERE sched_type_code = :sched_type_code"
+        kwargs = {"sched_type_code": sched_type_code}
+        return cls.update_or_create(query, kwargs)
+
+    @classmethod
+    def get_schedule_type(cls, sched_type_code: str):
+        try:
+            return cls.objects.get(sched_type_code=sched_type_code)
+        except Exception:
+            return cls.sync_schedule_type(sched_type_code)
 
 
 class School(Model):
+    QUERY = """
+            SELECT school_code, school_desc_long
+            FROM dwngss.v_school
+            """
     school_code = CharField(max_length=10, unique=True, primary_key=True)
     school_desc_long = CharField(max_length=50, unique=True)
     visible = BooleanField(default=True)
@@ -128,40 +160,48 @@ class School(Model):
             self.save()
 
     @classmethod
-    def create_school(cls, school_code: str, school_desc_long: str):
-        school, created = cls.objects.update_or_create(
-            school_code=school_code, defaults={"school_desc_long": school_desc_long}
-        )
-        school.get_canvas_sub_account()
-        action = "ADDED" if created else "UPDATED"
-        logger.info(f"{action} {school}")
+    def update_or_create(cls, query: str, kwargs: Optional[dict] = None):
+        cursor = execute_query(query, kwargs)
+        school = None
+        for school_code, school_desc_long in cursor:
+            try:
+                school, created = cls.objects.update_or_create(
+                    school_code=school_code,
+                    defaults={"school_desc_long": school_desc_long},
+                )
+                school.get_canvas_sub_account()
+                action = "ADDED" if created else "UPDATED"
+                logger.info(f"{action} {school}")
+            except Exception as error:
+                logger.error(
+                    f"FAILED to update or create school '{school_code}': {error}"
+                )
         return school
 
     @classmethod
-    def sync(cls):
-        query = """
-                SELECT school_code, school_desc_long
-                FROM dwngss.v_school
-                """
-        cursor = execute_query(query)
-        for school_code, school_desc_long in cursor:
-            cls.create_school(school_code, school_desc_long)
+    def sync_all(cls):
+        cls.update_or_create(cls.QUERY)
 
     @classmethod
     def sync_school(cls, school_code: str):
-        query = """
-                SELECT school_code, school_desc_long
-                FROM dwngss.v_school
-                WHERE school_code = :school_code
-                """
-        cursor = execute_query(query, {"school_code": school_code})
-        school = None
-        for school_code, school_desc_long in cursor:
-            school = cls.create_school(school_code, school_desc_long)
+        query = f"{cls.QUERY} WHERE school_code = :school_code"
+        kwargs = {"school_code": school_code}
+        return cls.update_or_create(query, kwargs)
+
+    @classmethod
+    def get_school(cls, school_code: str):
+        try:
+            school = cls.objects.get(school_code=school_code)
+        except Exception:
+            school = cls.sync_school(school_code)
         return school
 
 
 class Subject(Model):
+    QUERY = """
+            SELECT subject_code, subject_desc_long, school_code
+            FROM dwngss.v_subject
+            """
     subject_code = CharField(max_length=10, unique=True, primary_key=True)
     subject_desc_long = CharField(max_length=255, null=True)
     visible = BooleanField(default=True)
@@ -176,23 +216,299 @@ class Subject(Model):
         return f"{self.subject_desc_long} ({self.subject_code})"
 
     @classmethod
-    def sync(cls):
-        query = """
-                SELECT subject_code, subject_desc_long, school_code
-                FROM dwngss.v_subject
-                """
-        cursor = execute_query(query)
+    def update_or_create(cls, query: str, kwargs: Optional[dict] = None):
+        cursor = execute_query(query, kwargs)
+        subject = None
         for subject_code, subject_desc_long, school_code in cursor:
             try:
-                school = School.objects.get(school_code=school_code)
-            except Exception:
-                if school_code:
-                    school = School.sync_school(school_code)
-                else:
-                    school = None
-            subject, created = cls.objects.update_or_create(
-                subject_code=subject_code,
-                defaults={"subject_desc_long": subject_desc_long, "school": school},
-            )
-            action = "ADDED" if created else "UPDATED"
-            logger.info(f"{action} {subject}")
+                school = School.get_school(school_code)
+                subject, created = cls.objects.update_or_create(
+                    subject_code=subject_code,
+                    defaults={"subject_desc_long": subject_desc_long, "school": school},
+                )
+                action = "ADDED" if created else "UPDATED"
+                logger.info(f"{action} {subject}")
+            except Exception as error:
+                logger.error(
+                    f"FAILED to update or create subject '{subject_code}': {error}"
+                )
+        return subject
+
+    @classmethod
+    def sync_all(cls):
+        cls.update_or_create(cls.QUERY)
+
+    @classmethod
+    def sync_subject(cls, subject_code: str):
+        query = f"{cls.QUERY} WHERE subject_code = :subject_code"
+        kwargs = {"subject_code": subject_code}
+        return cls.update_or_create(query, kwargs)
+
+    @classmethod
+    def get_subject(cls, subject_code: str):
+        try:
+            return cls.objects.get(subject_code=subject_code)
+        except Exception:
+            return cls.sync_subject(subject_code)
+
+
+class Section(Model):
+    CURRENT_TERM = "202220"
+    QUERY = """
+            SELECT
+                section_id || term,
+                section_id,
+                school,
+                subject,
+                primary_subject,
+                course_num,
+                section_num,
+                term,
+                title,
+                schedule_type,
+                section_status
+            FROM dwngss_ps.crse_section section
+            WHERE term = :term
+            """
+    SPRING = "10"
+    SUMMER = "20"
+    FALL = "30"
+    TERM_CHOICES = ((SPRING, "Spring"), (SUMMER, "Summer"), (FALL, "Fall"))
+    section_code = CharField(
+        max_length=150, unique=True, primary_key=True, editable=False
+    )
+    section_id = CharField(max_length=150, editable=False)
+    school = ForeignKey(School, on_delete=CASCADE, related_name="sections")
+    subject = ForeignKey(Subject, on_delete=CASCADE, related_name="sections")
+    primary_subject = ForeignKey(Subject, on_delete=CASCADE)
+    course_num = CharField(max_length=4, blank=False)
+    section_num = CharField(max_length=4, blank=False)
+    term = CharField(max_length=6, choices=TERM_CHOICES)
+    title = CharField(max_length=250)
+    schedule_type = ForeignKey(ScheduleType, on_delete=CASCADE, related_name="sections")
+    instructors = ManyToManyField(User, blank=True, related_name="sections")
+    # related_sections = ManyToManyField(
+    #     "self", blank=True, symmetrical=True, default=None
+    # )
+    # primary_crosslist = CharField(max_length=20, default="", blank=True)
+    # crosslisted = ManyToManyField("self", blank=True, symmetrical=True, default=None)
+    site_request = ForeignKey(
+        "form.Request",
+        on_delete=CASCADE,
+        blank=True,
+        null=True,
+        related_name="sections",
+    )
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.section_code
+
+    # def save(self, *args, **kwargs):
+    #     self.section_code = (
+    #         f"{self.subject.subject_code}"
+    #         f"{self.course_num}"
+    #         f"{self.section_num}"
+    #         f"{self.term}"
+    #     )
+    #     self.set_related_sections()
+    #     super().save(*args, **kwargs)
+
+    # @staticmethod
+    # def is_relevant_section(section):
+    #     section_num = section.section_num
+    #     return section_num >= 300 and section_num < 400
+
+    # def set_related_sections(self):
+    #     sections = Section.objects.filter(
+    #         Q(subject=self.subject)
+    #         & Q(course_num=self.course_num)
+    #         & Q(term=self.term)
+    #         & Q(year=self.year)
+    #     ).exclude(course_code=self.section_code)
+    #     sections = [
+    #         section for section in sections if self.is_relevant_section(section)
+    #     ]
+    #     self.related_sections.set(sections)
+
+    def set_instructors(self):
+        query = """
+                SELECT
+                    employee.pennkey,
+                    instructor.instructor_first_name,
+                    instructor.instructor_last_name,
+                    instructor.instructor_penn_id,
+                    instructor.instructor_email
+                FROM dwngss_ps.crse_sect_instructor instructor
+                JOIN employee_general_v employee
+                ON instructor.instructor_penn_id = employee.penn_id
+                WHERE instructor.section_id = :section_id
+                AND term = :term
+                """
+        kwargs = {"section_id": f"{self.section_id}", "term": self.term}
+        cursor = execute_query(query, kwargs)
+        instructors = list()
+        for penn_key, first_name, last_name, penn_id, email_address in cursor:
+            try:
+                user, created = User.objects.update_or_create(
+                    username=penn_key,
+                    defaults={
+                        "first_name": first_name,
+                        "last_name": last_name,
+                        "penn_id": penn_id,
+                        "email_address": email_address,
+                    },
+                )
+                if user:
+                    instructors.append(user)
+                action = "ADDED" if created else "UPDATED"
+                logger.info(f"{action} {action}")
+            except Exception as error:
+                logger.error(
+                    f"FAILED to update or create instructor '{penn_key}': {error}"
+                )
+        self.instructors.set(instructors)
+
+    @classmethod
+    def update_or_create(cls, query: str, kwargs: Optional[dict] = None):
+        cursor = execute_query(query, kwargs)
+        for (
+            section_code,
+            section_id,
+            school_code,
+            subject_code,
+            primary_subject_code,
+            course_num,
+            section_num,
+            term,
+            title,
+            sched_type_code,
+            section_status,
+        ) in cursor:
+            if section_status != "A":
+                try:
+                    section = cls.objects.get(section_code=section_code)
+                except Exception:
+                    section = None
+                if section:
+                    section.delete()
+                continue
+            school = ""
+            school = School.get_school(school_code)
+            subject = Subject.get_subject(subject_code)
+            primary_subject = Subject.get_subject(primary_subject_code) or subject
+            schedule_type = ScheduleType.get_schedule_type(sched_type_code)
+            try:
+                section, created = cls.objects.update_or_create(
+                    section_code=section_code,
+                    defaults={
+                        "section_id": section_id,
+                        "school": school,
+                        "subject": subject,
+                        "primary_subject": primary_subject,
+                        "course_num": course_num,
+                        "section_num": section_num,
+                        "term": term,
+                        "title": title,
+                        "schedule_type": schedule_type,
+                    },
+                )
+                action = "ADDED" if created else "UPDATED"
+                logger.info(f"{action} {section}")
+                section.set_instructors()
+            except Exception as error:
+                logger.error(
+                    f"FAILED to update or create section '{section_code}': {error}"
+                )
+
+    @classmethod
+    def sync_all(cls):
+        kwargs = {"term": cls.CURRENT_TERM}
+        cls.update_or_create(cls.QUERY, kwargs)
+
+    def sync(self):
+        query = f"{self.QUERY} AND section_id = :section_id"
+        kwargs = {"section_id": self.section_id, "term": self.term}
+        self.update_or_create(query, kwargs)
+
+
+class Request(Model):
+    STATUSES = (
+        ("COMPLETED", "Completed"),
+        ("IN_PROCESS", "In Process"),
+        ("CANCELED", "Canceled"),
+        ("APPROVED", "Approved"),
+        ("SUBMITTED", "Submitted"),
+        ("LOCKED", "Locked"),
+    )
+    section = OneToOneField(Section, on_delete=CASCADE, primary_key=True)
+    requester = ForeignKey(User, related_name="requests", on_delete=CASCADE)
+    masquerade = CharField(max_length=20, null=True)
+    title_override = CharField(max_length=255, null=True, default=None, blank=True)
+    copy_from_course = IntegerField(null=True, default=None, blank=True)
+    reserves = BooleanField(default=False)
+    lps_online = BooleanField(default=False, verbose_name="LPS Online")
+    exclude_announcements = BooleanField(default=False)
+    additional_instructions = TextField(blank=True, default=None, null=True)
+    admin_additional_instructions = TextField(blank=True, default=None, null=True)
+    process_notes = TextField(blank=True, default="")
+    status = CharField(max_length=20, choices=STATUSES, default="SUBMITTED")
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
+
+
+# CANVAS_ROLES = (
+#     ("TA", "TA"),
+#     ("INST", "Instructor"),
+#     ("DES", "Designer"),
+#     ("LIB", "Librarian"),
+#     ("OBS", "Observer"),
+# )
+
+
+# class AdditionalEnrollment(Model):
+#     user = ForeignKey(User, on_delete=CASCADE)
+#     role = CharField(max_length=4, choices=CANVAS_ROLES, default="TA")
+#     request = ForeignKey(
+#         Request, related_name="additional_enrollments", on_delete=CASCADE,
+#         default=None
+#     )
+
+
+# class AutoAdd(Model):
+#     user = ForeignKey(User, on_delete=CASCADE, blank=False)
+#     school = ForeignKey(School, on_delete=CASCADE, blank=False)
+#     subject = ForeignKey(Subject, on_delete=CASCADE, blank=False)
+#     role = CharField(max_length=4, choices=CANVAS_ROLES)
+#     created_at = DateTimeField(auto_now_add=True, null=True, blank=True)
+
+#     class Meta:
+#         ordering = ("user__username",)
+
+
+# class Message(Model):
+#     content = TextField(max_length=4000)
+#     created_at = DateTimeField(auto_now_add=True)
+#     updated_at = DateTimeField(auto_now=True)
+
+#     def get_html(self):
+#         return mark_safe(clean(markdown(self.content), markdown_tags, markdown_attrs))
+
+
+# class Notice(Message):
+#     header = CharField(max_length=100)
+#     author = ForeignKey(User, related_name="notices", on_delete=CASCADE)
+
+#     class Meta:
+#         get_latest_by = "updated_at"
+
+#     def __str__(self):
+#         return self.header
+
+
+# class PageContent(Message):
+#     page = CharField(max_length=100)
+
+#     def __str__(self):
+#         return self.page
