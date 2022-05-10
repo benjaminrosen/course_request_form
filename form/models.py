@@ -16,6 +16,7 @@ from django.db.models.fields.related import ManyToManyField, OneToOneField
 
 from canvas.canvas_api import get_all_canvas_accounts, get_canvas_user_id_by_pennkey
 from data_warehouse.data_warehouse import execute_query
+from form.terms import CURRENT_TERM
 
 logger = getLogger(__name__)
 
@@ -87,7 +88,6 @@ class ScheduleType(Model):
     @classmethod
     def update_or_create(cls, query: str, kwargs: Optional[dict] = None):
         cursor = execute_query(query, kwargs)
-        schedule_type = None
         for sched_type_code, sched_type_desc in cursor:
             try:
                 schedule_type, created = cls.objects.update_or_create(
@@ -97,6 +97,7 @@ class ScheduleType(Model):
                 action = "ADDED" if created else "UPDATED"
                 logger.info(f"{action} {schedule_type}")
             except Exception as error:
+                schedule_type = None
                 logger.error(
                     f"FAILED to update or create schedule type '{sched_type_code}':"
                     f" {error}"
@@ -162,7 +163,6 @@ class School(Model):
     @classmethod
     def update_or_create(cls, query: str, kwargs: Optional[dict] = None):
         cursor = execute_query(query, kwargs)
-        school = None
         for school_code, school_desc_long in cursor:
             try:
                 school, created = cls.objects.update_or_create(
@@ -173,6 +173,7 @@ class School(Model):
                 action = "ADDED" if created else "UPDATED"
                 logger.info(f"{action} {school}")
             except Exception as error:
+                school = None
                 logger.error(
                     f"FAILED to update or create school '{school_code}': {error}"
                 )
@@ -218,7 +219,6 @@ class Subject(Model):
     @classmethod
     def update_or_create(cls, query: str, kwargs: Optional[dict] = None):
         cursor = execute_query(query, kwargs)
-        subject = None
         for subject_code, subject_desc_long, school_code in cursor:
             try:
                 school = School.get_school(school_code)
@@ -229,6 +229,7 @@ class Subject(Model):
                 action = "ADDED" if created else "UPDATED"
                 logger.info(f"{action} {subject}")
             except Exception as error:
+                subject = None
                 logger.error(
                     f"FAILED to update or create subject '{subject_code}': {error}"
                 )
@@ -253,11 +254,13 @@ class Subject(Model):
 
 
 class Section(Model):
-    CURRENT_TERM = "202220"
+    RELATED_NAME = "sections"
+    ACTIVE_SECTION_STATUS_CODE = "A"
     QUERY = """
             SELECT
                 section_id || term,
                 section_id,
+                primary_section_id,
                 school,
                 subject,
                 primary_subject,
@@ -270,23 +273,22 @@ class Section(Model):
             FROM dwngss_ps.crse_section section
             WHERE term = :term
             """
-    SPRING = "10"
-    SUMMER = "20"
-    FALL = "30"
-    TERM_CHOICES = ((SPRING, "Spring"), (SUMMER, "Summer"), (FALL, "Fall"))
     section_code = CharField(
         max_length=150, unique=True, primary_key=True, editable=False
     )
     section_id = CharField(max_length=150, editable=False)
-    school = ForeignKey(School, on_delete=CASCADE, related_name="sections")
-    subject = ForeignKey(Subject, on_delete=CASCADE, related_name="sections")
+    primary_section = ManyToManyField("self", blank=True)
+    school = ForeignKey(School, on_delete=CASCADE, related_name=RELATED_NAME)
+    subject = ForeignKey(Subject, on_delete=CASCADE, related_name=RELATED_NAME)
     primary_subject = ForeignKey(Subject, on_delete=CASCADE)
     course_num = CharField(max_length=4, blank=False)
     section_num = CharField(max_length=4, blank=False)
-    term = CharField(max_length=6, choices=TERM_CHOICES)
+    term = IntegerField()
     title = CharField(max_length=250)
-    schedule_type = ForeignKey(ScheduleType, on_delete=CASCADE, related_name="sections")
-    instructors = ManyToManyField(User, blank=True, related_name="sections")
+    schedule_type = ForeignKey(
+        ScheduleType, on_delete=CASCADE, related_name=RELATED_NAME
+    )
+    instructors = ManyToManyField(User, blank=True, related_name=RELATED_NAME)
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
@@ -332,11 +334,21 @@ class Section(Model):
         self.instructors.set(instructors)
 
     @classmethod
+    def delete_canceled_section(cls, section_code: str):
+        try:
+            section = cls.objects.get(section_code=section_code)
+        except Exception:
+            section = None
+        if section:
+            section.delete()
+
+    @classmethod
     def update_or_create(cls, query: str, kwargs: Optional[dict] = None):
         cursor = execute_query(query, kwargs)
         for (
             section_code,
             section_id,
+            primary_section_id,
             school_code,
             subject_code,
             primary_subject_code,
@@ -347,25 +359,23 @@ class Section(Model):
             sched_type_code,
             section_status,
         ) in cursor:
-            if section_status != "A":
-                try:
-                    section = cls.objects.get(section_code=section_code)
-                except Exception:
-                    section = None
-                if section:
-                    section.delete()
+            if section_status != cls.ACTIVE_SECTION_STATUS_CODE:
+                cls.delete_canceled_section(section_code)
                 continue
-            school = ""
             school = School.get_school(school_code)
             subject = Subject.get_subject(subject_code)
             primary_subject = Subject.get_subject(primary_subject_code) or subject
             schedule_type = ScheduleType.get_schedule_type(sched_type_code)
-            section = None
+            if primary_section_id != section_id:
+                primary_section = cls.get_section(primary_section_id, term)
+            else:
+                primary_section = None
             try:
                 section, created = cls.objects.update_or_create(
                     section_code=section_code,
                     defaults={
                         "section_id": section_id,
+                        "primary_section_id": primary_section,
                         "school": school,
                         "subject": subject,
                         "primary_subject": primary_subject,
@@ -380,26 +390,37 @@ class Section(Model):
                 logger.info(f"{action} {section}")
                 section.set_instructors()
             except Exception as error:
+                section = None
                 logger.error(
                     f"FAILED to update or create section '{section_code}': {error}"
                 )
             return section
 
     @classmethod
-    def sync_all(cls):
-        kwargs = {"term": cls.CURRENT_TERM}
+    def sync_all(cls, term: Optional[int] = None):
+        term = term or CURRENT_TERM
+        kwargs = {"term": term}
         cls.update_or_create(cls.QUERY, kwargs)
 
     @classmethod
-    def sync_section(cls, course_id: str):
-        query = f"{cls.QUERY} AND course_id = :course_id"
-        kwargs = {"course_id": course_id}
+    def sync_section(cls, section_id: str, term: Optional[int] = None):
+        query = f"{cls.QUERY} AND section_id = :section_id"
+        term = term or CURRENT_TERM
+        kwargs = {"section_id": section_id, "term": term}
         return cls.update_or_create(query, kwargs)
 
     def sync(self):
         query = f"{self.QUERY} AND section_id = :section_id"
         kwargs = {"section_id": self.section_id, "term": self.term}
         self.update_or_create(query, kwargs)
+
+    @classmethod
+    def get_section(cls, section_id: str, term: Optional[int] = None):
+        term = term or CURRENT_TERM
+        try:
+            return cls.objects.get(section_id=section_id, term=term)
+        except Exception:
+            return cls.sync_section(section_id, term)
 
 
 class Request(Model):
