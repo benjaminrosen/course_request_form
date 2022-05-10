@@ -78,9 +78,7 @@ class UserTest(TestCase):
         mock_get_canvas_user_id_by_pennkey.return_value = self.canvas_id
         user = self.create_user()
         user_string = str(user)
-        user_first_and_last_and_username = (
-            f"{self.first_name} {self.last_name} ({self.username})"
-        )
+        user_first_and_last_and_username = "Test User (testuser)"
         self.assertEqual(user_string, user_first_and_last_and_username)
 
     @patch(EXECUTE_QUERY)
@@ -155,7 +153,7 @@ class ScheduleTypeTest(TestCase):
 
     def test_str(self):
         schedule_type_string = str(self.schedule_type)
-        sched_type_desc_and_code = f"{self.sched_type_desc} ({self.sched_type_code})"
+        sched_type_desc_and_code = "Schedule Type Description (SCH)"
         self.assertEqual(schedule_type_string, sched_type_desc_and_code)
 
     @patch(EXECUTE_QUERY)
@@ -164,6 +162,15 @@ class ScheduleTypeTest(TestCase):
         self.assertEqual(schedule_type_count, 1)
         mock_schedule_types = get_mock_code_and_description("Schedule Type")
         mock_execute_query.return_value = mock_schedule_types
+        ScheduleType.sync_all()
+        success_schedule_type_count = get_mock_values_success_count(mock_schedule_types)
+        expected_schedule_type_count = success_schedule_type_count + schedule_type_count
+        schedule_type_count = ScheduleType.objects.count()
+        self.assertEqual(schedule_type_count, expected_schedule_type_count)
+
+    @patch(EXECUTE_QUERY)
+    def test_sync_schedule_type(self, mock_execute_query):
+        mock_execute_query.return_value = "NEW"
         ScheduleType.sync_all()
         success_schedule_type_count = get_mock_values_success_count(mock_schedule_types)
         expected_schedule_type_count = success_schedule_type_count + schedule_type_count
@@ -186,7 +193,7 @@ class SchoolTest(TestCase):
 
     def test_str(self):
         school_string = str(self.school)
-        school_desc_and_code = f"{SCHOOL_DESC_LONG} ({SCHOOL_CODE})"
+        school_desc_and_code = "School Description (SCHL)"
         self.assertEqual(school_string, school_desc_and_code)
 
     def test_save(self):
@@ -230,7 +237,7 @@ class SubjectTest(TestCase):
 
     def test_str(self):
         subject_string = str(self.subject)
-        subject_desc_and_code = f"{SUBJECT_DESC_LONG} ({SUBJECT_CODE})"
+        subject_desc_and_code = "Subject Description (SUBJ)"
         self.assertEqual(subject_string, subject_desc_and_code)
 
     @patch(EXECUTE_QUERY)
