@@ -14,13 +14,19 @@ SUBJECT_CODE = "SUBJ"
 SUBJECT_DESC_LONG = "Subject Description"
 
 
-def get_mock_code_and_description(model: str):
+def get_mock_code_and_description(model: str) -> tuple:
     description = "Description"
     return (
         ("ABCD", f"First {model} {description}"),
         ("EFGH", f"Second {model} {description}"),
         ("IJKL", f"Third {model} {description}"),
+        (None, None),
     )
+
+
+def get_mock_values_success_count(values: tuple) -> int:
+    success_values = [value for value in values if all(value)]
+    return len(success_values)
 
 
 class UserTest(TestCase):
@@ -159,7 +165,8 @@ class ScheduleTypeTest(TestCase):
         mock_schedule_types = get_mock_code_and_description("Schedule Type")
         mock_execute_query.return_value = mock_schedule_types
         ScheduleType.sync_all()
-        expected_schedule_type_count = len(mock_schedule_types) + schedule_type_count
+        success_schedule_type_count = get_mock_values_success_count(mock_schedule_types)
+        expected_schedule_type_count = success_schedule_type_count + schedule_type_count
         schedule_type_count = ScheduleType.objects.count()
         self.assertEqual(schedule_type_count, expected_schedule_type_count)
 
@@ -208,7 +215,8 @@ class SchoolTest(TestCase):
             MockAccount(id=1, name=f"First {SCHOOL_DESC_LONG}")
         ]
         School.sync_all()
-        expected_school_count = len(mock_schools) + school_count
+        success_school_count = get_mock_values_success_count(mock_schools)
+        expected_school_count = success_school_count + school_count
         school_count = School.objects.count()
         self.assertEqual(school_count, expected_school_count)
 
