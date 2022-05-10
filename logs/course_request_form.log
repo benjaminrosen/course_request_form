@@ -823,3 +823,109 @@ DETAIL:  Failing row contains (EAS8980904202220, EAS8980904, 8980, 904, 202220, 
 [INFO] 2022-05-10 16:14:36,069 models.py log_field 41 FOUND last name 'REITER' for 'reiter'
 [INFO] 2022-05-10 16:14:36,070 models.py log_field 41 FOUND Penn id '10117955' for 'reiter'
 [INFO] 2022-05-10 16:14:36,070 models.py log_field 41 FOUND email address 'reiter@vet.upenn.edu' for 'reiter'
+[INFO] 2022-05-10 16:18:07,350 models.py update_or_create 100 ADDED First Schedule Type Description (ABCD)
+[INFO] 2022-05-10 16:18:07,351 models.py update_or_create 100 ADDED Second Schedule Type Description (EFGH)
+[INFO] 2022-05-10 16:18:07,353 models.py update_or_create 100 ADDED Third Schedule Type Description (IJKL)
+[INFO] 2022-05-10 16:18:07,370 models.py update_or_create 176 ADDED First School Description (ABCD)
+[INFO] 2022-05-10 16:18:07,372 models.py update_or_create 176 ADDED Second School Description (EFGH)
+[INFO] 2022-05-10 16:18:07,373 models.py update_or_create 176 ADDED Third School Description (IJKL)
+[INFO] 2022-05-10 16:18:07,386 models.py update_or_create 176 ADDED School Description (SCHL)
+[INFO] 2022-05-10 16:18:07,387 models.py update_or_create 232 ADDED First Subject Description (ABCD)
+[INFO] 2022-05-10 16:18:07,389 models.py update_or_create 232 ADDED Second Subject Description (EFGH)
+[ERROR] 2022-05-10 16:18:07,393 models.py update_or_create 178 FAILED to update or create school 'None': null value in column "school_desc_long" of relation "form_school" violates not-null constraint
+DETAIL:  Failing row contains (, null, t, null, t).
+
+[INFO] 2022-05-10 16:18:07,394 models.py update_or_create 232 ADDED Third Subject Description (IJKL)
+[INFO] 2022-05-10 16:18:07,401 models.py sync_dw_info 46 Getting testuser's info from Data Warehouse...
+[INFO] 2022-05-10 16:18:07,401 models.py log_field 41 FOUND first name 'Test' for 'testuser'
+[INFO] 2022-05-10 16:18:07,401 models.py log_field 41 FOUND last name 'User' for 'testuser'
+[INFO] 2022-05-10 16:18:07,401 models.py log_field 41 FOUND Penn id '1234567' for 'testuser'
+[INFO] 2022-05-10 16:18:07,401 models.py log_field 41 FOUND email address 'testuser@upenn.edu' for 'testuser'
+[INFO] 2022-05-10 16:18:07,401 models.py sync_canvas_id 69 Getting Canvas user id for 'testuser'...
+[INFO] 2022-05-10 16:18:07,401 models.py log_field 41 FOUND Canvas user id '7654321' for 'testuser'
+[INFO] 2022-05-10 16:18:07,405 models.py sync_dw_info 46 Getting testuser's info from Data Warehouse...
+[INFO] 2022-05-10 16:18:07,405 models.py log_field 41 FOUND first name 'Test' for 'testuser'
+[INFO] 2022-05-10 16:18:07,405 models.py log_field 41 FOUND last name 'User' for 'testuser'
+[INFO] 2022-05-10 16:18:07,406 models.py log_field 41 FOUND Penn id '1234567' for 'testuser'
+[INFO] 2022-05-10 16:18:07,406 models.py log_field 41 FOUND email address 'testuser@upenn.edu' for 'testuser'
+[INFO] 2022-05-10 16:18:07,406 models.py sync_canvas_id 69 Getting Canvas user id for 'testuser'...
+[INFO] 2022-05-10 16:18:07,406 models.py log_field 41 FOUND Canvas user id '7654321' for 'testuser'
+[INFO] 2022-05-10 16:18:07,408 models.py sync_dw_info 46 Getting testuser's info from Data Warehouse...
+[INFO] 2022-05-10 16:18:07,408 models.py log_field 41 FOUND first name 'Test' for 'testuser'
+[INFO] 2022-05-10 16:18:07,408 models.py log_field 41 FOUND last name 'User' for 'testuser'
+[INFO] 2022-05-10 16:18:07,408 models.py log_field 41 FOUND Penn id '1234567' for 'testuser'
+[INFO] 2022-05-10 16:18:07,408 models.py log_field 41 FOUND email address 'testuser@upenn.edu' for 'testuser'
+[INFO] 2022-05-10 16:18:07,408 models.py sync_canvas_id 69 Getting Canvas user id for 'testuser'...
+[INFO] 2022-05-10 16:18:07,408 models.py log_field 41 FOUND Canvas user id '7654321' for 'testuser'
+[INFO] 2022-05-10 16:18:07,409 models.py sync_canvas_id 69 Getting Canvas user id for 'testuser'...
+[INFO] 2022-05-10 16:18:07,409 models.py log_field 41 FOUND Canvas user id '7654322' for 'testuser'
+[INFO] 2022-05-10 16:18:07,412 models.py sync_dw_info 46 Getting testuser's info from Data Warehouse...
+[INFO] 2022-05-10 16:18:07,413 models.py log_field 41 FOUND first name 'Test' for 'testuser'
+[INFO] 2022-05-10 16:18:07,413 models.py log_field 41 FOUND last name 'User' for 'testuser'
+[INFO] 2022-05-10 16:18:07,413 models.py log_field 41 FOUND Penn id '1234567' for 'testuser'
+[INFO] 2022-05-10 16:18:07,413 models.py log_field 41 FOUND email address 'testuser@upenn.edu' for 'testuser'
+[INFO] 2022-05-10 16:18:07,413 models.py sync_canvas_id 69 Getting Canvas user id for 'testuser'...
+[INFO] 2022-05-10 16:18:07,413 models.py log_field 41 FOUND Canvas user id '7654321' for 'testuser'
+[INFO] 2022-05-10 16:18:07,414 models.py sync_dw_info 46 Getting testuser's info from Data Warehouse...
+[INFO] 2022-05-10 16:18:07,414 models.py log_field 41 FOUND first name 'New' for 'testuser'
+[INFO] 2022-05-10 16:18:07,414 models.py log_field 41 FOUND last name 'Name' for 'testuser'
+[INFO] 2022-05-10 16:18:07,414 models.py log_field 41 FOUND Penn id '1234568' for 'testuser'
+[INFO] 2022-05-10 16:18:07,414 models.py log_field 41 FOUND email address 'newname@upenn.edu' for 'testuser'
+[INFO] 2022-05-10 16:18:07,415 models.py sync_dw_info 46 Getting testuser's info from Data Warehouse...
+[WARNING] 2022-05-10 16:18:07,415 models.py log_field 43 first name NOT FOUND for 'testuser'
+[WARNING] 2022-05-10 16:18:07,415 models.py log_field 43 last name NOT FOUND for 'testuser'
+[WARNING] 2022-05-10 16:18:07,416 models.py log_field 43 Penn id NOT FOUND for 'testuser'
+[WARNING] 2022-05-10 16:18:07,416 models.py log_field 43 email address NOT FOUND for 'testuser'
+[INFO] 2022-05-10 16:18:08,719 models.py update_or_create 100 ADDED First Schedule Type Description (ABCD)
+[INFO] 2022-05-10 16:18:08,721 models.py update_or_create 100 ADDED Second Schedule Type Description (EFGH)
+[INFO] 2022-05-10 16:18:08,723 models.py update_or_create 100 ADDED Third Schedule Type Description (IJKL)
+[INFO] 2022-05-10 16:18:08,741 models.py update_or_create 176 ADDED First School Description (ABCD)
+[INFO] 2022-05-10 16:18:08,743 models.py update_or_create 176 ADDED Second School Description (EFGH)
+[INFO] 2022-05-10 16:18:08,746 models.py update_or_create 176 ADDED Third School Description (IJKL)
+[INFO] 2022-05-10 16:18:08,759 models.py update_or_create 176 ADDED School Description (SCHL)
+[INFO] 2022-05-10 16:18:08,761 models.py update_or_create 232 ADDED First Subject Description (ABCD)
+[INFO] 2022-05-10 16:18:08,763 models.py update_or_create 232 ADDED Second Subject Description (EFGH)
+[ERROR] 2022-05-10 16:18:08,767 models.py update_or_create 178 FAILED to update or create school 'None': null value in column "school_desc_long" of relation "form_school" violates not-null constraint
+DETAIL:  Failing row contains (, null, t, null, t).
+
+[INFO] 2022-05-10 16:18:08,768 models.py update_or_create 232 ADDED Third Subject Description (IJKL)
+[INFO] 2022-05-10 16:18:08,774 models.py sync_dw_info 46 Getting testuser's info from Data Warehouse...
+[INFO] 2022-05-10 16:18:08,774 models.py log_field 41 FOUND first name 'Test' for 'testuser'
+[INFO] 2022-05-10 16:18:08,774 models.py log_field 41 FOUND last name 'User' for 'testuser'
+[INFO] 2022-05-10 16:18:08,774 models.py log_field 41 FOUND Penn id '1234567' for 'testuser'
+[INFO] 2022-05-10 16:18:08,774 models.py log_field 41 FOUND email address 'testuser@upenn.edu' for 'testuser'
+[INFO] 2022-05-10 16:18:08,774 models.py sync_canvas_id 69 Getting Canvas user id for 'testuser'...
+[INFO] 2022-05-10 16:18:08,774 models.py log_field 41 FOUND Canvas user id '7654321' for 'testuser'
+[INFO] 2022-05-10 16:18:08,778 models.py sync_dw_info 46 Getting testuser's info from Data Warehouse...
+[INFO] 2022-05-10 16:18:08,778 models.py log_field 41 FOUND first name 'Test' for 'testuser'
+[INFO] 2022-05-10 16:18:08,778 models.py log_field 41 FOUND last name 'User' for 'testuser'
+[INFO] 2022-05-10 16:18:08,778 models.py log_field 41 FOUND Penn id '1234567' for 'testuser'
+[INFO] 2022-05-10 16:18:08,778 models.py log_field 41 FOUND email address 'testuser@upenn.edu' for 'testuser'
+[INFO] 2022-05-10 16:18:08,778 models.py sync_canvas_id 69 Getting Canvas user id for 'testuser'...
+[INFO] 2022-05-10 16:18:08,778 models.py log_field 41 FOUND Canvas user id '7654321' for 'testuser'
+[INFO] 2022-05-10 16:18:08,780 models.py sync_dw_info 46 Getting testuser's info from Data Warehouse...
+[INFO] 2022-05-10 16:18:08,780 models.py log_field 41 FOUND first name 'Test' for 'testuser'
+[INFO] 2022-05-10 16:18:08,781 models.py log_field 41 FOUND last name 'User' for 'testuser'
+[INFO] 2022-05-10 16:18:08,781 models.py log_field 41 FOUND Penn id '1234567' for 'testuser'
+[INFO] 2022-05-10 16:18:08,781 models.py log_field 41 FOUND email address 'testuser@upenn.edu' for 'testuser'
+[INFO] 2022-05-10 16:18:08,781 models.py sync_canvas_id 69 Getting Canvas user id for 'testuser'...
+[INFO] 2022-05-10 16:18:08,781 models.py log_field 41 FOUND Canvas user id '7654321' for 'testuser'
+[INFO] 2022-05-10 16:18:08,781 models.py sync_canvas_id 69 Getting Canvas user id for 'testuser'...
+[INFO] 2022-05-10 16:18:08,782 models.py log_field 41 FOUND Canvas user id '7654322' for 'testuser'
+[INFO] 2022-05-10 16:18:08,784 models.py sync_dw_info 46 Getting testuser's info from Data Warehouse...
+[INFO] 2022-05-10 16:18:08,784 models.py log_field 41 FOUND first name 'Test' for 'testuser'
+[INFO] 2022-05-10 16:18:08,784 models.py log_field 41 FOUND last name 'User' for 'testuser'
+[INFO] 2022-05-10 16:18:08,784 models.py log_field 41 FOUND Penn id '1234567' for 'testuser'
+[INFO] 2022-05-10 16:18:08,784 models.py log_field 41 FOUND email address 'testuser@upenn.edu' for 'testuser'
+[INFO] 2022-05-10 16:18:08,784 models.py sync_canvas_id 69 Getting Canvas user id for 'testuser'...
+[INFO] 2022-05-10 16:18:08,785 models.py log_field 41 FOUND Canvas user id '7654321' for 'testuser'
+[INFO] 2022-05-10 16:18:08,785 models.py sync_dw_info 46 Getting testuser's info from Data Warehouse...
+[INFO] 2022-05-10 16:18:08,785 models.py log_field 41 FOUND first name 'New' for 'testuser'
+[INFO] 2022-05-10 16:18:08,785 models.py log_field 41 FOUND last name 'Name' for 'testuser'
+[INFO] 2022-05-10 16:18:08,785 models.py log_field 41 FOUND Penn id '1234568' for 'testuser'
+[INFO] 2022-05-10 16:18:08,786 models.py log_field 41 FOUND email address 'newname@upenn.edu' for 'testuser'
+[INFO] 2022-05-10 16:18:08,786 models.py sync_dw_info 46 Getting testuser's info from Data Warehouse...
+[WARNING] 2022-05-10 16:18:08,786 models.py log_field 43 first name NOT FOUND for 'testuser'
+[WARNING] 2022-05-10 16:18:08,786 models.py log_field 43 last name NOT FOUND for 'testuser'
+[WARNING] 2022-05-10 16:18:08,787 models.py log_field 43 Penn id NOT FOUND for 'testuser'
+[WARNING] 2022-05-10 16:18:08,787 models.py log_field 43 email address NOT FOUND for 'testuser'
