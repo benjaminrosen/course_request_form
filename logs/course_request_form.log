@@ -1,0 +1,825 @@
+[INFO] 2022-05-10 15:54:38,598 models.py update_or_create 174 UPDATED Veterinary Medicine (V)
+[INFO] 2022-05-10 15:54:38,604 models.py update_or_create 174 UPDATED Perelman School of Medicine (M)
+[INFO] 2022-05-10 15:54:38,608 models.py update_or_create 174 UPDATED Annenberg School for Communication (C)
+[INFO] 2022-05-10 15:54:38,610 models.py update_or_create 174 UPDATED Graduate School of Education (G)
+[INFO] 2022-05-10 15:54:38,612 models.py update_or_create 174 UPDATED Law School (L)
+[INFO] 2022-05-10 15:54:38,614 models.py update_or_create 174 UPDATED School of Arts & Sciences (A)
+[INFO] 2022-05-10 15:54:38,616 models.py update_or_create 174 UPDATED Stuart Weitzman School of Design (F)
+[INFO] 2022-05-10 15:54:38,620 models.py update_or_create 174 UPDATED School of Nursing (N)
+[INFO] 2022-05-10 15:54:38,622 models.py update_or_create 174 UPDATED Wharton School (W)
+[INFO] 2022-05-10 15:54:38,625 models.py update_or_create 174 UPDATED School of Engineering and Applied Science (E)
+[INFO] 2022-05-10 15:54:38,627 models.py update_or_create 174 UPDATED School of Dental Medicine (D)
+[INFO] 2022-05-10 15:54:38,629 models.py update_or_create 174 UPDATED Provost Center (P)
+[INFO] 2022-05-10 15:54:38,631 models.py update_or_create 174 UPDATED School of Social Policy & Practice (S)
+[ERROR] 2022-05-10 15:54:52,903 models.py update_or_create 233 FAILED to update or create subject 'BERK': local variable 'school' referenced before assignment
+[ERROR] 2022-05-10 15:54:53,793 models.py update_or_create 233 FAILED to update or create subject 'PHR': local variable 'school' referenced before assignment
+[INFO] 2022-05-10 15:54:53,809 models.py update_or_create 230 ADDED Art and Archaeology of the Mediterranean World (AAMW)
+[INFO] 2022-05-10 15:54:53,812 models.py update_or_create 230 ADDED Accounting (ACCT)
+[INFO] 2022-05-10 15:54:53,815 models.py update_or_create 230 ADDED None (ACFD)
+[ERROR] 2022-05-10 15:54:54,664 models.py update_or_create 233 FAILED to update or create subject 'AFAM': local variable 'school' referenced before assignment
+[INFO] 2022-05-10 15:54:54,679 models.py update_or_create 230 ADDED Africana Studies (AFRC)
+[ERROR] 2022-05-10 15:54:55,543 models.py update_or_create 233 FAILED to update or create subject 'AFST': local variable 'school' referenced before assignment
+[INFO] 2022-05-10 15:54:55,554 models.py update_or_create 230 ADDED Asian Languages (ALAN)
+[INFO] 2022-05-10 15:54:55,557 models.py update_or_create 230 ADDED Applied Math and Computational Science (AMCS)
+[ERROR] 2022-05-10 15:54:56,435 models.py update_or_create 233 FAILED to update or create subject 'AMCV': local variable 'school' referenced before assignment
+[ERROR] 2022-05-10 15:54:57,313 models.py update_or_create 233 FAILED to update or create subject 'AMES': local variable 'school' referenced before assignment
+[INFO] 2022-05-10 15:54:57,332 models.py update_or_create 230 ADDED Amharic (AMHR)
+[INFO] 2022-05-10 15:54:57,334 models.py update_or_create 230 ADDED Anatomy (ANAT)
+[INFO] 2022-05-10 15:54:57,336 models.py update_or_create 230 ADDED Ancient History (ANCH)
+[ERROR] 2022-05-10 15:54:58,166 models.py update_or_create 233 FAILED to update or create subject 'ANCS': local variable 'school' referenced before assignment
+[INFO] 2022-05-10 15:54:58,177 models.py update_or_create 230 ADDED Anesthesiology & Critical Care (ANE)
+[INFO] 2022-05-10 15:54:58,180 models.py update_or_create 230 ADDED Ancient Near East Languages (ANEL)
+[INFO] 2022-05-10 15:54:58,182 models.py update_or_create 230 ADDED Anthropology (ANTH)
+[INFO] 2022-05-10 15:54:58,185 models.py update_or_create 230 ADDED Applied Positive Psychology (APOP)
+[INFO] 2022-05-10 15:54:58,187 models.py update_or_create 230 ADDED Arabic (ARAB)
+[INFO] 2022-05-10 15:54:58,188 models.py update_or_create 230 ADDED Architecture (ARCH)
+[INFO] 2022-05-10 15:54:58,190 models.py update_or_create 230 ADDED History of Art (ARTH)
+[INFO] 2022-05-10 15:54:58,192 models.py update_or_create 230 ADDED Asian American Studies (ASAM)
+[INFO] 2022-05-10 15:54:58,194 models.py update_or_create 230 ADDED American Sign Language (ASLD)
+[INFO] 2022-05-10 15:54:58,196 models.py update_or_create 230 ADDED Astronomy (ASTR)
+[INFO] 2022-05-10 15:54:58,198 models.py update_or_create 230 ADDED None (BAAS)
+[INFO] 2022-05-10 15:54:58,199 models.py update_or_create 230 ADDED Biochemistry (Undergrads) (BCHE)
+[INFO] 2022-05-10 15:54:58,201 models.py update_or_create 230 ADDED Bosnian/Croatian/Serbian (BCS)
+[INFO] 2022-05-10 15:54:58,203 models.py update_or_create 230 ADDED Behavioral and Decision Sciences (BDS)
+[INFO] 2022-05-10 15:54:58,205 models.py update_or_create 230 ADDED Bioengineering (BE)
+[INFO] 2022-05-10 15:54:58,207 models.py update_or_create 230 ADDED Benjamin Franklin Seminars (BENF)
+[INFO] 2022-05-10 15:54:58,209 models.py update_or_create 230 ADDED Bengali (BENG)
+[INFO] 2022-05-10 15:54:58,211 models.py update_or_create 230 ADDED Business Economics and Public Policy (BEPP)
+[ERROR] 2022-05-10 15:54:59,079 models.py update_or_create 233 FAILED to update or create subject 'BFLW': local variable 'school' referenced before assignment
+[ERROR] 2022-05-10 15:54:59,965 models.py update_or_create 233 FAILED to update or create subject 'BFMD': local variable 'school' referenced before assignment
+[ERROR] 2022-05-10 15:55:00,821 models.py update_or_create 233 FAILED to update or create subject 'BIBB': local variable 'school' referenced before assignment
+[ERROR] 2022-05-10 15:55:01,724 models.py update_or_create 233 FAILED to update or create subject 'BIOC': local variable 'school' referenced before assignment
+[INFO] 2022-05-10 15:55:01,738 models.py update_or_create 230 ADDED Bioethics (BIOE)
+[ERROR] 2022-05-10 15:55:02,675 models.py update_or_create 233 FAILED to update or create subject 'BIOH': local variable 'school' referenced before assignment
+[INFO] 2022-05-10 15:55:02,687 models.py update_or_create 230 ADDED Biology (BIOL)
+[INFO] 2022-05-10 15:55:02,690 models.py update_or_create 230 ADDED Biomedical Studies (BIOM)
+[ERROR] 2022-05-10 15:55:03,561 models.py update_or_create 233 FAILED to update or create subject 'BIOP': local variable 'school' referenced before assignment
+[INFO] 2022-05-10 15:55:03,573 models.py update_or_create 230 ADDED Biotechnology (BIOT)
+[ERROR] 2022-05-10 15:55:04,440 models.py update_or_create 233 FAILED to update or create subject 'BLAW': local variable 'school' referenced before assignment
+[INFO] 2022-05-10 15:55:04,454 models.py update_or_create 230 ADDED Biochemistry & Molecular Biophysics (BMB)
+[INFO] 2022-05-10 15:55:04,456 models.py update_or_create 230 ADDED Biomedical Informatics (BMIN)
+[ERROR] 2022-05-10 15:55:05,323 models.py update_or_create 233 FAILED to update or create subject 'BPUB': local variable 'school' referenced before assignment
+[ERROR] 2022-05-10 15:55:06,199 models.py update_or_create 233 FAILED to update or create subject 'BRWN': local variable 'school' referenced before assignment
+[ERROR] 2022-05-10 15:55:07,057 models.py update_or_create 233 FAILED to update or create subject 'BRYN': local variable 'school' referenced before assignment
+[INFO] 2022-05-10 15:55:07,069 models.py update_or_create 230 ADDED Biostatistics (BSTA)
+[INFO] 2022-05-10 15:55:07,071 models.py update_or_create 230 ADDED Cell and Molecular Biology (CAMB)
+[INFO] 2022-05-10 15:55:07,073 models.py update_or_create 230 ADDED Chemical and Biomolecular Engineering (CBE)
+[INFO] 2022-05-10 15:55:07,075 models.py update_or_create 230 ADDED Cell and Developmental Biology (CDB)
+[ERROR] 2022-05-10 15:55:07,919 models.py update_or_create 233 FAILED to update or create subject 'CELL': local variable 'school' referenced before assignment
+[INFO] 2022-05-10 15:55:07,933 models.py update_or_create 230 ADDED Chemistry (CHEM)
+[INFO] 2022-05-10 15:56:56,865 models.py update_or_create 175 UPDATED Veterinary Medicine (V)
+[INFO] 2022-05-10 15:56:56,880 models.py update_or_create 175 UPDATED Perelman School of Medicine (M)
+[INFO] 2022-05-10 15:56:56,883 models.py update_or_create 175 UPDATED Annenberg School for Communication (C)
+[INFO] 2022-05-10 15:56:56,885 models.py update_or_create 175 UPDATED Graduate School of Education (G)
+[INFO] 2022-05-10 15:56:56,887 models.py update_or_create 175 UPDATED Law School (L)
+[INFO] 2022-05-10 15:56:56,898 models.py update_or_create 175 UPDATED School of Arts & Sciences (A)
+[INFO] 2022-05-10 15:56:56,900 models.py update_or_create 175 UPDATED Stuart Weitzman School of Design (F)
+[INFO] 2022-05-10 15:56:56,903 models.py update_or_create 175 UPDATED School of Nursing (N)
+[INFO] 2022-05-10 15:56:56,908 models.py update_or_create 175 UPDATED Wharton School (W)
+[INFO] 2022-05-10 15:56:56,914 models.py update_or_create 175 UPDATED School of Engineering and Applied Science (E)
+[INFO] 2022-05-10 15:56:56,916 models.py update_or_create 175 UPDATED School of Dental Medicine (D)
+[INFO] 2022-05-10 15:56:56,919 models.py update_or_create 175 UPDATED Provost Center (P)
+[INFO] 2022-05-10 15:56:56,921 models.py update_or_create 175 UPDATED School of Social Policy & Practice (S)
+[INFO] 2022-05-10 15:57:01,119 models.py update_or_create 231 ADDED University of California Berkeley Exchange Program (BERK)
+[INFO] 2022-05-10 15:57:01,989 models.py update_or_create 231 ADDED None (PHR)
+[INFO] 2022-05-10 15:57:01,991 models.py update_or_create 231 UPDATED Art and Archaeology of the Mediterranean World (AAMW)
+[INFO] 2022-05-10 15:57:01,993 models.py update_or_create 231 UPDATED Accounting (ACCT)
+[INFO] 2022-05-10 15:57:01,995 models.py update_or_create 231 UPDATED None (ACFD)
+[INFO] 2022-05-10 15:57:02,875 models.py update_or_create 231 ADDED None (AFAM)
+[INFO] 2022-05-10 15:57:02,877 models.py update_or_create 231 UPDATED Africana Studies (AFRC)
+[INFO] 2022-05-10 15:57:03,736 models.py update_or_create 231 ADDED African Studies Program (AFST)
+[INFO] 2022-05-10 15:57:03,738 models.py update_or_create 231 UPDATED Asian Languages (ALAN)
+[INFO] 2022-05-10 15:57:03,740 models.py update_or_create 231 UPDATED Applied Math and Computational Science (AMCS)
+[INFO] 2022-05-10 15:57:04,607 models.py update_or_create 231 ADDED None (AMCV)
+[INFO] 2022-05-10 15:57:05,450 models.py update_or_create 231 ADDED None (AMES)
+[INFO] 2022-05-10 15:57:05,453 models.py update_or_create 231 UPDATED Amharic (AMHR)
+[INFO] 2022-05-10 15:57:05,455 models.py update_or_create 231 UPDATED Anatomy (ANAT)
+[INFO] 2022-05-10 15:57:05,457 models.py update_or_create 231 UPDATED Ancient History (ANCH)
+[INFO] 2022-05-10 15:57:06,305 models.py update_or_create 231 ADDED None (ANCS)
+[INFO] 2022-05-10 15:57:06,308 models.py update_or_create 231 UPDATED Anesthesiology & Critical Care (ANE)
+[INFO] 2022-05-10 15:57:06,310 models.py update_or_create 231 UPDATED Ancient Near East Languages (ANEL)
+[INFO] 2022-05-10 15:57:06,312 models.py update_or_create 231 UPDATED Anthropology (ANTH)
+[INFO] 2022-05-10 15:57:06,314 models.py update_or_create 231 UPDATED Applied Positive Psychology (APOP)
+[INFO] 2022-05-10 15:57:06,316 models.py update_or_create 231 UPDATED Arabic (ARAB)
+[INFO] 2022-05-10 15:57:06,318 models.py update_or_create 231 UPDATED Architecture (ARCH)
+[INFO] 2022-05-10 15:57:06,319 models.py update_or_create 231 UPDATED History of Art (ARTH)
+[INFO] 2022-05-10 15:57:06,321 models.py update_or_create 231 UPDATED Asian American Studies (ASAM)
+[INFO] 2022-05-10 15:57:06,323 models.py update_or_create 231 UPDATED American Sign Language (ASLD)
+[INFO] 2022-05-10 15:57:06,325 models.py update_or_create 231 UPDATED Astronomy (ASTR)
+[INFO] 2022-05-10 15:57:06,327 models.py update_or_create 231 UPDATED None (BAAS)
+[INFO] 2022-05-10 15:57:06,329 models.py update_or_create 231 UPDATED Biochemistry (Undergrads) (BCHE)
+[INFO] 2022-05-10 15:57:06,330 models.py update_or_create 231 UPDATED Bosnian/Croatian/Serbian (BCS)
+[INFO] 2022-05-10 15:57:06,332 models.py update_or_create 231 UPDATED Behavioral and Decision Sciences (BDS)
+[INFO] 2022-05-10 15:57:06,334 models.py update_or_create 231 UPDATED Bioengineering (BE)
+[INFO] 2022-05-10 15:57:06,336 models.py update_or_create 231 UPDATED Benjamin Franklin Seminars (BENF)
+[INFO] 2022-05-10 15:57:06,338 models.py update_or_create 231 UPDATED Bengali (BENG)
+[INFO] 2022-05-10 15:57:06,339 models.py update_or_create 231 UPDATED Business Economics and Public Policy (BEPP)
+[INFO] 2022-05-10 15:57:07,212 models.py update_or_create 231 ADDED None (BFLW)
+[INFO] 2022-05-10 15:57:08,101 models.py update_or_create 231 ADDED None (BFMD)
+[INFO] 2022-05-10 15:57:09,271 models.py update_or_create 231 ADDED Biological Basis of Behavior (BIBB)
+[INFO] 2022-05-10 15:57:10,407 models.py update_or_create 231 ADDED None (BIOC)
+[INFO] 2022-05-10 15:57:10,409 models.py update_or_create 231 UPDATED Bioethics (BIOE)
+[INFO] 2022-05-10 15:57:12,388 models.py update_or_create 231 ADDED None (BIOH)
+[INFO] 2022-05-10 15:57:12,390 models.py update_or_create 231 UPDATED Biology (BIOL)
+[INFO] 2022-05-10 15:57:12,392 models.py update_or_create 231 UPDATED Biomedical Studies (BIOM)
+[INFO] 2022-05-10 15:57:15,006 models.py update_or_create 231 ADDED None (BIOP)
+[INFO] 2022-05-10 15:57:15,008 models.py update_or_create 231 UPDATED Biotechnology (BIOT)
+[INFO] 2022-05-10 15:57:16,460 models.py update_or_create 231 ADDED None (BLAW)
+[INFO] 2022-05-10 15:57:16,462 models.py update_or_create 231 UPDATED Biochemistry & Molecular Biophysics (BMB)
+[INFO] 2022-05-10 15:57:16,463 models.py update_or_create 231 UPDATED Biomedical Informatics (BMIN)
+[INFO] 2022-05-10 15:57:17,621 models.py update_or_create 231 ADDED None (BPUB)
+[INFO] 2022-05-10 15:57:18,738 models.py update_or_create 231 ADDED None (BRWN)
+[INFO] 2022-05-10 15:57:19,764 models.py update_or_create 231 ADDED None (BRYN)
+[INFO] 2022-05-10 15:57:19,766 models.py update_or_create 231 UPDATED Biostatistics (BSTA)
+[INFO] 2022-05-10 15:57:19,768 models.py update_or_create 231 UPDATED Cell and Molecular Biology (CAMB)
+[INFO] 2022-05-10 15:57:19,770 models.py update_or_create 231 UPDATED Chemical and Biomolecular Engineering (CBE)
+[INFO] 2022-05-10 15:57:19,771 models.py update_or_create 231 UPDATED Cell and Developmental Biology (CDB)
+[INFO] 2022-05-10 15:57:20,877 models.py update_or_create 231 ADDED None (CELL)
+[INFO] 2022-05-10 15:57:20,879 models.py update_or_create 231 UPDATED Chemistry (CHEM)
+[INFO] 2022-05-10 15:57:21,864 models.py update_or_create 231 ADDED None (CHE)
+[INFO] 2022-05-10 15:57:21,867 models.py update_or_create 231 ADDED Chichewa (CHIC)
+[INFO] 2022-05-10 15:57:21,869 models.py update_or_create 231 ADDED Chinese (CHIN)
+[INFO] 2022-05-10 15:57:21,872 models.py update_or_create 231 ADDED Cinema and Media Studies (CIMS)
+[INFO] 2022-05-10 15:57:22,934 models.py update_or_create 231 ADDED None (CINE)
+[INFO] 2022-05-10 15:57:22,938 models.py update_or_create 231 ADDED Cinema (CINM)
+[INFO] 2022-05-10 15:57:22,940 models.py update_or_create 231 ADDED Computer and Information Science (CIS)
+[INFO] 2022-05-10 15:57:22,942 models.py update_or_create 231 ADDED Computer and Information Technology (CIT)
+[INFO] 2022-05-10 15:57:24,009 models.py update_or_create 231 ADDED None (CIVE)
+[INFO] 2022-05-10 15:57:25,059 models.py update_or_create 231 ADDED None (CLAR)
+[INFO] 2022-05-10 15:57:25,062 models.py update_or_create 231 ADDED Climate Change (CLCH)
+[INFO] 2022-05-10 15:57:25,064 models.py update_or_create 231 ADDED Classics (CLSC)
+[INFO] 2022-05-10 15:57:25,066 models.py update_or_create 231 ADDED Classical Studies (CLST)
+[INFO] 2022-05-10 15:57:26,060 models.py update_or_create 231 ADDED None (CMSC)
+[INFO] 2022-05-10 15:57:26,062 models.py update_or_create 231 ADDED Consortium (CNST)
+[INFO] 2022-05-10 15:57:26,064 models.py update_or_create 231 ADDED Cognitive Science (COGS)
+[INFO] 2022-05-10 15:57:26,066 models.py update_or_create 231 ADDED College (COLL)
+[INFO] 2022-05-10 15:57:27,136 models.py update_or_create 231 ADDED None (COLU)
+[INFO] 2022-05-10 15:57:27,138 models.py update_or_create 231 ADDED Comparative Literature (COML)
+[INFO] 2022-05-10 15:57:27,141 models.py update_or_create 231 ADDED Communications (COMM)
+[INFO] 2022-05-10 15:57:28,193 models.py update_or_create 231 ADDED None (CONV)
+[INFO] 2022-05-10 15:57:29,251 models.py update_or_create 231 ADDED None (CORN)
+[INFO] 2022-05-10 15:57:29,253 models.py update_or_create 231 ADDED City Planning (CPLN)
+[INFO] 2022-05-10 15:57:29,255 models.py update_or_create 231 ADDED Criminology (CRIM)
+[INFO] 2022-05-10 15:57:30,262 models.py update_or_create 231 ADDED None (CRJP)
+[INFO] 2022-05-10 15:57:30,265 models.py update_or_create 231 ADDED Creative Writing (CRWR)
+[INFO] 2022-05-10 15:57:31,315 models.py update_or_create 231 ADDED None (CSA)
+[INFO] 2022-05-10 15:57:32,349 models.py update_or_create 231 ADDED None (CSE)
+[INFO] 2022-05-10 15:57:33,417 models.py update_or_create 231 ADDED None (CULS)
+[INFO] 2022-05-10 15:57:33,419 models.py update_or_create 231 ADDED Czech (CZCH)
+[INFO] 2022-05-10 15:57:33,421 models.py update_or_create 231 ADDED Dental DADE Core Curriculum Basic Science (DADE)
+[INFO] 2022-05-10 15:57:34,449 models.py update_or_create 231 ADDED None (DANH)
+[INFO] 2022-05-10 15:57:34,451 models.py update_or_create 231 ADDED Data Analytics (DATA)
+[INFO] 2022-05-10 15:57:34,454 models.py update_or_create 231 ADDED Data Science (DATS)
+[INFO] 2022-05-10 15:57:35,518 models.py update_or_create 231 ADDED None (DBCH)
+[INFO] 2022-05-10 15:57:36,545 models.py update_or_create 231 ADDED None (DCAR)
+[INFO] 2022-05-10 15:57:36,547 models.py update_or_create 231 ADDED Community Oral Health (DCOH)
+[INFO] 2022-05-10 15:57:37,625 models.py update_or_create 231 ADDED None (DELW)
+[INFO] 2022-05-10 15:57:37,628 models.py update_or_create 231 ADDED Demography (DEMG)
+[INFO] 2022-05-10 15:57:38,655 models.py update_or_create 231 ADDED Endodontics (DEND)
+[INFO] 2022-05-10 15:57:38,658 models.py update_or_create 231 ADDED Dental (DENT)
+[INFO] 2022-05-10 15:57:39,794 models.py update_or_create 231 ADDED None (DENV)
+[INFO] 2022-05-10 15:57:39,796 models.py update_or_create 231 ADDED Dermatology (DER)
+[INFO] 2022-05-10 15:57:40,791 models.py update_or_create 231 ADDED None (DIAG)
+[INFO] 2022-05-10 15:57:40,811 models.py update_or_create 231 ADDED None (DIGC)
+[INFO] 2022-05-10 15:57:41,804 models.py update_or_create 231 ADDED None (DMCB)
+[INFO] 2022-05-10 15:57:41,806 models.py update_or_create 231 ADDED Oral Medicine (DOMD)
+[INFO] 2022-05-10 15:57:41,808 models.py update_or_create 231 ADDED Orthodontics (DORT)
+[INFO] 2022-05-10 15:57:41,810 models.py update_or_create 231 ADDED Oral Surgery and Pharmacology (DOSP)
+[INFO] 2022-05-10 15:57:42,830 models.py update_or_create 231 ADDED Pediatric Dentistry (DPED)
+[INFO] 2022-05-10 15:57:43,882 models.py update_or_create 231 ADDED Periodontics (DPRD)
+[INFO] 2022-05-10 15:57:44,960 models.py update_or_create 231 ADDED None (DPTH)
+[INFO] 2022-05-10 15:57:45,985 models.py update_or_create 231 ADDED Radiology (DRAD)
+[INFO] 2022-05-10 15:57:47,055 models.py update_or_create 231 ADDED None (DREX)
+[INFO] 2022-05-10 15:57:47,058 models.py update_or_create 231 ADDED Restorative Dentistry (DRST)
+[INFO] 2022-05-10 15:57:48,127 models.py update_or_create 231 ADDED None (DSCI)
+[INFO] 2022-05-10 15:57:48,153 models.py update_or_create 231 ADDED Design (DSGN)
+[INFO] 2022-05-10 15:57:48,155 models.py update_or_create 231 ADDED Dutch (DTCH)
+[INFO] 2022-05-10 15:57:48,157 models.py update_or_create 231 ADDED Organizational Dynamics (DYNM)
+[INFO] 2022-05-10 15:57:48,159 models.py update_or_create 231 ADDED East Asian Languages and Civilizations (EALC)
+[INFO] 2022-05-10 15:57:48,161 models.py update_or_create 231 ADDED Engineering and Applied Sciences (EAS)
+[INFO] 2022-05-10 15:57:49,130 models.py update_or_create 231 ADDED Earth Science (EASC)
+[INFO] 2022-05-10 15:57:49,133 models.py update_or_create 231 ADDED Economics (ECON)
+[INFO] 2022-05-10 15:57:49,135 models.py update_or_create 231 ADDED Education-Continuing Education (EDCE)
+[INFO] 2022-05-10 15:57:49,137 models.py update_or_create 231 ADDED Chief Learning Officer (EDCL)
+[INFO] 2022-05-10 15:57:49,139 models.py update_or_create 231 ADDED Education Entrepreneurship (EDEN)
+[INFO] 2022-05-10 15:57:49,141 models.py update_or_create 231 ADDED Higher Education Management (EDHE)
+[INFO] 2022-05-10 15:57:49,143 models.py update_or_create 231 ADDED Mid-Career Educational & Organizational Leadership (EDMC)
+[INFO] 2022-05-10 15:57:49,145 models.py update_or_create 231 ADDED Medical Education (EDME)
+[INFO] 2022-05-10 15:57:49,147 models.py update_or_create 231 ADDED Penn Residency (EDPR)
+[INFO] 2022-05-10 15:57:49,149 models.py update_or_create 231 ADDED School and Mental Health Counseling (EDSC)
+[INFO] 2022-05-10 15:57:49,151 models.py update_or_create 231 ADDED School Leadership (EDSL)
+[INFO] 2022-05-10 15:57:49,152 models.py update_or_create 231 ADDED Teach For America Certificate (EDTC)
+[INFO] 2022-05-10 15:57:49,154 models.py update_or_create 231 ADDED Teach For America MSEd (EDTF)
+[INFO] 2022-05-10 15:57:49,156 models.py update_or_create 231 ADDED Education (EDUC)
+[INFO] 2022-05-10 15:57:49,158 models.py update_or_create 231 ADDED None (EESC)
+[INFO] 2022-05-10 15:57:50,249 models.py update_or_create 231 ADDED East European Studies (EEUR)
+[INFO] 2022-05-10 15:57:51,294 models.py update_or_create 231 ADDED None (EE)
+[INFO] 2022-05-10 15:57:52,304 models.py update_or_create 231 ADDED None (EMAT)
+[INFO] 2022-05-10 15:57:52,306 models.py update_or_create 231 ADDED Emergency Medicine (EMR)
+[INFO] 2022-05-10 15:57:53,347 models.py update_or_create 231 ADDED None (EMTM)
+[INFO] 2022-05-10 15:57:53,350 models.py update_or_create 231 ADDED English (ENGL)
+[INFO] 2022-05-10 15:57:53,352 models.py update_or_create 231 ADDED Engineering (ENGR)
+[INFO] 2022-05-10 15:57:53,355 models.py update_or_create 231 ADDED English Literature (ENLT)
+[INFO] 2022-05-10 15:57:53,357 models.py update_or_create 231 ADDED Engineering Mathematics (ENM)
+[INFO] 2022-05-10 15:57:53,359 models.py update_or_create 231 ADDED Energy Management and Policy (ENMG)
+[INFO] 2022-05-10 15:57:53,361 models.py update_or_create 231 ADDED Environmental Studies (ENVS)
+[INFO] 2022-05-10 15:57:53,363 models.py update_or_create 231 ADDED Epidemiology (EPID)
+[INFO] 2022-05-10 15:57:53,365 models.py update_or_create 231 ADDED Electric and Systems Engineerng (ESE)
+[INFO] 2022-05-10 15:57:53,367 models.py update_or_create 231 ADDED Ethics (ETHC)
+[INFO] 2022-05-10 15:57:54,412 models.py update_or_create 231 ADDED None (EXEN)
+[INFO] 2022-05-10 15:57:55,491 models.py update_or_create 231 ADDED None (FACF)
+[INFO] 2022-05-10 15:57:55,493 models.py update_or_create 231 ADDED Family Medicine (FAM)
+[INFO] 2022-05-10 15:57:56,490 models.py update_or_create 231 ADDED None (FILM)
+[INFO] 2022-05-10 15:57:56,492 models.py update_or_create 231 ADDED Filipino (FILP)
+[INFO] 2022-05-10 15:57:56,495 models.py update_or_create 231 ADDED Fine Arts (FNAR)
+[INFO] 2022-05-10 15:57:56,497 models.py update_or_create 231 ADDED Finance (FNCE)
+[INFO] 2022-05-10 15:57:57,582 models.py update_or_create 231 ADDED Folklore (FOLK)
+[INFO] 2022-05-10 15:57:57,587 models.py update_or_create 231 ADDED French (FREN)
+[INFO] 2022-05-10 15:57:57,591 models.py update_or_create 231 ADDED Frontiers (FRO)
+[INFO] 2022-05-10 15:57:57,594 models.py update_or_create 231 ADDED Non-SAS Freshman Seminar (FRSM)
+[INFO] 2022-05-10 15:57:57,596 models.py update_or_create 231 ADDED Government Administration (GAFL)
+[INFO] 2022-05-10 15:57:57,599 models.py update_or_create 231 ADDED Graduate Arts and Sciences (GAS)
+[INFO] 2022-05-10 15:57:57,601 models.py update_or_create 231 ADDED Genomics and Computational Biology (GCB)
+[INFO] 2022-05-10 15:57:57,604 models.py update_or_create 231 ADDED Genetics (GEN)
+[INFO] 2022-05-10 15:57:57,606 models.py update_or_create 231 ADDED Genetic Counseling (GENC)
+[INFO] 2022-05-10 15:57:57,608 models.py update_or_create 231 ADDED Graduate Endodontics (GEND)
+[INFO] 2022-05-10 15:57:58,676 models.py update_or_create 231 ADDED None (GENE)
+[INFO] 2022-05-10 15:57:59,631 models.py update_or_create 231 ADDED None (GENH)
+[INFO] 2022-05-10 15:58:00,670 models.py update_or_create 231 ADDED None (GEOG)
+[INFO] 2022-05-10 15:58:01,776 models.py update_or_create 231 ADDED Geology (GEOL)
+[INFO] 2022-05-10 15:58:02,805 models.py update_or_create 231 ADDED None (GLAW)
+[INFO] 2022-05-10 15:58:02,808 models.py update_or_create 231 ADDED Global Studies (GLBS)
+[INFO] 2022-05-10 15:58:03,829 models.py update_or_create 231 ADDED Global Leadership and Problem Solving (GLPS)
+[INFO] 2022-05-10 15:58:04,867 models.py update_or_create 231 ADDED None (GMED)
+[INFO] 2022-05-10 15:58:04,869 models.py update_or_create 231 ADDED None (GMPA)
+[INFO] 2022-05-10 15:58:04,871 models.py update_or_create 231 ADDED None (GOHS)
+[INFO] 2022-05-10 15:58:04,873 models.py update_or_create 231 ADDED Graduate Oral Medicine (GOMD)
+[INFO] 2022-05-10 15:58:04,875 models.py update_or_create 231 ADDED Graduate Orthodontics (GORT)
+[INFO] 2022-05-10 15:58:04,877 models.py update_or_create 231 ADDED Graduate Pediatric Program (GPED)
+[INFO] 2022-05-10 15:58:04,879 models.py update_or_create 231 ADDED Graduate Periodontics (GPRD)
+[INFO] 2022-05-10 15:58:04,881 models.py update_or_create 231 ADDED Graduate Prosthodontics (GPRS)
+[INFO] 2022-05-10 15:58:04,883 models.py update_or_create 231 ADDED Greek (GREK)
+[INFO] 2022-05-10 15:58:04,885 models.py update_or_create 231 ADDED Germanic Languages (GRMN)
+[INFO] 2022-05-10 15:58:05,970 models.py update_or_create 231 ADDED None (GSFA)
+[INFO] 2022-05-10 15:58:07,003 models.py update_or_create 231 ADDED None (GSOC)
+[INFO] 2022-05-10 15:58:07,005 models.py update_or_create 231 ADDED Gender, Sexuality, and Women's Studies (GSWS)
+[INFO] 2022-05-10 15:58:07,008 models.py update_or_create 231 ADDED Gujarati (GUJR)
+[INFO] 2022-05-10 15:58:08,009 models.py update_or_create 231 ADDED None (HARV)
+[INFO] 2022-05-10 15:58:09,067 models.py update_or_create 231 ADDED None (HAVE)
+[INFO] 2022-05-10 15:58:09,069 models.py update_or_create 231 ADDED Health Care Innovation (HCIN)
+[INFO] 2022-05-10 15:58:09,072 models.py update_or_create 231 ADDED Health Care Management (HCMG)
+[INFO] 2022-05-10 15:58:09,074 models.py update_or_create 231 ADDED Hebrew (HEBR)
+[INFO] 2022-05-10 15:58:09,077 models.py update_or_create 231 ADDED Hindi (HIND)
+[INFO] 2022-05-10 15:58:09,079 models.py update_or_create 231 ADDED History (HIST)
+[INFO] 2022-05-10 15:58:10,098 models.py update_or_create 231 ADDED None (HLTH)
+[INFO] 2022-05-10 15:58:10,100 models.py update_or_create 231 ADDED Health Policy Research (HPR)
+[INFO] 2022-05-10 15:58:10,102 models.py update_or_create 231 ADDED None (HQS)
+[INFO] 2022-05-10 15:58:10,104 models.py update_or_create 231 ADDED Health and Societies (HSOC)
+[INFO] 2022-05-10 15:58:10,106 models.py update_or_create 231 ADDED Historic Preservation (HSPV)
+[INFO] 2022-05-10 15:58:10,108 models.py update_or_create 231 ADDED History and Sociology of Science (HSSC)
+[INFO] 2022-05-10 15:58:11,202 models.py update_or_create 231 ADDED None (HUMA)
+[INFO] 2022-05-10 15:58:11,205 models.py update_or_create 231 ADDED Hungarian (HUNG)
+[INFO] 2022-05-10 15:58:11,207 models.py update_or_create 231 ADDED Intercultural Communication (ICOM)
+[INFO] 2022-05-10 15:58:12,201 models.py update_or_create 231 ADDED None (IDAT)
+[INFO] 2022-05-10 15:58:12,203 models.py update_or_create 231 ADDED Igbo (IGBO)
+[INFO] 2022-05-10 15:58:12,205 models.py update_or_create 231 ADDED International MPA (IMPA)
+[INFO] 2022-05-10 15:58:12,207 models.py update_or_create 231 ADDED Immunology (IMUN)
+[INFO] 2022-05-10 15:58:12,209 models.py update_or_create 231 ADDED Indonesian (INDO)
+[INFO] 2022-05-10 15:58:13,245 models.py update_or_create 231 ADDED None (INSC)
+[INFO] 2022-05-10 15:58:13,247 models.py update_or_create 231 ADDED International Studies (INSP)
+[INFO] 2022-05-10 15:58:14,291 models.py update_or_create 231 ADDED None (INSR)
+[INFO] 2022-05-10 15:58:14,294 models.py update_or_create 231 ADDED Integrated Studies (INTG)
+[INFO] 2022-05-10 15:58:14,296 models.py update_or_create 231 ADDED Penn Global Study Abroad (INTL)
+[INFO] 2022-05-10 15:58:14,298 models.py update_or_create 231 ADDED International Relations (INTR)
+[INFO] 2022-05-10 15:58:14,300 models.py update_or_create 231 ADDED International Studies (INTS)
+[INFO] 2022-05-10 15:58:14,302 models.py update_or_create 231 ADDED Integrated Product Design (IPD)
+[INFO] 2022-05-10 15:58:14,304 models.py update_or_create 231 ADDED Irish-Gaelic (IRIS)
+[INFO] 2022-05-10 15:58:14,306 models.py update_or_create 231 ADDED Italian (ITAL)
+[INFO] 2022-05-10 15:58:14,308 models.py update_or_create 231 ADDED Interdepartmental (ITD)
+[INFO] 2022-05-10 15:58:14,309 models.py update_or_create 231 ADDED Japanese (JPAN)
+[INFO] 2022-05-10 15:58:14,312 models.py update_or_create 231 ADDED Jewish Studies Program (JWST)
+[INFO] 2022-05-10 15:58:14,314 models.py update_or_create 231 ADDED Kannada (KAND)
+[INFO] 2022-05-10 15:58:14,315 models.py update_or_create 231 ADDED Korean (KORN)
+[INFO] 2022-05-10 15:58:14,318 models.py update_or_create 231 ADDED None (KSOG)
+[INFO] 2022-05-10 15:58:14,320 models.py update_or_create 231 ADDED Latin American and Latino Studies (LALS)
+[INFO] 2022-05-10 15:58:14,323 models.py update_or_create 231 ADDED Landscape Architecture & Regional Planning (LARP)
+[INFO] 2022-05-10 15:58:14,325 models.py update_or_create 231 ADDED Latin (LATN)
+[INFO] 2022-05-10 15:58:14,327 models.py update_or_create 231 ADDED Law (LAW)
+[INFO] 2022-05-10 15:58:14,329 models.py update_or_create 231 ADDED Master in Law (LAWM)
+[INFO] 2022-05-10 15:58:14,331 models.py update_or_create 231 ADDED Leadership and Communication (LEAD)
+[INFO] 2022-05-10 15:58:14,332 models.py update_or_create 231 ADDED Logic, Information, and Computation (LGIC)
+[INFO] 2022-05-10 15:58:14,334 models.py update_or_create 231 ADDED Legal Studies & Business Ethics (LGST)
+[INFO] 2022-05-10 15:58:15,375 models.py update_or_create 231 ADDED None (LIBS)
+[INFO] 2022-05-10 15:58:15,378 models.py update_or_create 231 ADDED Linguistics (LING)
+[INFO] 2022-05-10 15:58:15,380 models.py update_or_create 231 ADDED Roy and Diana Vagelos Program in Life Sciences and Management (LSMP)
+[INFO] 2022-05-10 15:58:16,414 models.py update_or_create 231 ADDED None (LTAM)
+[INFO] 2022-05-10 15:58:16,416 models.py update_or_create 231 ADDED Malagasy (MALG)
+[INFO] 2022-05-10 15:58:16,419 models.py update_or_create 231 ADDED Master of Applied Positive Psychology (MAPP)
+[INFO] 2022-05-10 15:58:16,421 models.py update_or_create 231 ADDED Mathematics (MATH)
+[INFO] 2022-05-10 15:58:16,423 models.py update_or_create 231 ADDED Master of Chemical Sciences (MCS)
+[INFO] 2022-05-10 15:58:16,426 models.py update_or_create 231 ADDED Mechanical Engineering and Applied Mechanics (MEAM)
+[INFO] 2022-05-10 15:58:16,428 models.py update_or_create 231 ADDED Medicine (MED)
+[INFO] 2022-05-10 15:58:16,430 models.py update_or_create 231 ADDED Management of Economics (MGEC)
+[INFO] 2022-05-10 15:58:16,432 models.py update_or_create 231 ADDED Management (MGMT)
+[INFO] 2022-05-10 15:58:17,543 models.py update_or_create 231 ADDED None (MICR)
+[INFO] 2022-05-10 15:58:18,584 models.py update_or_create 231 ADDED None (MKSE)
+[INFO] 2022-05-10 15:58:18,586 models.py update_or_create 231 ADDED Marketing (MKTG)
+[INFO] 2022-05-10 15:58:18,589 models.py update_or_create 231 ADDED Master of Liberal Arts Program (MLA)
+[INFO] 2022-05-10 15:58:18,591 models.py update_or_create 231 ADDED Malayalam (MLYM)
+[INFO] 2022-05-10 15:58:18,593 models.py update_or_create 231 ADDED Modern Middle Eastern Studies (MMES)
+[INFO] 2022-05-10 15:58:19,566 models.py update_or_create 231 ADDED Master of Medical Physics (MMP)
+[INFO] 2022-05-10 15:58:20,580 models.py update_or_create 231 ADDED None (MNAT)
+[INFO] 2022-05-10 15:58:20,583 models.py update_or_create 231 ADDED Modern Middle East Studies (MODM)
+[INFO] 2022-05-10 15:58:20,586 models.py update_or_create 231 ADDED None (MOD)
+[INFO] 2022-05-10 15:58:21,637 models.py update_or_create 231 ADDED None (MOLB)
+[INFO] 2022-05-10 15:58:21,640 models.py update_or_create 231 ADDED Master of Philosophy - Liberal Arts (MPHL)
+[INFO] 2022-05-10 15:58:21,642 models.py update_or_create 231 ADDED Medical Physics (MPHY)
+[INFO] 2022-05-10 15:58:21,644 models.py update_or_create 231 ADDED Marathi (MRTI)
+[INFO] 2022-05-10 15:58:21,646 models.py update_or_create 231 ADDED Military Science (MSCI)
+[INFO] 2022-05-10 15:58:21,648 models.py update_or_create 231 ADDED Materials Science and Engineering (MSE)
+[INFO] 2022-05-10 15:58:21,650 models.py update_or_create 231 ADDED Social Policy (MSSP)
+[INFO] 2022-05-10 15:58:21,651 models.py update_or_create 231 ADDED Mathematical Sciences (MTHS)
+[INFO] 2022-05-10 15:58:21,654 models.py update_or_create 231 ADDED Master of Science in Translational Research (MTR)
+[INFO] 2022-05-10 15:58:21,656 models.py update_or_create 231 ADDED Master of Urban Special Analytics (MUSA)
+[INFO] 2022-05-10 15:58:21,658 models.py update_or_create 231 ADDED Music (MUSC)
+[INFO] 2022-05-10 15:58:21,660 models.py update_or_create 231 ADDED Music Studies (MUSI)
+[INFO] 2022-05-10 15:58:21,661 models.py update_or_create 231 ADDED Nanotechnology (NANO)
+[INFO] 2022-05-10 15:58:21,663 models.py update_or_create 231 ADDED Near Eastern Languages and Civilizations (NELC)
+[INFO] 2022-05-10 15:58:22,746 models.py update_or_create 231 ADDED None (NETH)
+[INFO] 2022-05-10 15:58:22,749 models.py update_or_create 231 ADDED Networked and Social Systems (NETS)
+[INFO] 2022-05-10 15:58:22,751 models.py update_or_create 231 ADDED Neurology (NEU)
+[INFO] 2022-05-10 15:58:22,753 models.py update_or_create 231 ADDED Neuroscience (NEUR)
+[INFO] 2022-05-10 15:58:22,755 models.py update_or_create 231 ADDED Neuroscience (NGG)
+[INFO] 2022-05-10 15:58:22,757 models.py update_or_create 231 ADDED Nonprofit Leadership (NPLD)
+[INFO] 2022-05-10 15:58:22,759 models.py update_or_create 231 ADDED Neuroscience (NRSC)
+[INFO] 2022-05-10 15:58:22,761 models.py update_or_create 231 ADDED Naval Science (NSCI)
+[INFO] 2022-05-10 15:58:22,763 models.py update_or_create 231 ADDED Neurosurgery (NSG)
+[INFO] 2022-05-10 15:58:22,765 models.py update_or_create 231 ADDED Nursing (NURS)
+[INFO] 2022-05-10 15:58:22,766 models.py update_or_create 231 ADDED Obstetrics and Gynecology (OBG)
+[INFO] 2022-05-10 15:58:22,768 models.py update_or_create 231 ADDED Operations, Information, and Decisions (OIDD)
+[INFO] 2022-05-10 15:58:22,770 models.py update_or_create 231 ADDED Ophthalmology (OPH)
+[INFO] 2022-05-10 15:58:23,758 models.py update_or_create 231 ADDED None (OPIM)
+[INFO] 2022-05-10 15:58:23,760 models.py update_or_create 231 ADDED Organizational Anthropology (ORGC)
+[INFO] 2022-05-10 15:58:24,983 models.py update_or_create 231 ADDED None (ORST)
+[INFO] 2022-05-10 15:58:24,985 models.py update_or_create 231 ADDED Orthopaedic Surgery (ORT)
+[INFO] 2022-05-10 15:58:24,988 models.py update_or_create 231 ADDED Otorhinolaryngology (OTO)
+[INFO] 2022-05-10 15:58:25,899 models.py update_or_create 231 ADDED None (PARA)
+[INFO] 2022-05-10 15:58:25,902 models.py update_or_create 231 ADDED Pashto (PASH)
+[INFO] 2022-05-10 15:58:25,904 models.py update_or_create 231 ADDED Pathology (PAT)
+[INFO] 2022-05-10 15:58:26,924 models.py update_or_create 231 ADDED None (PATH)
+[INFO] 2022-05-10 15:58:26,926 models.py update_or_create 231 ADDED None (PBDS)
+[INFO] 2022-05-10 15:58:26,929 models.py update_or_create 231 ADDED Pre-College Program (PCPR)
+[INFO] 2022-05-10 15:58:27,958 models.py update_or_create 231 ADDED None (PCSC)
+[INFO] 2022-05-10 15:58:27,960 models.py update_or_create 231 ADDED Pediatrics (PED)
+[INFO] 2022-05-10 15:58:27,962 models.py update_or_create 231 ADDED Persian (PERS)
+[INFO] 2022-05-10 15:58:27,964 models.py update_or_create 231 ADDED Philosophy (PHIL)
+[INFO] 2022-05-10 15:58:27,966 models.py update_or_create 231 ADDED Pharmacology (PHRM)
+[INFO] 2022-05-10 15:58:28,985 models.py update_or_create 231 ADDED None (PHSO)
+[INFO] 2022-05-10 15:58:28,988 models.py update_or_create 231 ADDED None (PHYL)
+[INFO] 2022-05-10 15:58:28,990 models.py update_or_create 231 ADDED Physics (PHYS)
+[INFO] 2022-05-10 15:58:28,993 models.py update_or_create 231 ADDED Polish (PLSH)
+[INFO] 2022-05-10 15:58:28,994 models.py update_or_create 231 ADDED Physical Medicine and Rehabilitation (PMR)
+[INFO] 2022-05-10 15:58:28,996 models.py update_or_create 231 ADDED Philosophy, Politics, and Economics (PPE)
+[INFO] 2022-05-10 15:58:30,043 models.py update_or_create 231 ADDED None (PPMT)
+[INFO] 2022-05-10 15:58:30,046 models.py update_or_create 231 ADDED None (PPOL)
+[INFO] 2022-05-10 15:58:30,048 models.py update_or_create 231 ADDED Preceptoral (PREC)
+[INFO] 2022-05-10 15:58:31,114 models.py update_or_create 231 ADDED None (PRIN)
+[INFO] 2022-05-10 15:58:31,117 models.py update_or_create 231 ADDED Professional Writing (PROW)
+[INFO] 2022-05-10 15:58:31,119 models.py update_or_create 231 ADDED Portuguese (PRTG)
+[INFO] 2022-05-10 15:58:32,156 models.py update_or_create 231 ADDED None (PSAB)
+[INFO] 2022-05-10 15:58:33,174 models.py update_or_create 231 ADDED None (PSAS)
+[INFO] 2022-05-10 15:58:34,234 models.py update_or_create 231 ADDED None (PSCA)
+[INFO] 2022-05-10 15:58:34,237 models.py update_or_create 231 ADDED Political Science (PSCI)
+[INFO] 2022-05-10 15:58:34,239 models.py update_or_create 231 ADDED Penn Summer Humanities Academy (PSHA)
+[INFO] 2022-05-10 15:58:34,241 models.py update_or_create 231 ADDED Penn Summer High School (PSHS)
+[INFO] 2022-05-10 15:58:34,243 models.py update_or_create 231 ADDED Summer Math Academy (PSMA)
+[INFO] 2022-05-10 15:58:35,320 models.py update_or_create 231 ADDED None (PSOS)
+[INFO] 2022-05-10 15:58:35,322 models.py update_or_create 231 ADDED Penn Summer Prep Program (PSPR)
+[INFO] 2022-05-10 15:58:35,324 models.py update_or_create 231 ADDED Summer Science Academy (PSSA)
+[INFO] 2022-05-10 15:58:36,308 models.py update_or_create 231 ADDED None (PSTW)
+[INFO] 2022-05-10 15:58:36,311 models.py update_or_create 231 ADDED Psychiatry (PSY)
+[INFO] 2022-05-10 15:58:36,313 models.py update_or_create 231 ADDED Psychology (PSYC)
+[INFO] 2022-05-10 15:58:37,361 models.py update_or_create 231 ADDED None (PSYS)
+[INFO] 2022-05-10 15:58:37,363 models.py update_or_create 231 ADDED Public Health Studies (PUBH)
+[INFO] 2022-05-10 15:58:37,365 models.py update_or_create 231 ADDED Punjabi (PUNJ)
+[INFO] 2022-05-10 15:58:38,461 models.py update_or_create 231 ADDED None (PYCH)
+[INFO] 2022-05-10 15:58:39,487 models.py update_or_create 231 ADDED Qualitative Analysis (QUAL)
+[INFO] 2022-05-10 15:58:40,519 models.py update_or_create 231 ADDED Quantitative Analysis (QUAN)
+[INFO] 2022-05-10 15:58:40,521 models.py update_or_create 231 ADDED Quechua (QUEC)
+[INFO] 2022-05-10 15:58:40,523 models.py update_or_create 231 ADDED Radiology (RAD)
+[INFO] 2022-05-10 15:58:40,526 models.py update_or_create 231 ADDED Real Estate (REAL)
+[INFO] 2022-05-10 15:58:40,530 models.py update_or_create 231 ADDED Russian & East European Studies (REES)
+[INFO] 2022-05-10 15:58:40,532 models.py update_or_create 231 ADDED Regulation (REG)
+[INFO] 2022-05-10 15:58:40,535 models.py update_or_create 231 ADDED Religion and Culture (RELC)
+[INFO] 2022-05-10 15:58:40,537 models.py update_or_create 231 ADDED Religious Studies (RELS)
+[INFO] 2022-05-10 15:58:40,539 models.py update_or_create 231 ADDED Robotics (ROBO)
+[INFO] 2022-05-10 15:58:40,542 models.py update_or_create 231 ADDED Romance Languages (ROML)
+[INFO] 2022-05-10 15:58:41,456 models.py update_or_create 231 ADDED None (ROMP)
+[INFO] 2022-05-10 15:58:41,459 models.py update_or_create 231 ADDED Radiation Oncology (RON)
+[INFO] 2022-05-10 15:58:42,329 models.py update_or_create 231 ADDED None (RPLN)
+[INFO] 2022-05-10 15:58:43,198 models.py update_or_create 231 ADDED None (RSCI)
+[INFO] 2022-05-10 15:58:43,200 models.py update_or_create 231 ADDED Russian (RUSS)
+[INFO] 2022-05-10 15:58:44,075 models.py update_or_create 231 ADDED None (RUTG)
+[INFO] 2022-05-10 15:58:44,078 models.py update_or_create 231 ADDED None (SAIS)
+[INFO] 2022-05-10 15:58:44,081 models.py update_or_create 231 ADDED Sudanese Arabic (SARB)
+[INFO] 2022-05-10 15:58:44,993 models.py update_or_create 231 ADDED None (SARS)
+[INFO] 2022-05-10 15:58:44,996 models.py update_or_create 231 ADDED South Asia Studies (SAST)
+[INFO] 2022-05-10 15:58:44,998 models.py update_or_create 231 ADDED Scientific Computing (SCMP)
+[INFO] 2022-05-10 15:58:45,866 models.py update_or_create 231 ADDED Scandinavian (SCND)
+[INFO] 2022-05-10 15:58:45,868 models.py update_or_create 231 ADDED None (SDEI)
+[INFO] 2022-05-10 15:58:45,870 models.py update_or_create 231 ADDED None (SEM)
+[INFO] 2022-05-10 15:58:46,740 models.py update_or_create 231 ADDED None (SGER)
+[INFO] 2022-05-10 15:58:46,742 models.py update_or_create 231 ADDED Sanskrit (SKRT)
+[INFO] 2022-05-10 15:58:47,578 models.py update_or_create 231 ADDED Slavic (SLAV)
+[INFO] 2022-05-10 15:58:47,581 models.py update_or_create 231 ADDED Sociology (SOCI)
+[INFO] 2022-05-10 15:58:47,583 models.py update_or_create 231 ADDED Social Science (SOSC)
+[INFO] 2022-05-10 15:58:47,585 models.py update_or_create 231 ADDED Spanish (SPAN)
+[INFO] 2022-05-10 15:58:48,484 models.py update_or_create 231 ADDED None (SPEC)
+[INFO] 2022-05-10 15:58:48,487 models.py update_or_create 231 ADDED Scientific Process (SPRO)
+[INFO] 2022-05-10 15:58:49,397 models.py update_or_create 231 ADDED None (SSYS)
+[INFO] 2022-05-10 15:58:50,247 models.py update_or_create 231 ADDED None (STAN)
+[INFO] 2022-05-10 15:58:50,250 models.py update_or_create 231 ADDED Statistics (STAT)
+[INFO] 2022-05-10 15:58:51,132 models.py update_or_create 231 ADDED None (STMC)
+[INFO] 2022-05-10 15:58:51,134 models.py update_or_create 231 ADDED Science, Technolgy, and Society (STSC)
+[INFO] 2022-05-10 15:58:51,137 models.py update_or_create 231 ADDED Surgery (SUR)
+[INFO] 2022-05-10 15:58:51,139 models.py update_or_create 231 ADDED Swahili (SWAH)
+[INFO] 2022-05-10 15:58:52,045 models.py update_or_create 231 ADDED None (SWAR)
+[INFO] 2022-05-10 15:58:52,047 models.py update_or_create 231 ADDED Swedish (SWED)
+[INFO] 2022-05-10 15:58:52,049 models.py update_or_create 231 ADDED Social Work (SWRK)
+[INFO] 2022-05-10 15:58:52,914 models.py update_or_create 231 ADDED None (SWTH)
+[INFO] 2022-05-10 15:58:53,786 models.py update_or_create 231 ADDED None (SYS)
+[INFO] 2022-05-10 15:58:53,788 models.py update_or_create 231 ADDED Tamil (TAML)
+[INFO] 2022-05-10 15:58:54,666 models.py update_or_create 231 ADDED None (TCOM)
+[INFO] 2022-05-10 15:58:54,669 models.py update_or_create 231 ADDED Telugu (TELU)
+[INFO] 2022-05-10 15:58:55,573 models.py update_or_create 231 ADDED None (TFXR)
+[INFO] 2022-05-10 15:58:55,575 models.py update_or_create 231 ADDED Thai (THAI)
+[INFO] 2022-05-10 15:58:55,577 models.py update_or_create 231 ADDED Theatre Arts (THAR)
+[INFO] 2022-05-10 15:58:55,580 models.py update_or_create 231 ADDED Tibetan (TIBT)
+[INFO] 2022-05-10 15:58:55,581 models.py update_or_create 231 ADDED Tigrinya (TIGR)
+[INFO] 2022-05-10 15:58:56,450 models.py update_or_create 231 ADDED None (TMPL)
+[INFO] 2022-05-10 15:58:57,329 models.py update_or_create 231 ADDED None (TRAN)
+[INFO] 2022-05-10 15:58:57,331 models.py update_or_create 231 ADDED Turkish (TURK)
+[INFO] 2022-05-10 15:58:57,333 models.py update_or_create 231 ADDED Twi (TWI)
+[INFO] 2022-05-10 15:58:58,193 models.py update_or_create 231 ADDED None (UCHI)
+[INFO] 2022-05-10 15:58:59,070 models.py update_or_create 231 ADDED None (UDES)
+[INFO] 2022-05-10 15:58:59,072 models.py update_or_create 231 ADDED Ukrainian (UKRN)
+[INFO] 2022-05-10 15:58:59,075 models.py update_or_create 231 ADDED Urban Studies (URBS)
+[INFO] 2022-05-10 15:58:59,076 models.py update_or_create 231 ADDED Urdu (URDU)
+[INFO] 2022-05-10 15:58:59,950 models.py update_or_create 231 ADDED None (VANB)
+[INFO] 2022-05-10 15:58:59,952 models.py update_or_create 231 ADDED Veterinary & Biomedical Science (VBMS)
+[INFO] 2022-05-10 15:58:59,955 models.py update_or_create 231 ADDED Clinical Studies - New Bolton Center Electives (VCSN)
+[INFO] 2022-05-10 15:58:59,957 models.py update_or_create 231 ADDED Clinical Studies - Philadelphia Electives (VCSP)
+[INFO] 2022-05-10 15:59:00,808 models.py update_or_create 231 ADDED Veterinary Medicine (VET)
+[INFO] 2022-05-10 15:59:00,810 models.py update_or_create 231 ADDED Vietnamese (VIET)
+[INFO] 2022-05-10 15:59:00,812 models.py update_or_create 231 ADDED Vagelos Integrated Program in Energy Research (VIPR)
+[INFO] 2022-05-10 15:59:00,815 models.py update_or_create 231 ADDED Vet School Independent Study and Research (VISR)
+[INFO] 2022-05-10 15:59:00,817 models.py update_or_create 231 ADDED Visual Studies (VLST)
+[INFO] 2022-05-10 15:59:00,819 models.py update_or_create 231 ADDED Vet School CSP/CSN Medicine Courses (VMED)
+[INFO] 2022-05-10 15:59:00,820 models.py update_or_create 231 ADDED Pathobiology (VPTH)
+[INFO] 2022-05-10 15:59:00,822 models.py update_or_create 231 ADDED None (VSTG)
+[INFO] 2022-05-10 15:59:00,824 models.py update_or_create 231 ADDED Vet School CSP/CSN Surgery Courses (VSUR)
+[INFO] 2022-05-10 15:59:01,686 models.py update_or_create 231 ADDED None (WCIT)
+[INFO] 2022-05-10 15:59:01,688 models.py update_or_create 231 ADDED Wharton Undergraduate Division (WH)
+[INFO] 2022-05-10 15:59:01,699 models.py update_or_create 231 ADDED Wharton Communication Program (WHCP)
+[INFO] 2022-05-10 15:59:01,701 models.py update_or_create 231 ADDED Wharton Graduate MBA Program (WHG)
+[INFO] 2022-05-10 15:59:02,656 models.py update_or_create 231 ADDED None (WHMP)
+[INFO] 2022-05-10 15:59:02,658 models.py update_or_create 231 ADDED Wolof (WOLF)
+[INFO] 2022-05-10 15:59:02,661 models.py update_or_create 231 ADDED Writing Program (WRIT)
+[INFO] 2022-05-10 15:59:03,571 models.py update_or_create 231 ADDED None (WSTD)
+[INFO] 2022-05-10 15:59:04,453 models.py update_or_create 231 ADDED None (YALE)
+[INFO] 2022-05-10 15:59:04,457 models.py update_or_create 231 ADDED Yiddish (YDSH)
+[INFO] 2022-05-10 15:59:04,460 models.py update_or_create 231 ADDED Yoruba (YORB)
+[INFO] 2022-05-10 15:59:04,462 models.py update_or_create 231 ADDED Zulu (ZULU)
+[INFO] 2022-05-10 15:59:04,464 models.py update_or_create 231 ADDED None (GADS)
+[INFO] 2022-05-10 15:59:30,105 models.py update_or_create 99 ADDED Medical School (MED)
+[INFO] 2022-05-10 15:59:30,106 models.py update_or_create 99 ADDED Clinical (CLN)
+[INFO] 2022-05-10 15:59:30,108 models.py update_or_create 99 ADDED Clinical 1 (C01)
+[INFO] 2022-05-10 15:59:30,109 models.py update_or_create 99 ADDED Clinical 3 (C03)
+[INFO] 2022-05-10 15:59:30,110 models.py update_or_create 99 ADDED Clinical 4 (C04)
+[INFO] 2022-05-10 15:59:30,112 models.py update_or_create 99 ADDED Dissertation (DIS)
+[INFO] 2022-05-10 15:59:30,113 models.py update_or_create 99 ADDED Field Work (FLD)
+[INFO] 2022-05-10 15:59:30,115 models.py update_or_create 99 ADDED Field Work 1 (F01)
+[INFO] 2022-05-10 15:59:30,116 models.py update_or_create 99 ADDED Field Work 2 (F02)
+[INFO] 2022-05-10 15:59:30,117 models.py update_or_create 99 ADDED Field Work 3 (F03)
+[INFO] 2022-05-10 15:59:30,118 models.py update_or_create 99 ADDED Field Work 4 (F04)
+[INFO] 2022-05-10 15:59:30,120 models.py update_or_create 99 ADDED Independent Study (IND)
+[INFO] 2022-05-10 15:59:30,121 models.py update_or_create 99 ADDED Independent Study 1 (I01)
+[INFO] 2022-05-10 15:59:30,122 models.py update_or_create 99 ADDED Independent Study 2 (I02)
+[INFO] 2022-05-10 15:59:30,124 models.py update_or_create 99 ADDED Independent Study 3 (I03)
+[INFO] 2022-05-10 15:59:30,125 models.py update_or_create 99 ADDED Independent Study 4 (I04)
+[INFO] 2022-05-10 15:59:30,126 models.py update_or_create 99 ADDED Laboratory (LAB)
+[INFO] 2022-05-10 15:59:30,127 models.py update_or_create 99 ADDED Laboratory 1 (B01)
+[INFO] 2022-05-10 15:59:30,129 models.py update_or_create 99 ADDED Laboratory 2 (B02)
+[INFO] 2022-05-10 15:59:30,130 models.py update_or_create 99 ADDED Laboratory 3 (B03)
+[INFO] 2022-05-10 15:59:30,131 models.py update_or_create 99 ADDED Laboratory 4 (B04)
+[INFO] 2022-05-10 15:59:30,133 models.py update_or_create 99 ADDED Lecture (LEC)
+[INFO] 2022-05-10 15:59:30,134 models.py update_or_create 99 ADDED Lecture 1 (L01)
+[INFO] 2022-05-10 15:59:30,135 models.py update_or_create 99 ADDED Lecture 2 (L02)
+[INFO] 2022-05-10 15:59:30,137 models.py update_or_create 99 ADDED Lecture 3 (L03)
+[INFO] 2022-05-10 15:59:30,138 models.py update_or_create 99 ADDED Lecture 4 (L04)
+[INFO] 2022-05-10 15:59:30,139 models.py update_or_create 99 ADDED Lecture 5 (L05)
+[INFO] 2022-05-10 15:59:30,140 models.py update_or_create 99 ADDED Lecture 6 (L06)
+[INFO] 2022-05-10 15:59:30,142 models.py update_or_create 99 ADDED Lecture 7 (L07)
+[INFO] 2022-05-10 15:59:30,143 models.py update_or_create 99 ADDED Lecture 8 (L08)
+[INFO] 2022-05-10 15:59:30,144 models.py update_or_create 99 ADDED Lecture 9 (L09)
+[INFO] 2022-05-10 15:59:30,146 models.py update_or_create 99 ADDED Lecture 10 (L10)
+[INFO] 2022-05-10 15:59:30,147 models.py update_or_create 99 ADDED Masters Thesis (MST)
+[INFO] 2022-05-10 15:59:30,148 models.py update_or_create 99 ADDED Recitation (REC)
+[INFO] 2022-05-10 15:59:30,150 models.py update_or_create 99 ADDED Seminar (SEM)
+[INFO] 2022-05-10 15:59:30,151 models.py update_or_create 99 ADDED Seminar 1 (S01)
+[INFO] 2022-05-10 15:59:30,152 models.py update_or_create 99 ADDED Seminar 2 (S02)
+[INFO] 2022-05-10 15:59:30,154 models.py update_or_create 99 ADDED Seminar 3 (S03)
+[INFO] 2022-05-10 15:59:30,155 models.py update_or_create 99 ADDED Seminar 4 (S04)
+[INFO] 2022-05-10 15:59:30,156 models.py update_or_create 99 ADDED Senior Thesis (SRT)
+[INFO] 2022-05-10 15:59:30,157 models.py update_or_create 99 ADDED Studio (STU)
+[INFO] 2022-05-10 15:59:30,159 models.py update_or_create 99 ADDED Clinical 2 (C02)
+[ERROR] 2022-05-10 15:59:44,090 models.py update_or_create 427 FAILED to update or create section 'EAS8980904202220': null value in column "primary_course_id" of relation "form_section" violates not-null constraint
+DETAIL:  Failing row contains (EAS8980904202220, EAS8980904, 8980, 904, 202220, CPT Research Practicum., null, 2022-05-10 15:59:44.088494+00, 2022-05-10 15:59:44.08851+00, null, EAS, LEC, E, EAS).
+
+[ERROR] 2022-05-10 16:00:29,845 models.py update_or_create 427 FAILED to update or create section 'EAS8980904202220': null value in column "primary_course_id" of relation "form_section" violates not-null constraint
+DETAIL:  Failing row contains (EAS8980904202220, EAS8980904, 8980, 904, 202220, CPT Research Practicum., null, 2022-05-10 16:00:29.843819+00, 2022-05-10 16:00:29.843836+00, null, EAS, LEC, E, EAS).
+
+[ERROR] 2022-05-10 16:00:47,152 models.py update_or_create 427 FAILED to update or create section 'EAS8980904202220': null value in column "primary_course_id" of relation "form_section" violates not-null constraint
+DETAIL:  Failing row contains (EAS8980904202220, EAS8980904, 8980, 904, 202220, CPT Research Practicum., null, 2022-05-10 16:00:47.150796+00, 2022-05-10 16:00:47.150813+00, null, EAS, LEC, E, EAS).
+
+[ERROR] 2022-05-10 16:01:18,939 models.py update_or_create 428 FAILED to update or create section 'EAS8980904202220': null value in column "primary_course_id" of relation "form_section" violates not-null constraint
+DETAIL:  Failing row contains (EAS8980904202220, EAS8980904, 8980, 904, 202220, CPT Research Practicum., null, 2022-05-10 16:01:18.938056+00, 2022-05-10 16:01:18.938074+00, null, EAS, LEC, E, EAS).
+
+[ERROR] 2022-05-10 16:01:36,350 models.py update_or_create 429 FAILED to update or create section 'EAS8980904202220': null value in column "primary_course_id" of relation "form_section" violates not-null constraint
+DETAIL:  Failing row contains (EAS8980904202220, EAS8980904, 8980, 904, 202220, CPT Research Practicum., null, 2022-05-10 16:01:36.344314+00, 2022-05-10 16:01:36.344331+00, null, EAS, LEC, E, EAS).
+
+[ERROR] 2022-05-10 16:04:04,185 models.py update_or_create 428 FAILED to update or create section 'EAS8980904202220': null value in column "primary_course_id" of relation "form_section" violates not-null constraint
+DETAIL:  Failing row contains (EAS8980904202220, EAS8980904, 8980, 904, 202220, CPT Research Practicum., null, 2022-05-10 16:04:04.184198+00, 2022-05-10 16:04:04.184216+00, null, EAS, LEC, E, EAS).
+
+[ERROR] 2022-05-10 16:06:42,384 models.py update_or_create 429 FAILED to update or create section 'EAS8980904202220': null value in column "primary_section_id" of relation "form_section" violates not-null constraint
+DETAIL:  Failing row contains (EAS8980904202220, EAS8980904, 8980, 904, 202220, CPT Research Practicum., EAS8980, 2022-05-10 16:06:42.382955+00, 2022-05-10 16:06:42.382976+00, null, EAS, LEC, E, EAS).
+
+[ERROR] 2022-05-10 16:07:03,647 models.py update_or_create 430 FAILED to update or create section 'EAS8980904202220': null value in column "primary_section_id" of relation "form_section" violates not-null constraint
+DETAIL:  Failing row contains (EAS8980904202220, EAS8980904, 8980, 904, 202220, CPT Research Practicum., EAS8980, 2022-05-10 16:07:03.646219+00, 2022-05-10 16:07:03.646236+00, null, EAS, LEC, E, EAS).
+
+[ERROR] 2022-05-10 16:07:28,507 models.py update_or_create 430 FAILED to update or create section 'EAS8980904202220': null value in column "primary_section_id" of relation "form_section" violates not-null constraint
+DETAIL:  Failing row contains (EAS8980904202220, EAS8980904, 8980, 904, 202220, CPT Research Practicum., EAS8980, 2022-05-10 16:07:28.505782+00, 2022-05-10 16:07:28.505799+00, null, EAS, LEC, E, EAS).
+
+[INFO] 2022-05-10 16:08:20,952 models.py update_or_create 423 ADDED EAS8980904202220
+[ERROR] 2022-05-10 16:08:20,953 models.py update_or_create 429 FAILED to update or create section 'EAS8980904202220': 'Section' object has no attribute 'set_instructors'
+[INFO] 2022-05-10 16:08:36,634 models.py update_or_create 423 UPDATED EAS8980904202220
+[ERROR] 2022-05-10 16:08:36,637 models.py update_or_create 430 FAILED to update or create section 'EAS8980904202220': 'Section' object has no attribute 'set_instructors'
+[INFO] 2022-05-10 16:08:59,509 models.py update_or_create 423 UPDATED EAS8980904202220
+[INFO] 2022-05-10 16:09:00,482 models.py sync_dw_info 46 Getting aribeiro's info from Data Warehouse...
+[INFO] 2022-05-10 16:09:01,514 models.py log_field 41 FOUND first name 'ALEJANDRO' for 'aribeiro'
+[INFO] 2022-05-10 16:09:01,515 models.py log_field 41 FOUND last name 'RIBEIRO' for 'aribeiro'
+[INFO] 2022-05-10 16:09:01,515 models.py log_field 41 FOUND Penn id '31919714' for 'aribeiro'
+[INFO] 2022-05-10 16:09:01,515 models.py log_field 41 FOUND email address 'ARIBEIRO@SEAS.UPENN.EDU                                     ' for 'aribeiro'
+[INFO] 2022-05-10 16:09:01,523 models.py sync_canvas_id 68 Getting Canvas user id for 'aribeiro'...
+[INFO] 2022-05-10 16:09:02,011 models.py log_field 41 FOUND Canvas user id '5092256' for 'aribeiro'
+[INFO] 2022-05-10 16:09:02,015 models.py sync_instructors 334 ADDED Alejandro Ribeiro (aribeiro)
+[INFO] 2022-05-10 16:09:11,575 models.py update_or_create 423 UPDATED EAS8980904202220
+[INFO] 2022-05-10 16:09:12,678 models.py sync_instructors 334 UPDATED Alejandro Ribeiro (aribeiro)
+[INFO] 2022-05-10 16:12:33,084 models.py update_or_create 423 UPDATED EAS8980904202220
+[INFO] 2022-05-10 16:12:33,928 models.py sync_instructors 333 UPDATED Alejandro Ribeiro (aribeiro)
+[INFO] 2022-05-10 16:12:35,840 models.py update_or_create 423 ADDED EAS8970906202220
+[INFO] 2022-05-10 16:12:36,886 models.py sync_dw_info 46 Getting shlane's info from Data Warehouse...
+[INFO] 2022-05-10 16:12:37,962 models.py log_field 41 FOUND first name 'STEPHEN' for 'shlane'
+[INFO] 2022-05-10 16:12:37,962 models.py log_field 41 FOUND last name 'LANE' for 'shlane'
+[INFO] 2022-05-10 16:12:37,962 models.py log_field 41 FOUND Penn id '10189353' for 'shlane'
+[INFO] 2022-05-10 16:12:37,962 models.py log_field 41 FOUND email address 'shlane@cis.upenn.edu' for 'shlane'
+[INFO] 2022-05-10 16:12:37,972 models.py sync_canvas_id 67 Getting Canvas user id for 'shlane'...
+[INFO] 2022-05-10 16:12:38,464 models.py log_field 41 FOUND Canvas user id '4544838' for 'shlane'
+[INFO] 2022-05-10 16:12:38,466 models.py sync_instructors 333 ADDED Stephen Lane (shlane)
+[INFO] 2022-05-10 16:12:40,645 models.py update_or_create 423 ADDED EAS8970905202220
+[INFO] 2022-05-10 16:12:41,804 models.py sync_dw_info 46 Getting talid's info from Data Warehouse...
+[INFO] 2022-05-10 16:12:42,719 models.py log_field 41 FOUND first name 'TALID' for 'talid'
+[INFO] 2022-05-10 16:12:42,720 models.py log_field 41 FOUND last name 'SINNO' for 'talid'
+[INFO] 2022-05-10 16:12:42,720 models.py log_field 41 FOUND Penn id '10131982' for 'talid'
+[INFO] 2022-05-10 16:12:42,720 models.py log_field 41 FOUND email address 'talid@seas.upenn.edu' for 'talid'
+[INFO] 2022-05-10 16:12:42,730 models.py sync_canvas_id 67 Getting Canvas user id for 'talid'...
+[INFO] 2022-05-10 16:12:43,017 models.py log_field 41 FOUND Canvas user id '4972070' for 'talid'
+[INFO] 2022-05-10 16:12:43,019 models.py sync_instructors 333 ADDED Talid Sinno (talid)
+[INFO] 2022-05-10 16:12:44,772 models.py update_or_create 423 ADDED EAS8970909202220
+[INFO] 2022-05-10 16:12:45,785 models.py sync_dw_info 46 Getting swapneel's info from Data Warehouse...
+[INFO] 2022-05-10 16:12:46,841 models.py log_field 41 FOUND first name 'SWAPNEEL' for 'swapneel'
+[INFO] 2022-05-10 16:12:46,842 models.py log_field 41 FOUND last name 'SHETH' for 'swapneel'
+[INFO] 2022-05-10 16:12:46,842 models.py log_field 41 FOUND Penn id '69952305' for 'swapneel'
+[INFO] 2022-05-10 16:12:46,842 models.py log_field 41 FOUND email address 'swapneel@cis.upenn.edu' for 'swapneel'
+[INFO] 2022-05-10 16:12:46,851 models.py sync_canvas_id 67 Getting Canvas user id for 'swapneel'...
+[INFO] 2022-05-10 16:12:47,046 models.py log_field 41 FOUND Canvas user id '5088678' for 'swapneel'
+[INFO] 2022-05-10 16:12:47,048 models.py sync_instructors 333 ADDED Swapneel Sheth (swapneel)
+[INFO] 2022-05-10 16:12:48,981 models.py update_or_create 423 ADDED EAS8970907202220
+[INFO] 2022-05-10 16:12:49,988 models.py sync_dw_info 46 Getting sld's info from Data Warehouse...
+[INFO] 2022-05-10 16:12:51,065 models.py log_field 41 FOUND first name 'SCOTT' for 'sld'
+[INFO] 2022-05-10 16:12:51,066 models.py log_field 41 FOUND last name 'DIAMOND' for 'sld'
+[INFO] 2022-05-10 16:12:51,066 models.py log_field 41 FOUND Penn id '10088012' for 'sld'
+[INFO] 2022-05-10 16:12:51,066 models.py log_field 41 FOUND email address 'sld@seas.upenn.edu' for 'sld'
+[INFO] 2022-05-10 16:12:51,076 models.py sync_canvas_id 67 Getting Canvas user id for 'sld'...
+[INFO] 2022-05-10 16:12:51,307 models.py log_field 41 FOUND Canvas user id '4921392' for 'sld'
+[INFO] 2022-05-10 16:12:51,309 models.py sync_instructors 333 ADDED Scott Diamond (sld)
+[INFO] 2022-05-10 16:12:53,162 models.py update_or_create 423 ADDED EAS8970915202220
+[INFO] 2022-05-10 16:12:54,215 models.py sync_dw_info 46 Getting mya's info from Data Warehouse...
+[INFO] 2022-05-10 16:12:55,300 models.py log_field 41 FOUND first name 'MONGYING' for 'mya'
+[INFO] 2022-05-10 16:12:55,300 models.py log_field 41 FOUND last name 'HSIEH-COWLEY' for 'mya'
+[INFO] 2022-05-10 16:12:55,300 models.py log_field 41 FOUND Penn id '10203391' for 'mya'
+[INFO] 2022-05-10 16:12:55,300 models.py log_field 41 FOUND email address 'm.hsieh@seas.upenn.edu' for 'mya'
+[INFO] 2022-05-10 16:12:55,310 models.py sync_canvas_id 67 Getting Canvas user id for 'mya'...
+[INFO] 2022-05-10 16:12:55,604 models.py log_field 41 FOUND Canvas user id '5237927' for 'mya'
+[INFO] 2022-05-10 16:12:55,606 models.py sync_instructors 333 ADDED Mongying Hsieh-Cowley (mya)
+[INFO] 2022-05-10 16:12:57,641 models.py update_or_create 423 ADDED EAS8980902202220
+[INFO] 2022-05-10 16:12:58,590 models.py sync_dw_info 46 Getting jcrocker's info from Data Warehouse...
+[INFO] 2022-05-10 16:12:59,677 models.py log_field 41 FOUND first name 'JOHN' for 'jcrocker'
+[INFO] 2022-05-10 16:12:59,677 models.py log_field 41 FOUND last name 'CROCKER' for 'jcrocker'
+[INFO] 2022-05-10 16:12:59,677 models.py log_field 41 FOUND Penn id '10076012' for 'jcrocker'
+[INFO] 2022-05-10 16:12:59,677 models.py log_field 41 FOUND email address 'jcrocker@seas.upenn.edu' for 'jcrocker'
+[INFO] 2022-05-10 16:12:59,686 models.py sync_canvas_id 67 Getting Canvas user id for 'jcrocker'...
+[INFO] 2022-05-10 16:12:59,877 models.py log_field 41 FOUND Canvas user id '4975757' for 'jcrocker'
+[INFO] 2022-05-10 16:12:59,878 models.py sync_instructors 333 ADDED John Crocker (jcrocker)
+[INFO] 2022-05-10 16:13:01,747 models.py update_or_create 423 ADDED EAS8970908202220
+[INFO] 2022-05-10 16:13:02,628 models.py sync_dw_info 46 Getting taniak's info from Data Warehouse...
+[INFO] 2022-05-10 16:13:03,642 models.py log_field 41 FOUND first name 'TANIA' for 'taniak'
+[INFO] 2022-05-10 16:13:03,642 models.py log_field 41 FOUND last name 'KHANNA' for 'taniak'
+[INFO] 2022-05-10 16:13:03,643 models.py log_field 41 FOUND Penn id '12769450' for 'taniak'
+[INFO] 2022-05-10 16:13:03,643 models.py log_field 41 FOUND email address 'taniak@seas.upenn.edu' for 'taniak'
+[INFO] 2022-05-10 16:13:03,656 models.py sync_canvas_id 67 Getting Canvas user id for 'taniak'...
+[INFO] 2022-05-10 16:13:03,857 models.py log_field 41 FOUND Canvas user id '5223566' for 'taniak'
+[INFO] 2022-05-10 16:13:03,859 models.py sync_instructors 333 ADDED Tania Khanna (taniak)
+[INFO] 2022-05-10 16:13:05,774 models.py update_or_create 423 ADDED EAS8970911202220
+[INFO] 2022-05-10 16:13:06,819 models.py sync_dw_info 46 Getting bhusnur4's info from Data Warehouse...
+[INFO] 2022-05-10 16:13:07,857 models.py log_field 41 FOUND first name 'ARVIND' for 'bhusnur4'
+[INFO] 2022-05-10 16:13:07,857 models.py log_field 41 FOUND last name 'BHUSNURMATH' for 'bhusnur4'
+[INFO] 2022-05-10 16:13:07,857 models.py log_field 41 FOUND Penn id '10204787' for 'bhusnur4'
+[INFO] 2022-05-10 16:13:07,857 models.py log_field 41 FOUND email address 'bhusnur4@seas.upenn.edu' for 'bhusnur4'
+[INFO] 2022-05-10 16:13:07,867 models.py sync_canvas_id 67 Getting Canvas user id for 'bhusnur4'...
+[INFO] 2022-05-10 16:13:08,257 models.py log_field 41 FOUND Canvas user id '4931373' for 'bhusnur4'
+[INFO] 2022-05-10 16:13:08,259 models.py sync_instructors 333 ADDED Arvind Bhusnurmath (bhusnur4)
+[INFO] 2022-05-10 16:13:10,144 models.py update_or_create 423 ADDED EAS0099929202220
+[INFO] 2022-05-10 16:13:10,982 models.py sync_dw_info 46 Getting sweirich's info from Data Warehouse...
+[INFO] 2022-05-10 16:13:12,008 models.py log_field 41 FOUND first name 'STEPHANIE' for 'sweirich'
+[INFO] 2022-05-10 16:13:12,008 models.py log_field 41 FOUND last name 'WEIRICH' for 'sweirich'
+[INFO] 2022-05-10 16:13:12,008 models.py log_field 41 FOUND Penn id '10218944' for 'sweirich'
+[INFO] 2022-05-10 16:13:12,008 models.py log_field 41 FOUND email address 'sweirich@seas.upenn.edu' for 'sweirich'
+[INFO] 2022-05-10 16:13:12,019 models.py sync_canvas_id 67 Getting Canvas user id for 'sweirich'...
+[INFO] 2022-05-10 16:13:12,210 models.py log_field 41 FOUND Canvas user id '5136107' for 'sweirich'
+[INFO] 2022-05-10 16:13:12,213 models.py sync_instructors 333 ADDED Stephanie Weirich (sweirich)
+[INFO] 2022-05-10 16:13:14,102 models.py update_or_create 423 ADDED EAS8980905202220
+[INFO] 2022-05-10 16:13:15,172 models.py sync_dw_info 46 Getting iweichen's info from Data Warehouse...
+[INFO] 2022-05-10 16:13:16,206 models.py log_field 41 FOUND first name 'I-WEI' for 'iweichen'
+[INFO] 2022-05-10 16:13:16,206 models.py log_field 41 FOUND last name 'CHEN' for 'iweichen'
+[INFO] 2022-05-10 16:13:16,207 models.py log_field 41 FOUND Penn id '10089579' for 'iweichen'
+[INFO] 2022-05-10 16:13:16,207 models.py log_field 41 FOUND email address 'iweichen@seas.upenn.edu' for 'iweichen'
+[INFO] 2022-05-10 16:13:16,218 models.py sync_canvas_id 67 Getting Canvas user id for 'iweichen'...
+[INFO] 2022-05-10 16:13:16,434 models.py log_field 41 FOUND Canvas user id '5086428' for 'iweichen'
+[INFO] 2022-05-10 16:13:16,436 models.py sync_instructors 333 ADDED I-Wei Chen (iweichen)
+[INFO] 2022-05-10 16:13:18,362 models.py update_or_create 423 ADDED EAS8970903202220
+[INFO] 2022-05-10 16:13:19,358 models.py sync_dw_info 46 Getting rvohra's info from Data Warehouse...
+[INFO] 2022-05-10 16:13:20,402 models.py log_field 41 FOUND first name 'RAKESH' for 'rvohra'
+[INFO] 2022-05-10 16:13:20,402 models.py log_field 41 FOUND last name 'VOHRA' for 'rvohra'
+[INFO] 2022-05-10 16:13:20,403 models.py log_field 41 FOUND Penn id '56863090' for 'rvohra'
+[INFO] 2022-05-10 16:13:20,403 models.py log_field 41 FOUND email address 'rvohra@seas.upenn.edu' for 'rvohra'
+[INFO] 2022-05-10 16:13:20,410 models.py sync_canvas_id 67 Getting Canvas user id for 'rvohra'...
+[INFO] 2022-05-10 16:13:20,634 models.py log_field 41 FOUND Canvas user id '4942343' for 'rvohra'
+[INFO] 2022-05-10 16:13:20,637 models.py sync_instructors 333 ADDED Rakesh Vohra (rvohra)
+[INFO] 2022-05-10 16:13:22,554 models.py update_or_create 423 ADDED EAS8970901202220
+[INFO] 2022-05-10 16:13:23,539 models.py sync_dw_info 46 Getting ycohen's info from Data Warehouse...
+[INFO] 2022-05-10 16:13:24,600 models.py log_field 41 FOUND first name 'YALE' for 'ycohen'
+[INFO] 2022-05-10 16:13:24,600 models.py log_field 41 FOUND last name 'COHEN' for 'ycohen'
+[INFO] 2022-05-10 16:13:24,600 models.py log_field 41 FOUND Penn id '36911431' for 'ycohen'
+[INFO] 2022-05-10 16:13:24,600 models.py log_field 41 FOUND email address 'ycohen@pennmedicine.upenn.edu' for 'ycohen'
+[INFO] 2022-05-10 16:13:24,610 models.py sync_canvas_id 67 Getting Canvas user id for 'ycohen'...
+[INFO] 2022-05-10 16:13:24,801 models.py log_field 41 FOUND Canvas user id '5047444' for 'ycohen'
+[INFO] 2022-05-10 16:13:24,803 models.py sync_instructors 333 ADDED Yale Cohen (ycohen)
+[INFO] 2022-05-10 16:13:26,759 models.py update_or_create 423 ADDED EAS8970910202220
+[INFO] 2022-05-10 16:13:27,841 models.py sync_dw_info 46 Getting khantha's info from Data Warehouse...
+[INFO] 2022-05-10 16:13:28,838 models.py log_field 41 FOUND first name 'MAHADEVAN' for 'khantha'
+[INFO] 2022-05-10 16:13:28,838 models.py log_field 41 FOUND last name 'KHANTHA' for 'khantha'
+[INFO] 2022-05-10 16:13:28,839 models.py log_field 41 FOUND Penn id '10009761' for 'khantha'
+[INFO] 2022-05-10 16:13:28,839 models.py log_field 41 FOUND email address 'khantha@seas.upenn.edu' for 'khantha'
+[INFO] 2022-05-10 16:13:28,848 models.py sync_canvas_id 67 Getting Canvas user id for 'khantha'...
+[INFO] 2022-05-10 16:13:29,124 models.py log_field 41 FOUND Canvas user id '4908888' for 'khantha'
+[INFO] 2022-05-10 16:13:29,127 models.py sync_instructors 333 ADDED Mahadevan Khantha (khantha)
+[INFO] 2022-05-10 16:13:31,105 models.py update_or_create 423 ADDED EAS8980907202220
+[INFO] 2022-05-10 16:13:34,107 models.py update_or_create 423 ADDED CIMS1020920202220
+[INFO] 2022-05-10 16:13:35,112 models.py sync_dw_info 46 Getting anatdan's info from Data Warehouse...
+[INFO] 2022-05-10 16:13:36,149 models.py log_field 41 FOUND first name 'ANAT' for 'anatdan'
+[INFO] 2022-05-10 16:13:36,150 models.py log_field 41 FOUND last name 'DAN' for 'anatdan'
+[INFO] 2022-05-10 16:13:36,150 models.py log_field 41 FOUND Penn id '31400251' for 'anatdan'
+[INFO] 2022-05-10 16:13:36,150 models.py log_field 41 FOUND email address 'anatdan@sas.upenn.edu' for 'anatdan'
+[INFO] 2022-05-10 16:13:36,158 models.py sync_canvas_id 67 Getting Canvas user id for 'anatdan'...
+[INFO] 2022-05-10 16:13:36,345 models.py log_field 41 FOUND Canvas user id '5510430' for 'anatdan'
+[INFO] 2022-05-10 16:13:36,347 models.py sync_instructors 333 ADDED Anat Dan (anatdan)
+[INFO] 2022-05-10 16:13:38,438 models.py update_or_create 423 ADDED ENGL1901920202220
+[INFO] 2022-05-10 16:13:39,347 models.py sync_instructors 333 UPDATED Anat Dan (anatdan)
+[INFO] 2022-05-10 16:13:40,322 models.py update_or_create 423 ADDED COML1022920202220
+[INFO] 2022-05-10 16:13:41,391 models.py sync_instructors 333 UPDATED Anat Dan (anatdan)
+[INFO] 2022-05-10 16:13:42,458 models.py update_or_create 423 ADDED ARTH1090920202220
+[INFO] 2022-05-10 16:13:43,493 models.py sync_instructors 333 UPDATED Anat Dan (anatdan)
+[INFO] 2022-05-10 16:13:43,539 models.py update_or_create 423 UPDATED ENGL1901920202220
+[INFO] 2022-05-10 16:13:44,508 models.py sync_instructors 333 UPDATED Anat Dan (anatdan)
+[INFO] 2022-05-10 16:13:46,649 models.py update_or_create 423 ADDED CIMS1010910202220
+[INFO] 2022-05-10 16:13:47,680 models.py sync_dw_info 46 Getting jcoppola's info from Data Warehouse...
+[INFO] 2022-05-10 16:13:48,745 models.py log_field 41 FOUND first name 'JOSEPH' for 'jcoppola'
+[INFO] 2022-05-10 16:13:48,745 models.py log_field 41 FOUND last name 'COPPOLA' for 'jcoppola'
+[INFO] 2022-05-10 16:13:48,745 models.py log_field 41 FOUND Penn id '46117727' for 'jcoppola'
+[INFO] 2022-05-10 16:13:48,745 models.py log_field 41 FOUND email address 'jcoppola@sas.upenn.edu' for 'jcoppola'
+[INFO] 2022-05-10 16:13:48,759 models.py sync_canvas_id 67 Getting Canvas user id for 'jcoppola'...
+[INFO] 2022-05-10 16:13:48,958 models.py log_field 41 FOUND Canvas user id '5286471' for 'jcoppola'
+[INFO] 2022-05-10 16:13:48,960 models.py sync_instructors 333 ADDED Joseph Coppola (jcoppola)
+[INFO] 2022-05-10 16:13:48,962 models.py sync_dw_info 46 Getting hsalas's info from Data Warehouse...
+[INFO] 2022-05-10 16:13:49,855 models.py log_field 41 FOUND first name 'HUGO' for 'hsalas'
+[INFO] 2022-05-10 16:13:49,856 models.py log_field 41 FOUND last name 'SALAS' for 'hsalas'
+[INFO] 2022-05-10 16:13:49,856 models.py log_field 41 FOUND Penn id '33451743' for 'hsalas'
+[INFO] 2022-05-10 16:13:49,856 models.py log_field 41 FOUND email address 'hsalas@sas.upenn.edu' for 'hsalas'
+[INFO] 2022-05-10 16:13:49,956 models.py sync_canvas_id 67 Getting Canvas user id for 'hsalas'...
+[INFO] 2022-05-10 16:13:50,148 models.py log_field 41 FOUND Canvas user id '5742117' for 'hsalas'
+[INFO] 2022-05-10 16:13:50,151 models.py sync_instructors 333 ADDED Hugo Salas (hsalas)
+[INFO] 2022-05-10 16:13:52,071 models.py update_or_create 423 ADDED ARTH1080910202220
+[INFO] 2022-05-10 16:13:52,921 models.py sync_instructors 333 UPDATED Joseph Coppola (jcoppola)
+[INFO] 2022-05-10 16:13:52,923 models.py sync_instructors 333 UPDATED Hugo Salas (hsalas)
+[INFO] 2022-05-10 16:13:53,974 models.py update_or_create 423 ADDED ENGL1900910202220
+[INFO] 2022-05-10 16:13:55,023 models.py sync_instructors 333 UPDATED Joseph Coppola (jcoppola)
+[INFO] 2022-05-10 16:13:55,025 models.py sync_instructors 333 UPDATED Hugo Salas (hsalas)
+[INFO] 2022-05-10 16:13:56,049 models.py update_or_create 423 ADDED COML1011910202220
+[INFO] 2022-05-10 16:13:57,158 models.py sync_instructors 333 UPDATED Joseph Coppola (jcoppola)
+[INFO] 2022-05-10 16:13:57,160 models.py sync_instructors 333 UPDATED Hugo Salas (hsalas)
+[INFO] 2022-05-10 16:13:57,299 models.py update_or_create 423 UPDATED ARTH1080910202220
+[INFO] 2022-05-10 16:13:58,346 models.py sync_instructors 333 UPDATED Joseph Coppola (jcoppola)
+[INFO] 2022-05-10 16:13:58,348 models.py sync_instructors 333 UPDATED Hugo Salas (hsalas)
+[INFO] 2022-05-10 16:13:59,277 models.py update_or_create 423 UPDATED CIMS1010910202220
+[INFO] 2022-05-10 16:14:00,309 models.py sync_instructors 333 UPDATED Joseph Coppola (jcoppola)
+[INFO] 2022-05-10 16:14:00,311 models.py sync_instructors 333 UPDATED Hugo Salas (hsalas)
+[INFO] 2022-05-10 16:14:02,354 models.py update_or_create 423 ADDED BDS8970900202220
+[INFO] 2022-05-10 16:14:03,408 models.py sync_dw_info 46 Getting lart's info from Data Warehouse...
+[INFO] 2022-05-10 16:14:04,474 models.py log_field 41 FOUND first name 'LUIS' for 'lart'
+[INFO] 2022-05-10 16:14:04,474 models.py log_field 41 FOUND last name 'ARTAVIA-MORA' for 'lart'
+[INFO] 2022-05-10 16:14:04,474 models.py log_field 41 FOUND Penn id '41693814' for 'lart'
+[INFO] 2022-05-10 16:14:04,474 models.py log_field 41 FOUND email address 'lart@sas.upenn.edu' for 'lart'
+[INFO] 2022-05-10 16:14:04,484 models.py sync_canvas_id 67 Getting Canvas user id for 'lart'...
+[INFO] 2022-05-10 16:14:04,814 models.py log_field 41 FOUND Canvas user id '6046269' for 'lart'
+[INFO] 2022-05-10 16:14:04,816 models.py sync_instructors 333 ADDED Luis Artavia-Mora (lart)
+[INFO] 2022-05-10 16:14:06,540 models.py update_or_create 423 ADDED MKTG8990010202220
+[INFO] 2022-05-10 16:14:07,427 models.py sync_dw_info 46 Getting kahn's info from Data Warehouse...
+[INFO] 2022-05-10 16:14:08,268 models.py log_field 41 FOUND first name 'BARBARA' for 'kahn'
+[INFO] 2022-05-10 16:14:08,268 models.py log_field 41 FOUND last name 'KAHN' for 'kahn'
+[INFO] 2022-05-10 16:14:08,268 models.py log_field 41 FOUND Penn id '10009536' for 'kahn'
+[INFO] 2022-05-10 16:14:08,268 models.py log_field 41 FOUND email address 'kahn@wharton.upenn.edu' for 'kahn'
+[INFO] 2022-05-10 16:14:08,277 models.py sync_canvas_id 67 Getting Canvas user id for 'kahn'...
+[INFO] 2022-05-10 16:14:08,511 models.py log_field 41 FOUND Canvas user id '394345' for 'kahn'
+[INFO] 2022-05-10 16:14:08,513 models.py sync_instructors 333 ADDED Barbara Kahn (kahn)
+[INFO] 2022-05-10 16:14:10,280 models.py update_or_create 423 ADDED PSMA0001920202220
+[INFO] 2022-05-10 16:14:11,136 models.py sync_dw_info 46 Getting rimmer's info from Data Warehouse...
+[INFO] 2022-05-10 16:14:11,989 models.py log_field 41 FOUND first name 'NAKIA' for 'rimmer'
+[INFO] 2022-05-10 16:14:11,989 models.py log_field 41 FOUND last name 'RIMMER' for 'rimmer'
+[INFO] 2022-05-10 16:14:11,989 models.py log_field 41 FOUND Penn id '10087991' for 'rimmer'
+[INFO] 2022-05-10 16:14:11,990 models.py log_field 41 FOUND email address 'rimmer@sas.upenn.edu' for 'rimmer'
+[INFO] 2022-05-10 16:14:12,002 models.py sync_canvas_id 67 Getting Canvas user id for 'rimmer'...
+[INFO] 2022-05-10 16:14:12,207 models.py log_field 41 FOUND Canvas user id '4007103' for 'rimmer'
+[INFO] 2022-05-10 16:14:12,209 models.py sync_instructors 333 ADDED Nakia Rimmer (rimmer)
+[INFO] 2022-05-10 16:14:13,961 models.py update_or_create 423 ADDED PSPR0002920202220
+[INFO] 2022-05-10 16:14:14,840 models.py sync_dw_info 46 Getting hkhuri's info from Data Warehouse...
+[INFO] 2022-05-10 16:14:15,728 models.py log_field 41 FOUND first name 'HANNA' for 'hkhuri'
+[INFO] 2022-05-10 16:14:15,728 models.py log_field 41 FOUND last name 'KHURI' for 'hkhuri'
+[INFO] 2022-05-10 16:14:15,728 models.py log_field 41 FOUND Penn id '30899601' for 'hkhuri'
+[INFO] 2022-05-10 16:14:15,728 models.py log_field 41 FOUND email address 'hkhuri@sas.upenn.edu' for 'hkhuri'
+[INFO] 2022-05-10 16:14:15,739 models.py sync_canvas_id 67 Getting Canvas user id for 'hkhuri'...
+[INFO] 2022-05-10 16:14:15,939 models.py log_field 41 FOUND Canvas user id '4868703' for 'hkhuri'
+[INFO] 2022-05-10 16:14:15,941 models.py sync_instructors 333 ADDED Hanna Khuri (hkhuri)
+[INFO] 2022-05-10 16:14:17,683 models.py update_or_create 423 ADDED SPAN1400001202220
+[INFO] 2022-05-10 16:14:20,343 models.py update_or_create 423 ADDED LAW5860001202220
+[INFO] 2022-05-10 16:14:21,251 models.py sync_dw_info 46 Getting johnsq's info from Data Warehouse...
+[INFO] 2022-05-10 16:14:22,136 models.py log_field 41 FOUND first name 'JOHN' for 'johnsq'
+[INFO] 2022-05-10 16:14:22,137 models.py log_field 41 FOUND last name 'SQUIRES' for 'johnsq'
+[INFO] 2022-05-10 16:14:22,137 models.py log_field 41 FOUND Penn id '34855095' for 'johnsq'
+[INFO] 2022-05-10 16:14:22,137 models.py log_field 41 FOUND email address 'jsquires@dilworthlaw.com' for 'johnsq'
+[INFO] 2022-05-10 16:14:22,144 models.py sync_canvas_id 67 Getting Canvas user id for 'johnsq'...
+[WARNING] 2022-05-10 16:14:22,268 models.py log_field 43 Canvas user id NOT FOUND for 'johnsq'
+[INFO] 2022-05-10 16:14:22,270 models.py sync_instructors 333 ADDED John Squires (johnsq)
+[INFO] 2022-05-10 16:14:24,003 models.py update_or_create 423 ADDED NPLD5700910202220
+[INFO] 2022-05-10 16:14:24,848 models.py sync_dw_info 46 Getting gregh's info from Data Warehouse...
+[INFO] 2022-05-10 16:14:25,734 models.py log_field 41 FOUND first name 'GREG' for 'gregh'
+[INFO] 2022-05-10 16:14:25,734 models.py log_field 41 FOUND last name 'GOLDMAN' for 'gregh'
+[INFO] 2022-05-10 16:14:25,735 models.py log_field 41 FOUND Penn id '10093481' for 'gregh'
+[INFO] 2022-05-10 16:14:25,735 models.py log_field 41 FOUND email address 'gregh@sas.upenn.edu' for 'gregh'
+[INFO] 2022-05-10 16:14:25,743 models.py sync_canvas_id 67 Getting Canvas user id for 'gregh'...
+[INFO] 2022-05-10 16:14:26,022 models.py log_field 41 FOUND Canvas user id '5124729' for 'gregh'
+[INFO] 2022-05-10 16:14:26,024 models.py sync_instructors 333 ADDED Greg Goldman (gregh)
+[INFO] 2022-05-10 16:14:26,026 models.py sync_dw_info 46 Getting dbbauer's info from Data Warehouse...
+[INFO] 2022-05-10 16:14:26,873 models.py log_field 41 FOUND first name 'DOUGLAS' for 'dbbauer'
+[INFO] 2022-05-10 16:14:26,873 models.py log_field 41 FOUND last name 'BAUER' for 'dbbauer'
+[INFO] 2022-05-10 16:14:26,874 models.py log_field 41 FOUND Penn id '10093498' for 'dbbauer'
+[INFO] 2022-05-10 16:14:26,874 models.py log_field 41 FOUND email address 'emplnoemail@hr.upenn.edu' for 'dbbauer'
+[INFO] 2022-05-10 16:14:26,880 models.py sync_canvas_id 67 Getting Canvas user id for 'dbbauer'...
+[INFO] 2022-05-10 16:14:27,070 models.py log_field 41 FOUND Canvas user id '5628362' for 'dbbauer'
+[INFO] 2022-05-10 16:14:27,072 models.py sync_instructors 333 ADDED Douglas Bauer (dbbauer)
+[INFO] 2022-05-10 16:14:28,845 models.py update_or_create 423 ADDED PSPR1020920202220
+[INFO] 2022-05-10 16:14:31,484 models.py update_or_create 423 ADDED LAW5900001202220
+[INFO] 2022-05-10 16:14:32,352 models.py sync_dw_info 46 Getting wewald's info from Data Warehouse...
+[INFO] 2022-05-10 16:14:33,215 models.py log_field 41 FOUND first name 'WILLIAM' for 'wewald'
+[INFO] 2022-05-10 16:14:33,215 models.py log_field 41 FOUND last name 'EWALD' for 'wewald'
+[INFO] 2022-05-10 16:14:33,215 models.py log_field 41 FOUND Penn id '10002695' for 'wewald'
+[INFO] 2022-05-10 16:14:33,215 models.py log_field 41 FOUND email address 'wewald@law.upenn.edu' for 'wewald'
+[INFO] 2022-05-10 16:14:33,226 models.py sync_canvas_id 67 Getting Canvas user id for 'wewald'...
+[INFO] 2022-05-10 16:14:33,408 models.py log_field 41 FOUND Canvas user id '5648617' for 'wewald'
+[INFO] 2022-05-10 16:14:33,410 models.py sync_instructors 333 ADDED William Ewald (wewald)
+[INFO] 2022-05-10 16:14:34,318 models.py update_or_create 423 ADDED VCSP8775404202220
+[INFO] 2022-05-10 16:14:35,189 models.py sync_dw_info 46 Getting reiter's info from Data Warehouse...
+[INFO] 2022-05-10 16:14:36,069 models.py log_field 41 FOUND first name 'ALEXANDER' for 'reiter'
+[INFO] 2022-05-10 16:14:36,069 models.py log_field 41 FOUND last name 'REITER' for 'reiter'
+[INFO] 2022-05-10 16:14:36,070 models.py log_field 41 FOUND Penn id '10117955' for 'reiter'
+[INFO] 2022-05-10 16:14:36,070 models.py log_field 41 FOUND email address 'reiter@vet.upenn.edu' for 'reiter'

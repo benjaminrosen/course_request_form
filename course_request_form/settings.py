@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 from platform import system
 
@@ -132,6 +133,49 @@ STATIC_ROOT = BASE_DIR / "static/"
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+LOGGER = {
+    "handlers": ["course_request_form", "console"],
+    "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+    "propagate": False,
+}
+
+MODULES = [
+    "canvas",
+    "config",
+    "course_request_form",
+    "data_warehouse",
+    "form",
+]
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": (
+                "[%(levelname)s] %(asctime)s %(filename)s %(funcName)s"
+                " %(lineno)d %(message)s"
+            )
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+        },
+        "course_request_form": {
+            "level": "INFO",
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": "logs/course_request_form.log",
+            "when": "midnight",
+            "interval": 1,
+            "backupCount": 10,
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {module: LOGGER for module in MODULES},
+}
 
 if DEBUG and system() == "Darwin":
     lib_dir = Path.home() / LIB_DIR
