@@ -287,50 +287,11 @@ class Section(Model):
     title = CharField(max_length=250)
     schedule_type = ForeignKey(ScheduleType, on_delete=CASCADE, related_name="sections")
     instructors = ManyToManyField(User, blank=True, related_name="sections")
-    # related_sections = ManyToManyField(
-    #     "self", blank=True, symmetrical=True, default=None
-    # )
-    # primary_crosslist = CharField(max_length=20, default="", blank=True)
-    # crosslisted = ManyToManyField("self", blank=True, symmetrical=True, default=None)
-    site_request = ForeignKey(
-        "form.Request",
-        on_delete=CASCADE,
-        blank=True,
-        null=True,
-        related_name="sections",
-    )
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.section_code
-
-    # def save(self, *args, **kwargs):
-    #     self.section_code = (
-    #         f"{self.subject.subject_code}"
-    #         f"{self.course_num}"
-    #         f"{self.section_num}"
-    #         f"{self.term}"
-    #     )
-    #     self.set_related_sections()
-    #     super().save(*args, **kwargs)
-
-    # @staticmethod
-    # def is_relevant_section(section):
-    #     section_num = section.section_num
-    #     return section_num >= 300 and section_num < 400
-
-    # def set_related_sections(self):
-    #     sections = Section.objects.filter(
-    #         Q(subject=self.subject)
-    #         & Q(course_num=self.course_num)
-    #         & Q(term=self.term)
-    #         & Q(year=self.year)
-    #     ).exclude(course_code=self.section_code)
-    #     sections = [
-    #         section for section in sections if self.is_relevant_section(section)
-    #     ]
-    #     self.related_sections.set(sections)
 
     def set_instructors(self):
         query = """
@@ -363,7 +324,7 @@ class Section(Model):
                 if user:
                     instructors.append(user)
                 action = "ADDED" if created else "UPDATED"
-                logger.info(f"{action} {action}")
+                logger.info(f"{action} {user}")
             except Exception as error:
                 logger.error(
                     f"FAILED to update or create instructor '{penn_key}': {error}"
@@ -399,6 +360,7 @@ class Section(Model):
             subject = Subject.get_subject(subject_code)
             primary_subject = Subject.get_subject(primary_subject_code) or subject
             schedule_type = ScheduleType.get_schedule_type(sched_type_code)
+            section = None
             try:
                 section, created = cls.objects.update_or_create(
                     section_code=section_code,
@@ -421,11 +383,18 @@ class Section(Model):
                 logger.error(
                     f"FAILED to update or create section '{section_code}': {error}"
                 )
+            return section
 
     @classmethod
     def sync_all(cls):
         kwargs = {"term": cls.CURRENT_TERM}
         cls.update_or_create(cls.QUERY, kwargs)
+
+    @classmethod
+    def sync_section(cls, course_id: str):
+        query = f"{cls.QUERY} AND course_id = :course_id"
+        kwargs = {"course_id": course_id}
+        return cls.update_or_create(query, kwargs)
 
     def sync(self):
         query = f"{self.QUERY} AND section_id = :section_id"
@@ -443,8 +412,10 @@ class Request(Model):
         ("LOCKED", "Locked"),
     )
     section = OneToOneField(Section, on_delete=CASCADE, primary_key=True)
-    requester = ForeignKey(User, related_name="requests", on_delete=CASCADE)
-    masquerade = CharField(max_length=20, null=True)
+    requester = ForeignKey(User, on_delete=CASCADE, related_name="requests")
+    proxy_requester = ForeignKey(
+        User, on_delete=CASCADE, null=True, blank=True, related_name="proxy_requests"
+    )
     title_override = CharField(max_length=255, null=True, default=None, blank=True)
     copy_from_course = IntegerField(null=True, default=None, blank=True)
     reserves = BooleanField(default=False)
@@ -456,6 +427,9 @@ class Request(Model):
     status = CharField(max_length=20, choices=STATUSES, default="SUBMITTED")
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.section.section_code
 
 
 # CANVAS_ROLES = (
@@ -485,30 +459,3 @@ class Request(Model):
 
 #     class Meta:
 #         ordering = ("user__username",)
-
-
-# class Message(Model):
-#     content = TextField(max_length=4000)
-#     created_at = DateTimeField(auto_now_add=True)
-#     updated_at = DateTimeField(auto_now=True)
-
-#     def get_html(self):
-#         return mark_safe(clean(markdown(self.content), markdown_tags, markdown_attrs))
-
-
-# class Notice(Message):
-#     header = CharField(max_length=100)
-#     author = ForeignKey(User, related_name="notices", on_delete=CASCADE)
-
-#     class Meta:
-#         get_latest_by = "updated_at"
-
-#     def __str__(self):
-#         return self.header
-
-
-# class PageContent(Message):
-#     page = CharField(max_length=100)
-
-#     def __str__(self):
-#         return self.page
