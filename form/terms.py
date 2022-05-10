@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, Union
+from typing import Optional
 
 CURRENT_DATE = datetime.now()
 CURRENT_YEAR = CURRENT_DATE.year
@@ -29,11 +29,11 @@ def get_next_term_code(term_code: Optional[int] = None) -> int:
     return {SPRING: SUMMER, SUMMER: FALL, FALL: SPRING}.get(term_code, FALL)
 
 
-def get_year_and_term_code(term: Union[int, str]) -> tuple[int, int]:
-    term = str(term)
-    year = int(term[:-TERM_CODE_LENGTH])
-    term_code = int(term[-TERM_CODE_LENGTH:])
-    return year, term_code
+# def get_year_and_term_code(term: Union[int, str]) -> tuple[int, int]:
+#     term = str(term)
+#     year = int(term[:-TERM_CODE_LENGTH])
+#     term_code = int(term[-TERM_CODE_LENGTH:])
+#     return year, term_code
 
 
 def get_future_term_year(two_terms_ahead=False):

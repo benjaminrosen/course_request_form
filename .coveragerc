@@ -1,5 +1,5 @@
 [run]
-omit = manage.py, data_warehouse/data_warehouse.py
+omit = manage.py, form/data_warehouse.py
 
 [report]
 skip_covered = true

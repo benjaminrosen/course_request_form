@@ -6,17 +6,20 @@ from django.db.models import (
     CASCADE,
     BooleanField,
     CharField,
+    DateTimeField,
     EmailField,
     ForeignKey,
     IntegerField,
+    ManyToManyField,
     Model,
+    OneToOneField,
+    TextField,
 )
-from django.db.models.fields import DateTimeField, TextField
-from django.db.models.fields.related import ManyToManyField, OneToOneField
 
 from canvas.canvas_api import get_all_canvas_accounts, get_canvas_user_id_by_pennkey
-from data_warehouse.data_warehouse import execute_query
-from form.terms import CURRENT_TERM
+
+from .data_warehouse import execute_query
+from .terms import CURRENT_TERM
 
 logger = getLogger(__name__)
 
