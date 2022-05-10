@@ -47,9 +47,13 @@ shell: ## Open an app-aware python shell
 static: ## Collect static files
 	$(MANAGE) collectstatic --clear --no-input
 
-test: ## Run the test suite (arg: `module`)
+test: ## Run the test suite (args: `module`, `class`)
 ifdef module
+ifdef class
+	$(MANAGE) $(TEST).test_$(module).$(class)Test $(TEST_VERBOSE_LEVEL)
+else
 	$(MANAGE) $(TEST).test_$(module) $(TEST_VERBOSE_LEVEL)
+endif
 else
 	$(MANAGE) $(TEST) $(TEST_VERBOSE_LEVEL)
 endif

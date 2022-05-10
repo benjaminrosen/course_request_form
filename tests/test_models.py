@@ -170,12 +170,11 @@ class ScheduleTypeTest(TestCase):
 
     @patch(EXECUTE_QUERY)
     def test_sync_schedule_type(self, mock_execute_query):
-        mock_execute_query.return_value = "NEW"
-        ScheduleType.sync_all()
-        success_schedule_type_count = get_mock_values_success_count(mock_schedule_types)
-        expected_schedule_type_count = success_schedule_type_count + schedule_type_count
-        schedule_type_count = ScheduleType.objects.count()
-        self.assertEqual(schedule_type_count, expected_schedule_type_count)
+        new_sched_type_desc = "New Schedule Type Description"
+        mock_execute_query.return_value = ((self.sched_type_code, new_sched_type_desc),)
+        ScheduleType.sync_schedule_type(self.sched_type_code)
+        schedule_type = ScheduleType.objects.get(sched_type_code=self.sched_type_code)
+        self.assertEqual(schedule_type.sched_type_desc, new_sched_type_desc)
 
 
 @dataclass

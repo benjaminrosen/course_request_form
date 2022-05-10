@@ -277,7 +277,24 @@ class Section(Model):
                 primary_course_id,
                 course_id
             FROM dwngss_ps.crse_section section
-            WHERE term = :term
+            WHERE schedule_type NOT IN (
+                'MED',
+                'DIS',
+                'FLD',
+                'F01',
+                'F02',
+                'F03',
+                'F04',
+                'IND',
+                'I01',
+                'I02',
+                'I03',
+                'I04',
+                'MST',
+                'SRT'
+            )
+            AND school NOT IN ('W', 'L')
+            AND term = :term
             """
     QUERY_SECTION_ID = f"{QUERY} AND section_id = :section_id"
     section_code = CharField(
