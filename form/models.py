@@ -7,7 +7,6 @@ from django.db.models import (
     BooleanField,
     CharField,
     DateTimeField,
-    EmailField,
     ForeignKey,
     IntegerField,
     ManyToManyField,
@@ -26,14 +25,13 @@ logger = getLogger(__name__)
 
 class User(AbstractUser):
     penn_id = IntegerField(unique=True, null=True)
-    email_address = EmailField(unique=True, null=True)
     canvas_id = IntegerField(unique=True, null=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.username})"
 
     def save(self, *args, **kwargs):
-        if self._state.adding:
+        if self._state.adding and not self.penn_id:
             self.sync_dw_info(save=False)
             self.sync_canvas_id(save=False)
         super().save(*args, **kwargs)
@@ -53,7 +51,7 @@ class User(AbstractUser):
                 WHERE pennkey = :username
                 """
         cursor = execute_query(query, {"username": self.username})
-        for first_name, last_name, penn_id, email_address in cursor:
+        for first_name, last_name, penn_id, email in cursor:
             first_name = first_name.title() if first_name else ""
             self.log_field(self.username, "first name", first_name)
             self.first_name = first_name
@@ -62,9 +60,10 @@ class User(AbstractUser):
             self.last_name = last_name
             self.log_field(self.username, "Penn id", penn_id)
             self.penn_id = penn_id
-            email_address = email_address.strip().lower() if email_address else None
-            self.log_field(self.username, "email address", email_address)
-            self.email_address = email_address
+            email = email.strip().lower() if email else None
+            self.log_field(self.username, "email", email)
+            self.email = email or ""
+
         if save:
             self.save()
 
@@ -338,7 +337,7 @@ class Section(Model):
         kwargs = {"section_id": f"{self.section_id}", "term": self.term}
         cursor = execute_query(query, kwargs)
         instructors = list()
-        for penn_key, first_name, last_name, penn_id, email_address in cursor:
+        for penn_key, first_name, last_name, penn_id, email in cursor:
             try:
                 user, created = User.objects.update_or_create(
                     username=penn_key,
@@ -346,7 +345,7 @@ class Section(Model):
                         "first_name": first_name,
                         "last_name": last_name,
                         "penn_id": penn_id,
-                        "email_address": email_address,
+                        "email": email,
                     },
                 )
                 if user:
@@ -447,7 +446,6 @@ class Section(Model):
                 if sync_related_sections:
                     section.sync_related_sections(term)
             except Exception as error:
-                print(error)
                 logger.error(
                     f"FAILED to update or create section '{section_code}': {error}"
                 )
