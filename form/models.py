@@ -444,7 +444,7 @@ class Section(Model):
                 logger.info(f"{action} {section}")
                 section.sync_instructors()
                 if sync_related_sections:
-                    section.sync_related_sections(term)
+                    section.sync_related_sections()
             except Exception as error:
                 logger.error(
                     f"FAILED to update or create section '{section_code}': {error}"

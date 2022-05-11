@@ -2,7 +2,8 @@ from dataclasses import dataclass
 from unittest.mock import patch
 
 from django.test import TestCase
-from form.models import ScheduleType, School, Subject, User, Section
+
+from form.models import ScheduleType, School, Section, Subject, User
 from form.terms import CURRENT_TERM
 
 EXECUTE_QUERY = "form.models.execute_query"
@@ -263,10 +264,16 @@ class SubjectTest(TestCase):
 
 
 class SectionTest(TestCase):
-    COURSE_NUM = 1234
-    SECTION_NUM = 123
+    COURSE_NUM = 1000
+    SECTION_NUM = 200
     TERM = CURRENT_TERM
     TITLE = "Course Title"
+    INSTRUCTORS = (
+        (PENN_KEY, FIRST_NAME, LAST_NAME, PENN_ID, EMAIL),
+        (None, None, None, None, None),
+    )
+    PRIMARY_SUBJECT_CODE = "PRIM"
+    PRIMARY_SUBJECT_DESC_LONG = f"Primary {SUBJECT_DESC_LONG}"
 
     @classmethod
     def create_section(
@@ -323,15 +330,12 @@ class SectionTest(TestCase):
 
     def test_str(self):
         section_string = str(self.section)
-        section_code = f"SUBJ1234123{self.TERM}"
+        section_code = f"SUBJ1000200{self.TERM}"
         self.assertEqual(section_string, section_code)
 
     @patch(EXECUTE_QUERY)
     def test_sync_instructors(self, mock_execute_query):
-        mock_execute_query.return_value = (
-            (PENN_KEY, FIRST_NAME, LAST_NAME, PENN_ID, EMAIL),
-            (None, None, None, None, None),
-        )
+        mock_execute_query.return_value = self.INSTRUCTORS
         self.assertFalse(self.section.instructors.exists())
         self.section.sync_instructors()
         section = Section.objects.get(section_code=self.section.section_code)
@@ -339,20 +343,100 @@ class SectionTest(TestCase):
 
     @patch(EXECUTE_QUERY)
     def test_sync_related_sections(self, mock_execute_query):
+        related_code = "REL"
+        related_description = "Related"
         related_section = self.create_section(
-            "RELSCHL",
-            "Related School Description",
-            "RELSUBJ",
-            "Related Subject Description",
-            "RELSCHDTYPE",
-            "Related Schedule Type Description",
+            f"{related_code}{SCHOOL_CODE}",
+            f"{related_description}{SCHOOL_DESC_LONG}",
+            f"{related_code}{SUBJECT_CODE}",
+            f"{related_description}{SUBJECT_DESC_LONG}",
+            f"{related_code}{SCHED_TYPE_CODE}",
+            f"{related_description}{SCHOOL_DESC_LONG}",
             4321,
             321,
             self.TERM,
-            "Related Course",
+            f"{related_description}{self.TITLE}",
         )
         mock_execute_query.return_value = ((related_section.section_id,),)
         self.assertFalse(self.section.related_sections.exists())
         self.section.sync_related_sections()
         section = Section.objects.get(section_code=self.section.section_code)
         self.assertTrue(section.related_sections.exists())
+
+    @classmethod
+    def get_mock_section_data(cls, scheduled_with=False, active=True, unsynced=False):
+        primary_course_id = f"{cls.PRIMARY_SUBJECT_CODE}{cls.COURSE_NUM}"
+        course_id = (
+            f"{SUBJECT_CODE}{cls.COURSE_NUM}" if scheduled_with else primary_course_id
+        )
+        primary_section_id = f"{primary_course_id}{cls.SECTION_NUM}"
+        section_id = (
+            f"{course_id}{cls.SECTION_NUM}" if scheduled_with else primary_section_id
+        )
+        section_code = "RAND1234567" if unsynced else f"{section_id}{cls.TERM}"
+        primary_subject = cls.PRIMARY_SUBJECT_CODE
+        subject = SUBJECT_CODE if scheduled_with else primary_subject
+        status_code = "A" if active else "X"
+        return (
+            section_code,
+            section_id,
+            primary_section_id,
+            SCHOOL_CODE,
+            subject,
+            primary_subject,
+            cls.COURSE_NUM,
+            cls.SECTION_NUM,
+            cls.TERM,
+            cls.TITLE,
+            SCHED_TYPE_CODE,
+            status_code,
+            primary_course_id,
+            course_id,
+        )
+
+    @patch(EXECUTE_QUERY)
+    def test_sync_all(self, mock_execute_query):
+        Subject.objects.create(
+            subject_code=self.PRIMARY_SUBJECT_CODE,
+            subject_desc_long=self.PRIMARY_SUBJECT_DESC_LONG,
+        )
+        instructors = self.INSTRUCTORS[0]
+        mock_active_section = self.get_mock_section_data()
+        mock_canceled_section = self.get_mock_section_data(active=False)
+        mock_unsynced_canceled_section = self.get_mock_section_data(
+            active=False, unsynced=True
+        )
+        mock_scheduled_with_section = self.get_mock_section_data(scheduled_with=True)
+        mock_execute_query.side_effect = [
+            (
+                mock_active_section,
+                mock_canceled_section,
+                mock_unsynced_canceled_section,
+                mock_scheduled_with_section,
+            ),
+            (instructors,),
+            (mock_active_section,),
+            (mock_active_section,),
+            (instructors,),
+            (mock_active_section,),
+        ]
+        Section.sync_all()
+
+    @patch(EXECUTE_QUERY)
+    def test_sync(self, mock_execute_query):
+        mock_execute_query.side_effect = [
+            (self.get_mock_section_data(scheduled_with=True),),
+            ((self.PRIMARY_SUBJECT_CODE, self.PRIMARY_SUBJECT_DESC_LONG, SCHOOL_CODE),),
+            (self.get_mock_section_data(),),
+        ]
+        self.section.sync()
+        section = Section.objects.get(section_code=self.section.section_code)
+        self.assertEqual(
+            section.primary_section.section_code, f"PRIM1000200{CURRENT_TERM}"
+        )
+        self.assertEqual(section.primary_section.section_id, "PRIM1000200")
+        self.assertEqual(section.primary_section_id, f"PRIM1000200{CURRENT_TERM}")
+        self.assertEqual(
+            section.primary_subject.subject_code, self.PRIMARY_SUBJECT_CODE
+        )
+        self.assertEqual(section.primary_course_id, f"{self.PRIMARY_SUBJECT_CODE}1000")

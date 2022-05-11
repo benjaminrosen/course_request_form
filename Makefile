@@ -50,7 +50,11 @@ static: ## Collect static files
 test: ## Run the test suite (args: `module`, `class`)
 ifdef module
 ifdef class
+ifdef method
+	$(MANAGE) $(TEST).test_$(module).$(class)Test.test_$(method) $(TEST_VERBOSE_LEVEL)
+else
 	$(MANAGE) $(TEST).test_$(module).$(class)Test $(TEST_VERBOSE_LEVEL)
+endif
 else
 	$(MANAGE) $(TEST).test_$(module) $(TEST_VERBOSE_LEVEL)
 endif
