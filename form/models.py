@@ -358,7 +358,7 @@ class Section(Model):
                 )
         self.instructors.set(instructors)
 
-    def sync_related_sections(self, term: Optional[int] = None):
+    def sync_related_sections(self):
         query = """
                 SELECT section_id
                 FROM dwngss_ps.crse_section
@@ -366,7 +366,7 @@ class Section(Model):
                 AND primary_course_id = :primary_course_id
                 AND section_id != :section_id
                 """
-        term = term or CURRENT_TERM
+        term = self.term
         kwargs = {
             "term": term,
             "primary_course_id": self.primary_course_id,

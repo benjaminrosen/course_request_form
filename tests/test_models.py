@@ -269,29 +269,56 @@ class SectionTest(TestCase):
     TITLE = "Course Title"
 
     @classmethod
-    def setUpTestData(cls):
+    def create_section(
+        cls,
+        school_code,
+        school_desc_long,
+        subject_code,
+        subject_desc_long,
+        sched_type_code,
+        sched_type_desc,
+        course_num,
+        section_num,
+        term,
+        title,
+    ):
         school = School.objects.create(
-            school_code=SCHOOL_CODE, school_desc_long=SCHOOL_DESC_LONG
+            school_code=school_code, school_desc_long=school_desc_long
         )
         subject = Subject.objects.create(
-            subject_code=SUBJECT_CODE, subject_desc_long=SUBJECT_DESC_LONG
+            subject_code=subject_code, subject_desc_long=subject_desc_long
         )
         schedule_type = ScheduleType.objects.create(
-            sched_type_code=SCHED_TYPE_CODE, sched_type_desc=SCHED_TYPE_DESC
+            sched_type_code=sched_type_code, sched_type_desc=sched_type_desc
         )
-        section_id = f"{subject.subject_code}{cls.COURSE_NUM}{cls.SECTION_NUM}"
-        section_code = f"{section_id}{cls.TERM}"
-        cls.section = Section.objects.create(
+        section_id = f"{subject.subject_code}{course_num}{section_num}"
+        section_code = f"{section_id}{term}"
+        return Section.objects.create(
             section_code=section_code,
             section_id=section_id,
             school=school,
             subject=subject,
             primary_subject=subject,
-            course_num=cls.COURSE_NUM,
-            section_num=cls.SECTION_NUM,
-            term=cls.TERM,
-            title=cls.TITLE,
+            course_num=course_num,
+            section_num=section_num,
+            term=term,
+            title=title,
             schedule_type=schedule_type,
+        )
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.section = cls.create_section(
+            SCHOOL_CODE,
+            SCHOOL_DESC_LONG,
+            SUBJECT_CODE,
+            SUBJECT_DESC_LONG,
+            SCHED_TYPE_CODE,
+            SCHED_TYPE_DESC,
+            cls.COURSE_NUM,
+            cls.SECTION_NUM,
+            cls.TERM,
+            cls.TITLE,
         )
 
     def test_str(self):
@@ -308,3 +335,23 @@ class SectionTest(TestCase):
         self.section.sync_instructors()
         section = Section.objects.get(section_code=self.section.section_code)
         self.assertTrue(section.instructors.exists())
+
+    @patch(EXECUTE_QUERY)
+    def test_sync_related_sections(self, mock_execute_query):
+        related_section = self.create_section(
+            "RELSCHL",
+            "Related School Description",
+            "RELSUBJ",
+            "Related Subject Description",
+            "RELSCHDTYPE",
+            "Related Schedule Type Description",
+            4321,
+            321,
+            self.TERM,
+            "Related Course",
+        )
+        mock_execute_query.return_value = ((related_section.section_id,),)
+        self.assertFalse(self.section.related_sections.exists())
+        self.section.sync_related_sections()
+        section = Section.objects.get(section_code=self.section.section_code)
+        self.assertTrue(section.related_sections.exists())
