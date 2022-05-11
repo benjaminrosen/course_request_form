@@ -330,6 +330,7 @@ class SectionTest(TestCase):
     def test_sync_instructors(self, mock_execute_query):
         mock_execute_query.return_value = (
             (PENN_KEY, FIRST_NAME, LAST_NAME, PENN_ID, EMAIL),
+            (None, None, None, None, None),
         )
         self.assertFalse(self.section.instructors.exists())
         self.section.sync_instructors()
