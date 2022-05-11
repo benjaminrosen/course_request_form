@@ -446,10 +446,13 @@ class SectionTest(TestCase):
             ),
             (instructors,),
             (("SUBJ1000200",),),
+            (("SUBJ1000200",),),
             (mock_active_section,),
             (instructors,),
             (("SUBJ1000200",),),
+            (("SUBJ1000200",),),
             (instructors,),
+            (("SUBJ1000200",),),
             (("SUBJ1000200",),),
             (("NEW", f"New {SCHED_TYPE_DESC}"),),
         ]
