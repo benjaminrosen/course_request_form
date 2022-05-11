@@ -423,9 +423,12 @@ class SectionTest(TestCase):
                 mock_new_schedule_type_section,
             ),
             (instructors,),
-            (mock_active_section,),
+            (("SUBJ1000200",),),
             (mock_active_section,),
             (instructors,),
+            (("SUBJ1000200",),),
+            (instructors,),
+            (("SUBJ1000200",),),
             (("NEW", f"New {SCHED_TYPE_DESC}"),),
         ]
         Section.sync_all()

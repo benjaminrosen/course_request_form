@@ -378,7 +378,9 @@ class Section(Model):
         related_sections = list()
         for section_id in cursor:
             section_id = next(iter(section_id))
-            section = self.get_section(section_id, term, sync_related_sections=False)
+            section = self.get_section(
+                section_id, term, sync_also_offered_as_sections=False
+            )
             if section:
                 related_sections.append(section)
         self.related_sections.set(related_sections)
@@ -394,7 +396,10 @@ class Section(Model):
 
     @classmethod
     def update_or_create(
-        cls, query: str, kwargs: Optional[dict] = None, sync_related_sections=True
+        cls,
+        query: str,
+        kwargs: Optional[dict] = None,
+        sync_also_offered_as_sections=True,
     ):
         cursor = execute_query(query, kwargs)
         section = None
@@ -445,8 +450,8 @@ class Section(Model):
                 action = "ADDED" if created else "UPDATED"
                 logger.info(f"{action} {section}")
                 section.sync_instructors()
-                if sync_related_sections:
-                    section.sync_related_sections()
+                if sync_also_offered_as_sections:
+                    section.sync_also_offered_as_sections()
             except Exception as error:
                 logger.error(
                     f"FAILED to update or create section '{section_code}': {error}"
@@ -461,11 +466,16 @@ class Section(Model):
 
     @classmethod
     def sync_section(
-        cls, section_id: str, term: Optional[int] = None, sync_related_sections=True
+        cls,
+        section_id: str,
+        term: Optional[int] = None,
+        sync_also_offered_as_sections=True,
     ):
         term = term or CURRENT_TERM
         kwargs = {"section_id": section_id, "term": term}
-        return cls.update_or_create(cls.QUERY_SECTION_ID, kwargs, sync_related_sections)
+        return cls.update_or_create(
+            cls.QUERY_SECTION_ID, kwargs, sync_also_offered_as_sections
+        )
 
     def sync(self):
         kwargs = {"section_id": self.section_id, "term": self.term}
@@ -473,13 +483,16 @@ class Section(Model):
 
     @classmethod
     def get_section(
-        cls, section_id: str, term: Optional[int] = None, sync_related_sections=True
+        cls,
+        section_id: str,
+        term: Optional[int] = None,
+        sync_also_offered_as_sections=True,
     ):
         term = term or CURRENT_TERM
         try:
             return cls.objects.get(section_id=section_id, term=term)
         except Exception:
-            return cls.sync_section(section_id, term, sync_related_sections)
+            return cls.sync_section(section_id, term, sync_also_offered_as_sections)
 
 
 class Request(Model):
