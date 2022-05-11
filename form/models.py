@@ -358,18 +358,20 @@ class Section(Model):
                 )
         self.instructors.set(instructors)
 
-    def sync_related_sections(self):
+    def sync_also_offered_as_sections(self):
         query = """
                 SELECT section_id
                 FROM dwngss_ps.crse_section
                 WHERE term = :term
                 AND primary_course_id = :primary_course_id
+                AND section_num = :section_num
                 AND section_id != :section_id
                 """
         term = self.term
         kwargs = {
             "term": term,
             "primary_course_id": self.primary_course_id,
+            "section_num": self.section_num,
             "section_id": self.section_id,
         }
         cursor = execute_query(query, kwargs)

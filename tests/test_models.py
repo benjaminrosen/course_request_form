@@ -343,7 +343,7 @@ class SectionTest(TestCase):
         self.assertTrue(section.instructors.exists())
 
     @patch(EXECUTE_QUERY)
-    def test_sync_related_sections(self, mock_execute_query):
+    def test_sync_also_offered_as_sections(self, mock_execute_query):
         related_code = "REL"
         related_description = "Related"
         related_section = create_section(
@@ -360,7 +360,7 @@ class SectionTest(TestCase):
         )
         mock_execute_query.return_value = ((related_section.section_id,),)
         self.assertFalse(self.section.related_sections.exists())
-        self.section.sync_related_sections()
+        self.section.sync_also_offered_as_sections()
         section = Section.objects.get(section_code=self.section.section_code)
         self.assertTrue(section.related_sections.exists())
 
@@ -420,12 +420,12 @@ class SectionTest(TestCase):
                 mock_canceled_section,
                 mock_unsynced_canceled_section,
                 mock_scheduled_with_section,
+                mock_new_schedule_type_section,
             ),
             (instructors,),
             (mock_active_section,),
             (mock_active_section,),
             (instructors,),
-            (mock_new_schedule_type_section,),
             (("NEW", f"New {SCHED_TYPE_DESC}"),),
         ]
         Section.sync_all()
