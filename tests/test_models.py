@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from django.test import TestCase
 
-from form.models import ScheduleType, School, Section, Subject, User
+from form.models import Request, ScheduleType, School, Section, Subject, User
 from form.terms import CURRENT_TERM
 
 EXECUTE_QUERY = "form.models.execute_query"
@@ -14,12 +14,29 @@ FIRST_NAME = "Test"
 LAST_NAME = "User"
 PENN_ID = 1234567
 EMAIL = "testuser@upenn.edu"
+CANVAS_ID = 7654321
 SCHED_TYPE_CODE = "SCH"
 SCHED_TYPE_DESC = "Schedule Type Description"
 SCHOOL_CODE = "SCHL"
 SCHOOL_DESC_LONG = "School Description"
 SUBJECT_CODE = "SUBJ"
 SUBJECT_DESC_LONG = "Subject Description"
+COURSE_NUM = 1000
+SECTION_NUM = 200
+TERM = CURRENT_TERM
+TITLE = "Course Title"
+INSTRUCTORS = (
+    (PENN_KEY, FIRST_NAME, LAST_NAME, PENN_ID, EMAIL),
+    (None, None, None, None, None),
+)
+PRIMARY_SUBJECT_CODE = "PRIM"
+PRIMARY_SUBJECT_DESC_LONG = f"Primary {SUBJECT_DESC_LONG}"
+
+
+def create_user():
+    return User.objects.create(
+        username=PENN_KEY, first_name=FIRST_NAME, last_name=LAST_NAME
+    )
 
 
 def get_mock_code_and_description(model: str) -> tuple:
@@ -32,13 +49,50 @@ def get_mock_code_and_description(model: str) -> tuple:
     )
 
 
+def create_section(
+    school_code,
+    school_desc_long,
+    subject_code,
+    subject_desc_long,
+    sched_type_code,
+    sched_type_desc,
+    course_num,
+    section_num,
+    term,
+    title,
+):
+    school = School.objects.create(
+        school_code=school_code, school_desc_long=school_desc_long
+    )
+    subject = Subject.objects.create(
+        subject_code=subject_code, subject_desc_long=subject_desc_long
+    )
+    schedule_type = ScheduleType.objects.create(
+        sched_type_code=sched_type_code, sched_type_desc=sched_type_desc
+    )
+    section_id = f"{subject.subject_code}{course_num}{section_num}"
+    section_code = f"{section_id}{term}"
+    return Section.objects.create(
+        section_code=section_code,
+        section_id=section_id,
+        school=school,
+        subject=subject,
+        primary_subject=subject,
+        course_num=course_num,
+        section_num=section_num,
+        term=term,
+        title=title,
+        schedule_type=schedule_type,
+    )
+
+
 def get_mock_values_success_count(values: tuple) -> int:
-    success_values = [value for value in values if all(value)]
+    number_of_succes_fields = 2
+    success_values = [value for value in values if all(value[:number_of_succes_fields])]
     return len(success_values)
 
 
 class UserTest(TestCase):
-    canvas_id = 7654321
     new_first_name = "New"
     new_last_name = "Name"
     new_penn_id = 1234568
@@ -68,18 +122,12 @@ class UserTest(TestCase):
                 ),
             )
 
-    @classmethod
-    def create_user(cls):
-        return User.objects.create(
-            username=PENN_KEY, first_name=FIRST_NAME, last_name=LAST_NAME
-        )
-
     @patch(EXECUTE_QUERY)
     @patch(GET_CANVAS_USER_ID_BY_PENNKEY)
     def test_str(self, mock_get_canvas_user_id_by_pennkey, mock_execute_query):
         mock_execute_query.return_value = self.get_mock_data_warehouse_response()
-        mock_get_canvas_user_id_by_pennkey.return_value = self.canvas_id
-        user = self.create_user()
+        mock_get_canvas_user_id_by_pennkey.return_value = CANVAS_ID
+        user = create_user()
         user_string = str(user)
         user_first_and_last_and_username = "Test User (testuser)"
         self.assertEqual(user_string, user_first_and_last_and_username)
@@ -88,7 +136,7 @@ class UserTest(TestCase):
     @patch(GET_CANVAS_USER_ID_BY_PENNKEY)
     def test_create_user(self, mock_get_canvas_user_id_by_pennkey, mock_execute_query):
         mock_execute_query.return_value = self.get_mock_data_warehouse_response()
-        mock_get_canvas_user_id_by_pennkey.return_value = self.canvas_id
+        mock_get_canvas_user_id_by_pennkey.return_value = CANVAS_ID
         user = User(username=PENN_KEY)
         empty_values = (
             user.first_name,
@@ -103,14 +151,14 @@ class UserTest(TestCase):
         self.assertEqual(user.last_name, LAST_NAME)
         self.assertEqual(user.penn_id, PENN_ID)
         self.assertEqual(user.email, EMAIL)
-        self.assertEqual(user.canvas_id, self.canvas_id)
+        self.assertEqual(user.canvas_id, CANVAS_ID)
 
     @patch(EXECUTE_QUERY)
     @patch(GET_CANVAS_USER_ID_BY_PENNKEY)
     def test_sync_dw_info(self, mock_get_canvas_user_id_by_pennkey, mock_execute_query):
         mock_execute_query.return_value = self.get_mock_data_warehouse_response()
-        mock_get_canvas_user_id_by_pennkey.return_value = self.canvas_id
-        user = self.create_user()
+        mock_get_canvas_user_id_by_pennkey.return_value = CANVAS_ID
+        user = create_user()
         mock_execute_query.return_value = self.get_mock_data_warehouse_response(
             new=True
         )
@@ -134,8 +182,8 @@ class UserTest(TestCase):
         self, mock_get_canvas_user_id_by_pennkey, mock_execute_query
     ):
         mock_execute_query.return_value = self.get_mock_data_warehouse_response()
-        mock_get_canvas_user_id_by_pennkey.return_value = self.canvas_id
-        user = self.create_user()
+        mock_get_canvas_user_id_by_pennkey.return_value = CANVAS_ID
+        user = create_user()
         mock_execute_query.return_value = self.get_mock_data_warehouse_response(
             new=True
         )
@@ -248,6 +296,7 @@ class SubjectTest(TestCase):
             ("ABCD", f"First {SUBJECT_DESC_LONG}", SCHOOL_CODE),
             ("EFGH", f"Second {SUBJECT_DESC_LONG}", SCHOOL_CODE),
             ("IJKL", f"Third {SUBJECT_DESC_LONG}", ()),
+            (None, None, None),
         )
         mock_school = ((SCHOOL_CODE, SCHOOL_DESC_LONG),)
         mock_school_not_found = ((None, None),)
@@ -258,84 +307,36 @@ class SubjectTest(TestCase):
         ]
         mock_get_all_canvas_accounts.return_value = [MockAccount(1, SCHOOL_DESC_LONG)]
         Subject.sync_all()
-        expected_subject_count = len(mock_subjects) + subject_count
+        success_subject_count = get_mock_values_success_count(mock_subjects)
+        expected_subject_count = success_subject_count + subject_count
         subject_count = Subject.objects.count()
         self.assertEqual(subject_count, expected_subject_count)
 
 
 class SectionTest(TestCase):
-    COURSE_NUM = 1000
-    SECTION_NUM = 200
-    TERM = CURRENT_TERM
-    TITLE = "Course Title"
-    INSTRUCTORS = (
-        (PENN_KEY, FIRST_NAME, LAST_NAME, PENN_ID, EMAIL),
-        (None, None, None, None, None),
-    )
-    PRIMARY_SUBJECT_CODE = "PRIM"
-    PRIMARY_SUBJECT_DESC_LONG = f"Primary {SUBJECT_DESC_LONG}"
-
-    @classmethod
-    def create_section(
-        cls,
-        school_code,
-        school_desc_long,
-        subject_code,
-        subject_desc_long,
-        sched_type_code,
-        sched_type_desc,
-        course_num,
-        section_num,
-        term,
-        title,
-    ):
-        school = School.objects.create(
-            school_code=school_code, school_desc_long=school_desc_long
-        )
-        subject = Subject.objects.create(
-            subject_code=subject_code, subject_desc_long=subject_desc_long
-        )
-        schedule_type = ScheduleType.objects.create(
-            sched_type_code=sched_type_code, sched_type_desc=sched_type_desc
-        )
-        section_id = f"{subject.subject_code}{course_num}{section_num}"
-        section_code = f"{section_id}{term}"
-        return Section.objects.create(
-            section_code=section_code,
-            section_id=section_id,
-            school=school,
-            subject=subject,
-            primary_subject=subject,
-            course_num=course_num,
-            section_num=section_num,
-            term=term,
-            title=title,
-            schedule_type=schedule_type,
-        )
-
     @classmethod
     def setUpTestData(cls):
-        cls.section = cls.create_section(
+        cls.section = create_section(
             SCHOOL_CODE,
             SCHOOL_DESC_LONG,
             SUBJECT_CODE,
             SUBJECT_DESC_LONG,
             SCHED_TYPE_CODE,
             SCHED_TYPE_DESC,
-            cls.COURSE_NUM,
-            cls.SECTION_NUM,
-            cls.TERM,
-            cls.TITLE,
+            COURSE_NUM,
+            SECTION_NUM,
+            TERM,
+            TITLE,
         )
 
     def test_str(self):
         section_string = str(self.section)
-        section_code = f"SUBJ1000200{self.TERM}"
+        section_code = f"SUBJ1000200{TERM}"
         self.assertEqual(section_string, section_code)
 
     @patch(EXECUTE_QUERY)
     def test_sync_instructors(self, mock_execute_query):
-        mock_execute_query.return_value = self.INSTRUCTORS
+        mock_execute_query.return_value = INSTRUCTORS
         self.assertFalse(self.section.instructors.exists())
         self.section.sync_instructors()
         section = Section.objects.get(section_code=self.section.section_code)
@@ -345,7 +346,7 @@ class SectionTest(TestCase):
     def test_sync_related_sections(self, mock_execute_query):
         related_code = "REL"
         related_description = "Related"
-        related_section = self.create_section(
+        related_section = create_section(
             f"{related_code}{SCHOOL_CODE}",
             f"{related_description}{SCHOOL_DESC_LONG}",
             f"{related_code}{SUBJECT_CODE}",
@@ -354,8 +355,8 @@ class SectionTest(TestCase):
             f"{related_description}{SCHOOL_DESC_LONG}",
             4321,
             321,
-            self.TERM,
-            f"{related_description}{self.TITLE}",
+            TERM,
+            f"{related_description}{TITLE}",
         )
         mock_execute_query.return_value = ((related_section.section_id,),)
         self.assertFalse(self.section.related_sections.exists())
@@ -364,18 +365,21 @@ class SectionTest(TestCase):
         self.assertTrue(section.related_sections.exists())
 
     @classmethod
-    def get_mock_section_data(cls, scheduled_with=False, active=True, unsynced=False):
-        primary_course_id = f"{cls.PRIMARY_SUBJECT_CODE}{cls.COURSE_NUM}"
+    def get_mock_section_data(
+        cls, scheduled_with=False, active=True, unsynced=False, new_schedule_type=False
+    ):
+        primary_course_id = f"{PRIMARY_SUBJECT_CODE}{COURSE_NUM}"
         course_id = (
-            f"{SUBJECT_CODE}{cls.COURSE_NUM}" if scheduled_with else primary_course_id
+            f"{SUBJECT_CODE}{COURSE_NUM}" if scheduled_with else primary_course_id
         )
-        primary_section_id = f"{primary_course_id}{cls.SECTION_NUM}"
+        primary_section_id = f"{primary_course_id}{SECTION_NUM}"
         section_id = (
-            f"{course_id}{cls.SECTION_NUM}" if scheduled_with else primary_section_id
+            f"{course_id}{SECTION_NUM}" if scheduled_with else primary_section_id
         )
-        section_code = "RAND1234567" if unsynced else f"{section_id}{cls.TERM}"
-        primary_subject = cls.PRIMARY_SUBJECT_CODE
+        section_code = "RAND1234567" if unsynced else f"{section_id}{TERM}"
+        primary_subject = PRIMARY_SUBJECT_CODE
         subject = SUBJECT_CODE if scheduled_with else primary_subject
+        schedule_type = "NEW" if new_schedule_type else SCHED_TYPE_CODE
         status_code = "A" if active else "X"
         return (
             section_code,
@@ -384,11 +388,11 @@ class SectionTest(TestCase):
             SCHOOL_CODE,
             subject,
             primary_subject,
-            cls.COURSE_NUM,
-            cls.SECTION_NUM,
-            cls.TERM,
-            cls.TITLE,
-            SCHED_TYPE_CODE,
+            COURSE_NUM,
+            SECTION_NUM,
+            TERM,
+            TITLE,
+            schedule_type,
             status_code,
             primary_course_id,
             course_id,
@@ -397,16 +401,19 @@ class SectionTest(TestCase):
     @patch(EXECUTE_QUERY)
     def test_sync_all(self, mock_execute_query):
         Subject.objects.create(
-            subject_code=self.PRIMARY_SUBJECT_CODE,
-            subject_desc_long=self.PRIMARY_SUBJECT_DESC_LONG,
+            subject_code=PRIMARY_SUBJECT_CODE,
+            subject_desc_long=PRIMARY_SUBJECT_DESC_LONG,
         )
-        instructors = self.INSTRUCTORS[0]
+        instructors = INSTRUCTORS[0]
         mock_active_section = self.get_mock_section_data()
         mock_canceled_section = self.get_mock_section_data(active=False)
         mock_unsynced_canceled_section = self.get_mock_section_data(
             active=False, unsynced=True
         )
         mock_scheduled_with_section = self.get_mock_section_data(scheduled_with=True)
+        mock_new_schedule_type_section = self.get_mock_section_data(
+            new_schedule_type=True
+        )
         mock_execute_query.side_effect = [
             (
                 mock_active_section,
@@ -418,7 +425,8 @@ class SectionTest(TestCase):
             (mock_active_section,),
             (mock_active_section,),
             (instructors,),
-            (mock_active_section,),
+            (mock_new_schedule_type_section,),
+            (("NEW", f"New {SCHED_TYPE_DESC}"),),
         ]
         Section.sync_all()
 
@@ -426,7 +434,7 @@ class SectionTest(TestCase):
     def test_sync(self, mock_execute_query):
         mock_execute_query.side_effect = [
             (self.get_mock_section_data(scheduled_with=True),),
-            ((self.PRIMARY_SUBJECT_CODE, self.PRIMARY_SUBJECT_DESC_LONG, SCHOOL_CODE),),
+            ((PRIMARY_SUBJECT_CODE, PRIMARY_SUBJECT_DESC_LONG, SCHOOL_CODE),),
             (self.get_mock_section_data(),),
         ]
         self.section.sync()
@@ -436,7 +444,40 @@ class SectionTest(TestCase):
         )
         self.assertEqual(section.primary_section.section_id, "PRIM1000200")
         self.assertEqual(section.primary_section_id, f"PRIM1000200{CURRENT_TERM}")
-        self.assertEqual(
-            section.primary_subject.subject_code, self.PRIMARY_SUBJECT_CODE
+        self.assertEqual(section.primary_subject.subject_code, PRIMARY_SUBJECT_CODE)
+        self.assertEqual(section.primary_course_id, f"{PRIMARY_SUBJECT_CODE}1000")
+
+
+class RequestTest(TestCase):
+    @classmethod
+    @patch(EXECUTE_QUERY)
+    @patch(GET_CANVAS_USER_ID_BY_PENNKEY)
+    def setUpTestData(cls, mock_get_canvas_user_id_by_pennkey, mock_execute_query):
+        mock_execute_query.return_value = (
+            (
+                FIRST_NAME.upper(),
+                LAST_NAME.upper(),
+                PENN_ID,
+                f"{EMAIL}    ",
+            ),
         )
-        self.assertEqual(section.primary_course_id, f"{self.PRIMARY_SUBJECT_CODE}1000")
+        mock_get_canvas_user_id_by_pennkey.return_value = CANVAS_ID
+        section = create_section(
+            SCHOOL_CODE,
+            SCHOOL_DESC_LONG,
+            SUBJECT_CODE,
+            SUBJECT_DESC_LONG,
+            SCHED_TYPE_CODE,
+            SCHED_TYPE_DESC,
+            COURSE_NUM,
+            SECTION_NUM,
+            TERM,
+            TITLE,
+        )
+        user = create_user()
+        cls.request = Request.objects.create(section=section, requester=user)
+
+    def test_str(self):
+        request_string = str(self.request)
+        section_code = f"SUBJ1000200{TERM}"
+        self.assertEqual(request_string, section_code)
