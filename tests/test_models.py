@@ -61,13 +61,13 @@ def create_section(
     term,
     title,
 ):
-    school = School.objects.create(
+    school, _ = School.objects.update_or_create(
         school_code=school_code, school_desc_long=school_desc_long
     )
-    subject = Subject.objects.create(
+    subject, _ = Subject.objects.update_or_create(
         subject_code=subject_code, subject_desc_long=subject_desc_long
     )
-    schedule_type = ScheduleType.objects.create(
+    schedule_type, _ = ScheduleType.objects.update_or_create(
         sched_type_code=sched_type_code, sched_type_desc=sched_type_desc
     )
     section_id = f"{subject.subject_code}{course_num}{section_num}"
@@ -347,22 +347,44 @@ class SectionTest(TestCase):
         related_code = "REL"
         related_description = "Related"
         related_section = create_section(
-            f"{related_code}{SCHOOL_CODE}",
-            f"{related_description}{SCHOOL_DESC_LONG}",
+            SCHOOL_CODE,
+            SCHOOL_DESC_LONG,
             f"{related_code}{SUBJECT_CODE}",
             f"{related_description}{SUBJECT_DESC_LONG}",
             f"{related_code}{SCHED_TYPE_CODE}",
-            f"{related_description}{SCHOOL_DESC_LONG}",
-            4321,
-            321,
+            f"{related_description}{SCHED_TYPE_DESC}",
+            COURSE_NUM,
+            SECTION_NUM,
             TERM,
-            f"{related_description}{TITLE}",
+            TITLE,
         )
         mock_execute_query.return_value = ((related_section.section_id,),)
-        self.assertFalse(self.section.related_sections.exists())
+        self.assertFalse(self.section.also_offered_as.exists())
         self.section.sync_also_offered_as_sections()
         section = Section.objects.get(section_code=self.section.section_code)
-        self.assertTrue(section.related_sections.exists())
+        self.assertTrue(section.also_offered_as.exists())
+
+    @patch(EXECUTE_QUERY)
+    def test_sync_course_sections(self, mock_execute_query):
+        related_code = "REL"
+        related_description = "Related"
+        related_section = create_section(
+            SCHOOL_CODE,
+            SCHOOL_DESC_LONG,
+            SUBJECT_CODE,
+            SUBJECT_DESC_LONG,
+            f"{related_code}{SCHED_TYPE_CODE}",
+            f"{related_description}{SCHOOL_DESC_LONG}",
+            COURSE_NUM,
+            321,
+            TERM,
+            TITLE,
+        )
+        mock_execute_query.return_value = ((related_section.section_id,),)
+        self.assertFalse(self.section.course_sections.exists())
+        self.section.sync_course_sections()
+        section = Section.objects.get(section_code=self.section.section_code)
+        self.assertTrue(section.course_sections.exists())
 
     @classmethod
     def get_mock_section_data(

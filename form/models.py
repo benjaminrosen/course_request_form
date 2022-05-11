@@ -296,6 +296,12 @@ class Section(Model):
             AND term = :term
             """
     QUERY_SECTION_ID = f"{QUERY} AND section_id = :section_id"
+    QUERY_RELATED_SECTIONS = """
+                    SELECT section_id
+                    FROM dwngss_ps.crse_section
+                    WHERE term = :term
+                    AND section_id != :section_id
+                    """
     section_code = CharField(
         max_length=150, unique=True, primary_key=True, editable=False
     )
@@ -313,7 +319,8 @@ class Section(Model):
     )
     instructors = ManyToManyField(User, blank=True, related_name=RELATED_NAME)
     primary_course_id = CharField(max_length=150)
-    related_sections = ManyToManyField("self", blank=True)
+    also_offered_as = ManyToManyField("self", blank=True)
+    course_sections = ManyToManyField("self", blank=True)
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
@@ -358,15 +365,22 @@ class Section(Model):
                 )
         self.instructors.set(instructors)
 
+    def get_related_sections(self, cursor) -> list:
+        related_sections = list()
+        for section_id in cursor:
+            section_id = next(iter(section_id))
+            section = self.get_section(
+                section_id, self.term, sync_also_offered_as=False
+            )
+            if section:
+                related_sections.append(section)
+        return related_sections
+
     def sync_also_offered_as_sections(self):
-        query = """
-                SELECT section_id
-                FROM dwngss_ps.crse_section
-                WHERE term = :term
-                AND primary_course_id = :primary_course_id
-                AND section_num = :section_num
-                AND section_id != :section_id
-                """
+        query = (
+            f"{self.QUERY_RELATED_SECTIONS} AND primary_course_id = :primary_course_id"
+            " AND section_num = :section_num"
+        )
         term = self.term
         kwargs = {
             "term": term,
@@ -375,13 +389,20 @@ class Section(Model):
             "section_id": self.section_id,
         }
         cursor = execute_query(query, kwargs)
-        related_sections = list()
-        for section_id in cursor:
-            section_id = next(iter(section_id))
-            section = self.get_section(section_id, term, sync_also_offered_as=False)
-            if section:
-                related_sections.append(section)
-        self.related_sections.set(related_sections)
+        also_offered_as_sections = self.get_related_sections(cursor)
+        self.also_offered_as.set(also_offered_as_sections)
+
+    def sync_course_sections(self):
+        query = f"{self.QUERY_RELATED_SECTIONS} AND course_id = :course_id"
+        term = self.term
+        course_id = f"{self.subject}{self.course_num}"
+        kwargs = {
+            "term": term,
+            "course_id": course_id,
+        }
+        cursor = execute_query(query, kwargs)
+        course_sections = self.get_related_sections(cursor)
+        self.course_sections.set(course_sections)
 
     @classmethod
     def delete_canceled_section(cls, section_code: str):
