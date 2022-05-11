@@ -403,13 +403,12 @@ class SectionTest(TestCase):
         subject = SUBJECT_CODE if scheduled_with else primary_subject
         schedule_type = "NEW" if new_schedule_type else SCHED_TYPE_CODE
         status_code = "A" if active else "X"
+        xlist_family = f"{CURRENT_TERM}A1234"
         return (
             section_code,
             section_id,
-            primary_section_id,
             SCHOOL_CODE,
             subject,
-            primary_subject,
             COURSE_NUM,
             SECTION_NUM,
             TERM,
@@ -417,7 +416,10 @@ class SectionTest(TestCase):
             schedule_type,
             status_code,
             primary_course_id,
+            primary_section_id,
+            primary_subject,
             course_id,
+            xlist_family,
         )
 
     @patch(EXECUTE_QUERY)

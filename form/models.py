@@ -263,10 +263,8 @@ class Section(Model):
             SELECT
                 section_id || term,
                 section_id,
-                primary_section_id,
                 school,
                 subject,
-                primary_subject,
                 course_num,
                 section_num,
                 term,
@@ -274,7 +272,10 @@ class Section(Model):
                 schedule_type,
                 section_status,
                 primary_course_id,
-                course_id
+                primary_section_id,
+                primary_subject,
+                course_id,
+                xlist_family
             FROM dwngss_ps.crse_section section
             WHERE schedule_type NOT IN (
                 'MED',
@@ -296,20 +297,12 @@ class Section(Model):
             AND term = :term
             """
     QUERY_SECTION_ID = f"{QUERY} AND section_id = :section_id"
-    QUERY_RELATED_SECTIONS = """
-                    SELECT section_id
-                    FROM dwngss_ps.crse_section
-                    WHERE term = :term
-                    AND section_id != :section_id
-                    """
     section_code = CharField(
         max_length=150, unique=True, primary_key=True, editable=False
     )
     section_id = CharField(max_length=150, editable=False)
-    primary_section = ForeignKey("self", on_delete=CASCADE, blank=True, null=True)
     school = ForeignKey(School, on_delete=CASCADE, related_name=RELATED_NAME)
     subject = ForeignKey(Subject, on_delete=CASCADE, related_name=RELATED_NAME)
-    primary_subject = ForeignKey(Subject, on_delete=CASCADE)
     course_num = CharField(max_length=4, blank=False)
     section_num = CharField(max_length=4, blank=False)
     term = IntegerField()
@@ -319,6 +312,9 @@ class Section(Model):
     )
     instructors = ManyToManyField(User, blank=True, related_name=RELATED_NAME)
     primary_course_id = CharField(max_length=150)
+    primary_section = ForeignKey("self", on_delete=CASCADE, blank=True, null=True)
+    primary_subject = ForeignKey(Subject, on_delete=CASCADE)
+    xlist_family = CharField(max_length=255)
     also_offered_as = ManyToManyField("self", blank=True)
     course_sections = ManyToManyField("self", blank=True)
     created_at = DateTimeField(auto_now_add=True)
@@ -377,23 +373,24 @@ class Section(Model):
         return related_sections
 
     def sync_also_offered_as_sections(self):
-        query = (
-            f"{self.QUERY_RELATED_SECTIONS} AND primary_course_id = :primary_course_id"
-            " AND section_num = :section_num"
-        )
-        term = self.term
-        kwargs = {
-            "term": term,
-            "primary_course_id": self.primary_course_id,
-            "section_num": self.section_num,
-            "section_id": self.section_id,
-        }
+        query = """
+                SELECT section_id
+                FROM dwngss_ps.crse_section
+                WHERE xlist_family = :xlist_family
+                """
+        kwargs = {"xlist_family": self.xlist_family}
         cursor = execute_query(query, kwargs)
         also_offered_as_sections = self.get_related_sections(cursor)
         self.also_offered_as.set(also_offered_as_sections)
 
     def sync_course_sections(self):
-        query = f"{self.QUERY_RELATED_SECTIONS} AND course_id = :course_id"
+        query = """
+                SELECT section_id
+                FROM dwngss_ps.crse_section
+                WHERE term = :term
+                AND course_id = :course_id
+                AND section_id != :section_id
+                """
         term = self.term
         course_id = f"{self.subject}{self.course_num}"
         kwargs = {
@@ -425,10 +422,8 @@ class Section(Model):
         for (
             section_code,
             section_id,
-            primary_section_id,
             school_code,
             subject_code,
-            primary_subject_code,
             course_num,
             section_num,
             term,
@@ -436,7 +431,10 @@ class Section(Model):
             sched_type_code,
             section_status,
             primary_course_id,
+            primary_section_id,
+            primary_subject_code,
             course_id,
+            xlist_family,
         ) in cursor:
             if section_status != cls.ACTIVE_SECTION_STATUS_CODE:
                 cls.delete_canceled_section(section_code)
@@ -454,16 +452,17 @@ class Section(Model):
                     section_code=section_code,
                     defaults={
                         "section_id": section_id,
-                        "primary_section": primary_section,
                         "school": school,
                         "subject": subject,
-                        "primary_subject": primary_subject,
                         "course_num": course_num,
                         "section_num": section_num,
                         "term": term,
                         "title": title,
                         "schedule_type": schedule_type,
                         "primary_course_id": primary_course_id or course_id,
+                        "primary_section": primary_section,
+                        "primary_subject": primary_subject,
+                        "xlist_family": xlist_family,
                     },
                 )
                 action = "ADDED" if created else "UPDATED"
