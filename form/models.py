@@ -16,8 +16,7 @@ from django.db.models import (
     TextField,
 )
 
-from canvas.canvas_api import get_all_canvas_accounts, get_canvas_user_id_by_pennkey
-
+from .canvas import get_all_canvas_accounts, get_canvas_user_id_by_pennkey
 from .data_warehouse import execute_query
 from .terms import CURRENT_TERM, NEXT_TERM
 
