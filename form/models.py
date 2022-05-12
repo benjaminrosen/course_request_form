@@ -551,7 +551,7 @@ class AdditionalEnrollment(Model):
         OBSERVER = "Observer"
 
     user = ForeignKey(User, on_delete=CASCADE)
-    role = CharField(max_length=10, choices=CanvasRole.choices, default=CanvasRole.TA)
+    role = CharField(max_length=18, choices=CanvasRole.choices, default=CanvasRole.TA)
 
 
 class AutoAdd(AdditionalEnrollment):

@@ -6,6 +6,7 @@ from canvasapi.exceptions import CanvasException
 from canvasapi.user import User as CanvasUser
 from django.test import TestCase
 
+from config.config import PROD_KEY, PROD_URL, TEST_KEY, TEST_URL
 from form.canvas import (
     MAIN_ACCOUNT_ID,
     get_all_canvas_accounts,
@@ -14,9 +15,9 @@ from form.canvas import (
     get_canvas_user_id_by_pennkey,
     get_user_by_login_id,
 )
-from config.config import PROD_KEY, PROD_URL, TEST_KEY, TEST_URL
 
-GET_CANVAS = "canvas.canvas_api.get_canvas"
+CANVAS_MODULE = "form.canvas"
+GET_CANVAS = f"{CANVAS_MODULE}.get_canvas"
 LOGIN_ID = "testuser"
 SUB_ACCOUNTS = ["SubAccount"]
 
@@ -61,7 +62,7 @@ class CanvasApiTest(TestCase):
         main_account = get_canvas_main_account()
         self.assertEqual(main_account.id, MAIN_ACCOUNT_ID)
 
-    @patch("canvas.canvas_api.get_canvas_main_account")
+    @patch(f"{CANVAS_MODULE}.get_canvas_main_account")
     def test_get_all_canvas_accounts(self, mock_get_canvas_main_account):
         mock_get_canvas_main_account.return_value = MockAccount()
         sub_accounts = get_all_canvas_accounts()
@@ -76,7 +77,7 @@ class CanvasApiTest(TestCase):
         user = get_user_by_login_id("")
         self.assertIsNone(user)
 
-    @patch("canvas.canvas_api.get_user_by_login_id")
+    @patch(f"{CANVAS_MODULE}.get_user_by_login_id")
     def test_get_canvas_user_id_by_pennkey(self, mock_get_user_by_login_id):
         mock_get_user_by_login_id.return_value = CanvasUser(
             None, {"id": self.user_id, "login_id": LOGIN_ID}

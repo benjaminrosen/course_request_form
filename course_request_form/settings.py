@@ -141,10 +141,8 @@ LOGGER = {
 }
 
 MODULES = [
-    "canvas",
     "config",
     "course_request_form",
-    "data_warehouse",
     "form",
 ]
 
