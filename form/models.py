@@ -83,7 +83,7 @@ class ScheduleType(Model):
             SELECT sched_type_code, sched_type_desc
             FROM dwngss.v_sched_type
             """
-    sched_type_code = CharField(max_length=255, unique=True, primary_key=True)
+    sched_type_code = CharField(max_length=255, primary_key=True)
     sched_type_desc = CharField(max_length=255)
 
     def __str__(self):
@@ -131,7 +131,7 @@ class School(Model):
             SELECT school_code, school_desc_long
             FROM dwngss.v_school
             """
-    school_code = CharField(max_length=10, unique=True, primary_key=True)
+    school_code = CharField(max_length=10, primary_key=True)
     school_desc_long = CharField(max_length=50, unique=True)
     visible = BooleanField(default=True)
     canvas_sub_account_id = IntegerField(null=True)
@@ -207,7 +207,7 @@ class Subject(Model):
             SELECT subject_code, subject_desc_long, school_code
             FROM dwngss.v_subject
             """
-    subject_code = CharField(max_length=10, unique=True, primary_key=True)
+    subject_code = CharField(max_length=10, primary_key=True)
     subject_desc_long = CharField(max_length=255, null=True)
     visible = BooleanField(default=True)
     school = ForeignKey(
@@ -298,14 +298,12 @@ class Section(Model):
             AND term = :term
             """
     QUERY_SECTION_ID = f"{QUERY} AND section_id = :section_id"
-    section_code = CharField(
-        max_length=150, unique=True, primary_key=True, editable=False
-    )
+    section_code = CharField(max_length=150, primary_key=True, editable=False)
     section_id = CharField(max_length=150, editable=False)
     school = ForeignKey(School, on_delete=CASCADE, related_name=RELATED_NAME)
     subject = ForeignKey(Subject, on_delete=CASCADE, related_name=RELATED_NAME)
-    course_num = CharField(max_length=4, blank=False)
-    section_num = CharField(max_length=4, blank=False)
+    course_num = CharField(max_length=4)
+    section_num = CharField(max_length=4)
     term = IntegerField()
     title = CharField(max_length=250)
     schedule_type = ForeignKey(
@@ -522,12 +520,12 @@ class Request(Model):
     section = OneToOneField(Section, on_delete=CASCADE, primary_key=True)
     requester = ForeignKey(User, on_delete=CASCADE, related_name="requests")
     proxy_requester = ForeignKey(
-        User, on_delete=CASCADE, null=True, blank=True, related_name="proxy_requests"
+        User, on_delete=CASCADE, blank=True, null=True, related_name="proxy_requests"
     )
     title_override = CharField(max_length=255, null=True, default=None, blank=True)
     copy_from_course = IntegerField(null=True, default=None, blank=True)
     reserves = BooleanField(default=False)
-    lps_online = BooleanField(default=False, verbose_name="LPS Online")
+    lps_online = BooleanField(default=False)
     exclude_announcements = BooleanField(default=False)
     additional_instructions = TextField(blank=True, default=None, null=True)
     admin_additional_instructions = TextField(blank=True, default=None, null=True)
