@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Optional
+from typing import Optional, Union
 
 from django.contrib.auth.models import AbstractUser
 from django.db.models import (
@@ -12,14 +12,14 @@ from django.db.models import (
     ManyToManyField,
     Model,
     OneToOneField,
-    TextField,
     TextChoices,
+    TextField,
 )
 
 from canvas.canvas_api import get_all_canvas_accounts, get_canvas_user_id_by_pennkey
 
 from .data_warehouse import execute_query
-from .terms import CURRENT_TERM
+from .terms import CURRENT_TERM, NEXT_TERM
 
 logger = getLogger(__name__)
 
@@ -110,6 +110,7 @@ class ScheduleType(Model):
 
     @classmethod
     def sync_all(cls):
+        logger.info("Syncing Schedule Types...")
         cls.update_or_create(cls.QUERY)
 
     @classmethod
@@ -185,6 +186,7 @@ class School(Model):
 
     @classmethod
     def sync_all(cls):
+        logger.info("Syncing Schools...")
         cls.update_or_create(cls.QUERY)
 
     @classmethod
@@ -241,6 +243,7 @@ class Subject(Model):
 
     @classmethod
     def sync_all(cls):
+        logger.info("Syncing Subjects...")
         cls.update_or_create(cls.QUERY)
 
     @classmethod
@@ -295,9 +298,9 @@ class Section(Model):
                 'SRT'
             )
             AND school NOT IN ('W', 'L')
-            AND term = :term
             """
-    QUERY_SECTION_ID = f"{QUERY} AND section_id = :section_id"
+    QUERY_SECTION_ID = f"{QUERY} AND term = :term AND section_id = :section_id"
+    DEFAULT_TERMS = [CURRENT_TERM, NEXT_TERM]
     section_code = CharField(max_length=150, primary_key=True, editable=False)
     section_id = CharField(max_length=150, editable=False)
     school = ForeignKey(School, on_delete=CASCADE, related_name=RELATED_NAME)
@@ -474,10 +477,28 @@ class Section(Model):
         return section
 
     @classmethod
-    def sync_all(cls, term: Optional[int] = None):
-        term = term or CURRENT_TERM
-        kwargs = {"term": term}
-        cls.update_or_create(cls.QUERY, kwargs)
+    def get_terms_query_and_bindings(
+        cls, terms: Optional[Union[int, list[int]]]
+    ) -> tuple[str, dict]:
+        if terms:
+            terms = terms if isinstance(terms, list) else [terms]
+        else:
+            terms = cls.DEFAULT_TERMS
+        placeholders = [f":{index + 1}" for index in range(len(terms))]
+        placeholders_and_values = zip(placeholders, terms)
+        bindings = {placeholder: term for placeholder, term in placeholders_and_values}
+        placeholders_string = ",".join(f":{index + 1}" for index in range(len(terms)))
+        placeholders_string = f"({placeholders_string})"
+        query = f"{cls.QUERY} AND term IN {placeholders_string}"
+        return query, bindings
+
+    @classmethod
+    def sync_all(cls, terms: Optional[Union[int, list[int]]] = None):
+        logger.info(
+            f"Syncing sections for terms {terms if terms else cls.DEFAULT_TERMS}..."
+        )
+        query, bindings = cls.get_terms_query_and_bindings(terms)
+        cls.update_or_create(query, bindings)
 
     @classmethod
     def sync_section(

@@ -40,12 +40,27 @@ install: ## Install the dependencies from the requirements.txt file
 migrations: ## Make migrations and migrate
 	$(MANAGE) makemigrations && $(MANAGE) migrate
 
+sections: ## Sync sections from Pennant Student Records
+	$(MANAGE) sync --sections
+
+schedule-types: ## Sync schedule types from Pennant Student Records
+	$(MANAGE) sync --schedule-types
+
+schools: ## Sync schools from Pennant Student Records
+	$(MANAGE) sync --schools
+
 shell: ## Open an app-aware python shell
 	$(MANAGE) shell_plus --bpython
 
 .PHONY: static
 static: ## Collect static files
 	$(MANAGE) collectstatic --clear --no-input
+
+subjects: ## Sync subjects from Pennant Student Records
+	$(MANAGE) sync --subjects
+
+sync: ## Sync data from Pennant Student Records
+	$(MANAGE) sync
 
 test: ## Run the test suite (args: `module`, `class`)
 ifdef module

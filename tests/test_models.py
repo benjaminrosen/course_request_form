@@ -4,7 +4,7 @@ from unittest.mock import patch
 from django.test import TestCase
 
 from form.models import Request, ScheduleType, School, Section, Subject, User
-from form.terms import CURRENT_TERM
+from form.terms import CURRENT_TERM, TWO_TERMS_AHEAD
 
 EXECUTE_QUERY = "form.models.execute_query"
 GET_CANVAS_USER_ID_BY_PENNKEY = "form.models.get_canvas_user_id_by_pennkey"
@@ -421,6 +421,15 @@ class SectionTest(TestCase):
             course_id,
             xlist_family,
         )
+
+    def test_get_terms_query_and_bindings(self):
+        _, bindings = Section.get_terms_query_and_bindings(TWO_TERMS_AHEAD)
+        terms = bindings.values()
+        self.assertTrue(TWO_TERMS_AHEAD in terms)
+        self.assertFalse(CURRENT_TERM in terms)
+        _, bindings = Section.get_terms_query_and_bindings([TWO_TERMS_AHEAD])
+        self.assertTrue(TWO_TERMS_AHEAD in terms)
+        self.assertFalse(CURRENT_TERM in terms)
 
     @patch(EXECUTE_QUERY)
     def test_sync_all(self, mock_execute_query):
