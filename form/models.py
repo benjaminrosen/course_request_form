@@ -259,6 +259,7 @@ class Subject(Model):
 class Section(Model):
     RELATED_NAME = "sections"
     ACTIVE_SECTION_STATUS_CODE = "A"
+    LECTURE_CODE = "LEC"
     QUERY = """
             SELECT
                 section_id || term,
@@ -516,20 +517,30 @@ class Section(Model):
         except Exception:
             return cls.sync_section(section_id, term, sync_related_data)
 
-    def get_canvas_course_code(self, sis_format=False) -> str:
+    def get_canvas_course_code(self, sis_format=False, related_section=False) -> str:
         subject = self.subject.subject_code
         divider = "-" if sis_format else " "
         course_and_section = f"{self.course_num}-{self.section_num}"
-        return f"{subject}{divider}{course_and_section} {self.term}"
+        canvas_course_code = f"{subject}{divider}{course_and_section} {self.term}"
+        if related_section:
+            is_lecture_section = self.schedule_type.sched_type_code == self.LECTURE_CODE
+            if not is_lecture_section:
+                schedule_type = self.schedule_type.sched_type_code
+                canvas_course_code = f"{canvas_course_code} {schedule_type}"
+        return canvas_course_code
 
     def get_canvas_sis_id(self) -> str:
         sis_prefix = "BAN"
         canvas_course_code = self.get_canvas_course_code(sis_format=True)
         return f"{sis_prefix}_{canvas_course_code}"
 
-    def get_canvas_name(self, title_override: Optional[str]) -> str:
+    def get_canvas_name(
+        self, title_override: Optional[str], related_section=False
+    ) -> str:
         title = title_override if title_override else self.title
-        canvas_course_code = self.get_canvas_course_code()
+        canvas_course_code = self.get_canvas_course_code(
+            related_section=related_section
+        )
         return f"{canvas_course_code} {title}"
 
 
@@ -540,6 +551,7 @@ class Request(Model):
         LOCKED = "Locked"
         CANCELED = "Canceled"
         IN_PROCESS = "In Process"
+        ERROR = "Error"
         COMPLETED = "Completed"
 
     RELATED_NAME = "requests"
@@ -587,7 +599,7 @@ class Request(Model):
         }
         canvas_course = update_or_create_canvas_course(course, sub_account_id)
         if not canvas_course:
-            logger.error(f"FAILED to create Canvas course '{canvas_course}'")
+            self.set_status(self.Status.ERROR)
             return
         create_related_sections(self.included_sections, title_override, canvas_course)
         logger.info(f"CREATED Canvas course '{canvas_course}'")

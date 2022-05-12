@@ -63,15 +63,6 @@ def create_course_section(name: str, sis_course_id: str, canvas_course: Course):
     ),
 
 
-def create_related_sections(
-    related_sections: QuerySet, title_override: str, canvas_course: Course
-):
-    for section in related_sections:
-        name = section.get_canvas_name(title_override)
-        sis_course_id = section.get_canvas_sis_id()
-        create_course_section(name, sis_course_id, canvas_course)
-
-
 def update_canvas_course(course: dict) -> Optional[Course]:
     sis_course_id = course["sis_course_id"]
     try:
@@ -90,8 +81,15 @@ def update_or_create_canvas_course(course: dict, account_id: int) -> Optional[Co
         name = canvas_course.name
         sis_course_id = canvas_course.sis_course_id
         create_course_section(name, sis_course_id, canvas_course)
+        return canvas_course
     except Exception:
-        canvas_course = update_canvas_course(course)
-    if not canvas_course:
-        return None
-    return canvas_course
+        return update_canvas_course(course)
+
+
+def create_related_sections(
+    related_sections: QuerySet, title_override: str, canvas_course: Course
+):
+    for section in related_sections:
+        name = section.get_canvas_name(title_override, related_section=True)
+        sis_course_id = section.get_canvas_sis_id()
+        create_course_section(name, sis_course_id, canvas_course)
