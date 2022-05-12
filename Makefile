@@ -41,6 +41,9 @@ install: ## Install the dependencies from the requirements.txt file
 migrations: ## Make migrations and migrate
 	$(MANAGE) makemigrations && $(MANAGE) migrate
 
+run: ## Run the development server
+	$(MANAGE) runserver
+
 sections: ## Sync sections from Pennant Student Records
 	$(SYNC) --sections
 
