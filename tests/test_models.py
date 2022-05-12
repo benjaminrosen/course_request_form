@@ -447,6 +447,9 @@ class SectionTest(TestCase):
         mock_new_schedule_type_section = self.get_mock_section_data(
             new_schedule_type=True
         )
+        also_offered_with = (("PRIM1000200",),)
+        course_sections = (("SUBJ1000201",),)
+        new_schedule_type = (("NEW", f"New {SCHED_TYPE_DESC}"),)
         mock_execute_query.side_effect = [
             (
                 mock_active_section,
@@ -456,16 +459,26 @@ class SectionTest(TestCase):
                 mock_new_schedule_type_section,
             ),
             (instructors,),
-            (("SUBJ1000200",),),
-            (("SUBJ1000200",),),
+            (mock_active_section,),
             (mock_active_section,),
             (instructors,),
-            (("SUBJ1000200",),),
-            (("SUBJ1000200",),),
+            also_offered_with,
+            (mock_active_section,),
             (instructors,),
-            (("SUBJ1000200",),),
-            (("SUBJ1000200",),),
-            (("NEW", f"New {SCHED_TYPE_DESC}"),),
+            course_sections,
+            (mock_active_section,),
+            (instructors,),
+            new_schedule_type,
+            (mock_active_section,),
+            (instructors,),
+            (instructors,),
+            also_offered_with,
+            course_sections,
+            (mock_active_section,),
+            (instructors,),
+            new_schedule_type,
+            (instructors,),
+            also_offered_with,
         ]
         Section.sync_all()
 

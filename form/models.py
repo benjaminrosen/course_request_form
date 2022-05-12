@@ -502,10 +502,7 @@ class Section(Model):
 
     @classmethod
     def sync_section(
-        cls,
-        section_id: str,
-        term: Optional[int] = None,
-        sync_related_sections=True,
+        cls, section_id: str, term: Optional[int] = None, sync_related_sections=True
     ):
         term = term or CURRENT_TERM
         kwargs = {"section_id": section_id, "term": term}
@@ -517,10 +514,7 @@ class Section(Model):
 
     @classmethod
     def get_section(
-        cls,
-        section_id: str,
-        term: Optional[int] = None,
-        sync_related_sections=True,
+        cls, section_id: str, term: Optional[int] = None, sync_related_sections=True
     ):
         term = term or CURRENT_TERM
         try:
