@@ -414,7 +414,7 @@ class Section(Model):
         cls,
         query: str,
         kwargs: Optional[dict] = None,
-        sync_related_sections=True,
+        sync_related_data=True,
     ):
         cursor = execute_query(query, kwargs)
         section = None
@@ -466,8 +466,8 @@ class Section(Model):
                 )
                 action = "ADDED" if created else "UPDATED"
                 logger.info(f"{action} {section}")
-                section.sync_instructors()
-                if sync_related_sections:
+                if sync_related_data:
+                    section.sync_instructors()
                     section.sync_also_offered_as_sections()
                     section.sync_course_sections()
             except Exception as error:
