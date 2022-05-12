@@ -6,14 +6,14 @@ from canvasapi.exceptions import CanvasException
 from canvasapi.user import User as CanvasUser
 from django.test import TestCase
 
-from config.config import PROD_KEY, PROD_URL, TEST_KEY, TEST_URL
+from config.config import TEST_KEY, TEST_URL
 from form.canvas import (
     MAIN_ACCOUNT_ID,
     get_all_canvas_accounts,
     get_canvas,
     get_canvas_main_account,
+    get_canvas_user_by_login_id,
     get_canvas_user_id_by_pennkey,
-    get_user_by_login_id,
 )
 
 CANVAS_MODULE = "form.canvas"
@@ -52,9 +52,6 @@ class CanvasApiTest(TestCase):
         canvas = get_canvas()
         self.assertEqual(canvas._Canvas__requester.original_url, TEST_URL)
         self.assertEqual(canvas._Canvas__requester.access_token, TEST_KEY)
-        canvas = get_canvas(test=False)
-        self.assertEqual(canvas._Canvas__requester.original_url, PROD_URL)
-        self.assertEqual(canvas._Canvas__requester.access_token, PROD_KEY)
 
     @patch(GET_CANVAS)
     def test_get_canvas_main_account(self, mock_get_canvas):
@@ -69,21 +66,21 @@ class CanvasApiTest(TestCase):
         self.assertEqual(sub_accounts, SUB_ACCOUNTS)
 
     @patch(GET_CANVAS)
-    def test_get_user_by_login_id(self, mock_get_canvas):
+    def test_get_canvas_user_by_login_id(self, mock_get_canvas):
         mock_get_canvas.return_value = MockCanvas()
-        user = get_user_by_login_id(LOGIN_ID)
+        user = get_canvas_user_by_login_id(LOGIN_ID)
         self.assertIsInstance(user, CanvasUser)
         self.assertEqual(user.login_id, LOGIN_ID)
-        user = get_user_by_login_id("")
+        user = get_canvas_user_by_login_id("")
         self.assertIsNone(user)
 
-    @patch(f"{CANVAS_MODULE}.get_user_by_login_id")
-    def test_get_canvas_user_id_by_pennkey(self, mock_get_user_by_login_id):
-        mock_get_user_by_login_id.return_value = CanvasUser(
+    @patch(f"{CANVAS_MODULE}.get_canvas_user_by_login_id")
+    def test_get_canvas_user_id_by_pennkey(self, mock_get_canvas_user_by_login_id):
+        mock_get_canvas_user_by_login_id.return_value = CanvasUser(
             None, {"id": self.user_id, "login_id": LOGIN_ID}
         )
         user_id = get_canvas_user_id_by_pennkey(LOGIN_ID)
         self.assertEqual(user_id, self.user_id)
-        mock_get_user_by_login_id.return_value = None
+        mock_get_canvas_user_by_login_id.return_value = None
         user_id = get_canvas_user_id_by_pennkey(LOGIN_ID)
         self.assertIsNone(user_id)

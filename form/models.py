@@ -16,7 +16,13 @@ from django.db.models import (
     TextField,
 )
 
-from .canvas import get_all_canvas_accounts, get_canvas_user_id_by_pennkey
+from .canvas import (
+    create_related_sections,
+    get_all_canvas_accounts,
+    get_canvas_enrollment_term_id,
+    get_canvas_user_id_by_pennkey,
+    update_or_create_canvas_course,
+)
 from .data_warehouse import execute_query
 from .terms import CURRENT_TERM, NEXT_TERM
 
@@ -510,18 +516,37 @@ class Section(Model):
         except Exception:
             return cls.sync_section(section_id, term, sync_related_data)
 
+    def get_canvas_course_code(self, sis_format=False) -> str:
+        subject = self.subject.subject_code
+        divider = "-" if sis_format else " "
+        course_and_section = f"{self.course_num}-{self.section_num}"
+        return f"{subject}{divider}{course_and_section} {self.term}"
+
+    def get_canvas_sis_id(self) -> str:
+        sis_prefix = "BAN"
+        canvas_course_code = self.get_canvas_course_code(sis_format=True)
+        return f"{sis_prefix}_{canvas_course_code}"
+
+    def get_canvas_name(self, title_override: Optional[str]) -> str:
+        title = title_override if title_override else self.title
+        canvas_course_code = self.get_canvas_course_code()
+        return f"{canvas_course_code} {title}"
+
 
 class Request(Model):
     class Status(TextChoices):
-        COMPLETED = "Completed"
-        IN_PROCESS = "In Process"
-        CANCELED = "Canceled"
-        APPROVED = "Approved"
         SUBMITTED = "Submitted"
+        APPROVED = "Approved"
         LOCKED = "Locked"
+        CANCELED = "Canceled"
+        IN_PROCESS = "In Process"
+        COMPLETED = "Completed"
 
+    RELATED_NAME = "requests"
+    STORAGE_QUOTA = 2000
     section = OneToOneField(Section, on_delete=CASCADE, primary_key=True)
-    requester = ForeignKey(User, on_delete=CASCADE, related_name="requests")
+    included_sections = ManyToManyField(Section, blank=True, related_name=RELATED_NAME)
+    requester = ForeignKey(User, on_delete=CASCADE, related_name=RELATED_NAME)
     proxy_requester = ForeignKey(
         User, on_delete=CASCADE, blank=True, null=True, related_name="proxy_requests"
     )
@@ -540,6 +565,39 @@ class Request(Model):
 
     def __str__(self):
         return self.section.section_code
+
+    def set_status(self, status: str):
+        self.status = status
+        self.save()
+
+    def create_canvas_site(self):
+        self.set_status(self.Status.IN_PROCESS)
+        section = self.section
+        sub_account_id = section.school.canvas_sub_account_id
+        title_override = self.title_override
+        name = section.get_canvas_name(title_override)
+        sis_course_id = section.get_canvas_sis_id()
+        term_id = get_canvas_enrollment_term_id(section.term)
+        course = {
+            "name": name,
+            "sis_course_id": sis_course_id,
+            "course_code": sis_course_id,
+            "term_id": term_id,
+            "storage_quota_mb": self.STORAGE_QUOTA,
+        }
+        canvas_course = update_or_create_canvas_course(course, sub_account_id)
+        if not canvas_course:
+            logger.error(f"FAILED to create Canvas course '{canvas_course}'")
+            return
+        create_related_sections(self.included_sections, title_override, canvas_course)
+        logger.info(f"CREATED Canvas course '{canvas_course}'")
+        self.set_status(self.Status.COMPLETED)
+
+    @classmethod
+    def create_all_approved_sites(cls):
+        approved_requests = cls.objects.filter(status=cls.Status.APPROVED)
+        for request in approved_requests:
+            request.create_cavas_site()
 
 
 class AdditionalEnrollment(Model):
