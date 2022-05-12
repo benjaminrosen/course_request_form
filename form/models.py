@@ -136,12 +136,6 @@ class School(Model):
     school_desc_long = CharField(max_length=50, unique=True)
     visible = BooleanField(default=True)
     canvas_sub_account_id = IntegerField(null=True)
-    form_additional_enrollments = BooleanField(
-        default=True, verbose_name="Additional Enrollments Form Field"
-    )
-
-    class Meta:
-        ordering = ["school_desc_long"]
 
     def __str__(self):
         return f"{self.school_desc_long} ({self.school_code})"
@@ -215,9 +209,6 @@ class Subject(Model):
     school = ForeignKey(
         School, related_name="subjects", on_delete=CASCADE, blank=True, null=True
     )
-
-    class Meta:
-        ordering = ["subject_desc_long"]
 
     def __str__(self):
         return f"{self.subject_desc_long} ({self.subject_code})"
@@ -540,6 +531,7 @@ class Request(Model):
     reserves = BooleanField(default=False)
     lps_online = BooleanField(default=False)
     exclude_announcements = BooleanField(default=False)
+    additional_enrollments = ManyToManyField(User, blank=True)
     additional_instructions = TextField(blank=True, default=None, null=True)
     admin_additional_instructions = TextField(blank=True, default=None, null=True)
     process_notes = TextField(blank=True, default="")
@@ -551,26 +543,20 @@ class Request(Model):
         return self.section.section_code
 
 
-class CanvasRole(TextChoices):
-    TA = "TA"
-    INSTRUCTOR = "Instructor"
-    DESIGNER = "Designer"
-    LIBRARIAN = "Librarian"
-    OBSERVER = "Observer"
-
-
 class AdditionalEnrollment(Model):
+    class CanvasRole(TextChoices):
+        TA = "TA"
+        INSTRUCTOR = "Instructor"
+        DESIGNER = "Designer"
+        LIBRARIAN = "Librarian"
+        OBSERVER = "Observer"
+
     user = ForeignKey(User, on_delete=CASCADE)
     role = CharField(max_length=10, choices=CanvasRole.choices, default=CanvasRole.TA)
-    request = ForeignKey(
-        Request, on_delete=CASCADE, related_name="additional_enrollments"
-    )
 
 
-class AutoAdd(Model):
-    user = ForeignKey(User, on_delete=CASCADE)
+class AutoAdd(AdditionalEnrollment):
     school = ForeignKey(School, on_delete=CASCADE)
     subject = ForeignKey(Subject, on_delete=CASCADE)
-    role = CharField(max_length=10, choices=CanvasRole.choices)
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)

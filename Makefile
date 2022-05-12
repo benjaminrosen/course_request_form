@@ -3,6 +3,7 @@ REQUIREMENTS = requirements.txt
 TEST = test tests
 TEST_VERBOSE_LEVEL = -v 2
 COVERAGE = coverage run manage.py $(TEST) && coverage report -m
+SYNC = $(MANAGE) sync
 
 all: help
 
@@ -41,13 +42,13 @@ migrations: ## Make migrations and migrate
 	$(MANAGE) makemigrations && $(MANAGE) migrate
 
 sections: ## Sync sections from Pennant Student Records
-	$(MANAGE) sync --sections
+	$(SYNC) --sections
 
 schedule-types: ## Sync schedule types from Pennant Student Records
-	$(MANAGE) sync --schedule-types
+	$(SYNC) --schedule-types
 
 schools: ## Sync schools from Pennant Student Records
-	$(MANAGE) sync --schools
+	$(SYNC) --schools
 
 shell: ## Open an app-aware python shell
 	$(MANAGE) shell_plus --bpython
@@ -57,10 +58,12 @@ static: ## Collect static files
 	$(MANAGE) collectstatic --clear --no-input
 
 subjects: ## Sync subjects from Pennant Student Records
-	$(MANAGE) sync --subjects
+	$(SYNC) --subjects
 
 sync: ## Sync data from Pennant Student Records
-	$(MANAGE) sync
+	$(SYNC)
+
+sync-constants: schedule-types schools subjects ## Sync schedule types, schools, and subjects
 
 test: ## Run the test suite (args: `module`, `class`)
 ifdef module
