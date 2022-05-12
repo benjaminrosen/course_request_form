@@ -314,7 +314,7 @@ class Section(Model):
     primary_course_id = CharField(max_length=150)
     primary_section = ForeignKey("self", on_delete=CASCADE, blank=True, null=True)
     primary_subject = ForeignKey(Subject, on_delete=CASCADE)
-    xlist_family = CharField(max_length=255)
+    xlist_family = CharField(max_length=255, blank=True, null=True)
     also_offered_as = ManyToManyField("self", blank=True)
     course_sections = ManyToManyField("self", blank=True)
     created_at = DateTimeField(auto_now_add=True)
@@ -393,10 +393,7 @@ class Section(Model):
                 """
         term = self.term
         course_id = f"{self.subject}{self.course_num}"
-        kwargs = {
-            "term": term,
-            "course_id": course_id,
-        }
+        kwargs = {"term": term, "course_id": course_id, "section_id": self.section_id}
         cursor = execute_query(query, kwargs)
         course_sections = self.get_related_sections(cursor)
         self.course_sections.set(course_sections)
