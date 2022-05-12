@@ -13,6 +13,7 @@ from django.db.models import (
     Model,
     OneToOneField,
     TextField,
+    TextChoices,
 )
 
 from canvas.canvas_api import get_all_canvas_accounts, get_canvas_user_id_by_pennkey
@@ -510,14 +511,14 @@ class Section(Model):
 
 
 class Request(Model):
-    STATUSES = (
-        ("COMPLETED", "Completed"),
-        ("IN_PROCESS", "In Process"),
-        ("CANCELED", "Canceled"),
-        ("APPROVED", "Approved"),
-        ("SUBMITTED", "Submitted"),
-        ("LOCKED", "Locked"),
-    )
+    class Status(TextChoices):
+        COMPLETED = "Completed"
+        IN_PROCESS = "In Process"
+        CANCELED = "Canceled"
+        APPROVED = "Approved"
+        SUBMITTED = "Submitted"
+        LOCKED = "Locked"
+
     section = OneToOneField(Section, on_delete=CASCADE, primary_key=True)
     requester = ForeignKey(User, on_delete=CASCADE, related_name="requests")
     proxy_requester = ForeignKey(
@@ -531,7 +532,7 @@ class Request(Model):
     additional_instructions = TextField(blank=True, default=None, null=True)
     admin_additional_instructions = TextField(blank=True, default=None, null=True)
     process_notes = TextField(blank=True, default="")
-    status = CharField(max_length=20, choices=STATUSES, default="SUBMITTED")
+    status = CharField(max_length=20, choices=Status.choices, default=Status.SUBMITTED)
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
@@ -539,30 +540,26 @@ class Request(Model):
         return self.section.section_code
 
 
-# CANVAS_ROLES = (
-#     ("TA", "TA"),
-#     ("INST", "Instructor"),
-#     ("DES", "Designer"),
-#     ("LIB", "Librarian"),
-#     ("OBS", "Observer"),
-# )
+class CanvasRole(TextChoices):
+    TA = "TA"
+    INSTRUCTOR = "Instructor"
+    DESIGNER = "Designer"
+    LIBRARIAN = "Librarian"
+    OBSERVER = "Observer"
 
 
-# class AdditionalEnrollment(Model):
-#     user = ForeignKey(User, on_delete=CASCADE)
-#     role = CharField(max_length=4, choices=CANVAS_ROLES, default="TA")
-#     request = ForeignKey(
-#         Request, related_name="additional_enrollments", on_delete=CASCADE,
-#         default=None
-#     )
+class AdditionalEnrollment(Model):
+    user = ForeignKey(User, on_delete=CASCADE)
+    role = CharField(max_length=10, choices=CanvasRole.choices, default=CanvasRole.TA)
+    request = ForeignKey(
+        Request, on_delete=CASCADE, related_name="additional_enrollments"
+    )
 
 
-# class AutoAdd(Model):
-#     user = ForeignKey(User, on_delete=CASCADE, blank=False)
-#     school = ForeignKey(School, on_delete=CASCADE, blank=False)
-#     subject = ForeignKey(Subject, on_delete=CASCADE, blank=False)
-#     role = CharField(max_length=4, choices=CANVAS_ROLES)
-#     created_at = DateTimeField(auto_now_add=True, null=True, blank=True)
-
-#     class Meta:
-#         ordering = ("user__username",)
+class AutoAdd(Model):
+    user = ForeignKey(User, on_delete=CASCADE)
+    school = ForeignKey(School, on_delete=CASCADE)
+    subject = ForeignKey(Subject, on_delete=CASCADE)
+    role = CharField(max_length=10, choices=CanvasRole.choices)
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
