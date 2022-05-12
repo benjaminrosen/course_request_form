@@ -545,9 +545,9 @@ class Request(Model):
 
 class AdditionalEnrollment(Model):
     class CanvasRole(TextChoices):
-        TA = "TA"
-        INSTRUCTOR = "Instructor"
-        DESIGNER = "Designer"
+        TA = "TaEnrollment"
+        INSTRUCTOR = "TeacherEnrollment"
+        DESIGNER = "DesignerEnrollment"
         LIBRARIAN = "Librarian"
         OBSERVER = "Observer"
 
