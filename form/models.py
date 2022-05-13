@@ -18,18 +18,17 @@ from django.db.models import (
     TextChoices,
     TextField,
 )
+from django.db.models.query import QuerySet
 
 from .canvas import (
     create_course_section,
-    delete_announcement,
-    delete_zoom_event,
+    delete_announcements,
+    delete_zoom_events,
     enroll_users,
     get_all_canvas_accounts,
-    get_calendar_events,
     get_canvas_enrollment_term_id,
     get_canvas_main_account,
     get_canvas_user_id_by_pennkey,
-    is_zoom_event,
     update_or_create_canvas_course,
 )
 from .data_warehouse import execute_query
@@ -615,8 +614,7 @@ class Request(Model):
         self.status = status
         self.save()
 
-    def get_course_and_account_id(self) -> tuple[dict, int]:
-        self.set_status(self.Status.IN_PROCESS)
+    def get_course_data_and_account_id(self) -> tuple[dict, int]:
         section = self.section
         sub_account_id = section.school.canvas_sub_account_id
         name = section.get_canvas_name(self.title_override)
@@ -638,7 +636,7 @@ class Request(Model):
             sis_course_id = section.get_canvas_sis_id()
             create_course_section(name, sis_course_id, canvas_course)
 
-    def get_enrollments(self):
+    def get_enrollments(self) -> QuerySet[Union[Enrollment, AutoAdd]]:
         section = self.section
         instructors = section.instructors.all()
         instructor_enrollments = [
@@ -665,20 +663,6 @@ class Request(Model):
         tab = Tab(requester, reserves_tab)
         tab.update(hidden=False)
 
-    def delete_zoom_events(self, canvas_course):
-        logger.info("Deleting Zoom events...")
-        events = get_calendar_events(canvas_course.id)
-        zoom_events = [event.id for event in events if is_zoom_event(event)]
-        for event_id in zoom_events:
-            delete_zoom_event(event_id)
-
-    def delete_announcements(self, canvas_course):
-        logger.info("Deleting Announcements...")
-        announcements = canvas_course.get_discussion_topics(only_announcements=True)
-        announcements = [announcement for announcement in announcements]
-        for announcement in announcements:
-            delete_announcement(announcement)
-
     def migrate_course(self, canvas_course: Course):
         try:
             exclude_announcements = self.exclude_announcements
@@ -695,16 +679,17 @@ class Request(Model):
             migration_state = content_migration.get_progress().workflow_state
             while migration_state in {"queued", "running"}:
                 logger.info("Migration running...")
-                sleep(8)
+                sleep(5)
             logger.info("MIGRATION COMPLETE")
-            self.delete_zoom_events(canvas_course)
+            delete_zoom_events(canvas_course)
             if exclude_announcements:
-                self.delete_announcements(canvas_course)
+                delete_announcements(canvas_course)
         except Exception as error:
             logger.error(f"FAILED to migrate course '{canvas_course}': {error}")
 
     def create_canvas_site(self):
-        course, sub_account_id = self.get_course_and_account_id()
+        self.set_status(self.Status.IN_PROCESS)
+        course, sub_account_id = self.get_course_data_and_account_id()
         canvas_course = update_or_create_canvas_course(course, sub_account_id)
         if not canvas_course:
             self.set_status(self.Status.ERROR)
@@ -717,7 +702,11 @@ class Request(Model):
         self.set_status(self.Status.COMPLETED)
 
     @classmethod
+    def get_approved_requests(cls):
+        return cls.objects.filter(status=cls.Status.APPROVED)
+
+    @classmethod
     def create_all_approved_sites(cls):
-        approved_requests = cls.objects.filter(status=cls.Status.APPROVED)
+        approved_requests = cls.get_approved_requests()
         for request in approved_requests:
             request.create_cavas_site()

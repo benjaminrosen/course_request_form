@@ -138,3 +138,19 @@ def delete_zoom_event(event_id: int):
 def delete_announcement(announcement: DiscussionTopic):
     announcement.delete()
     logger.info(f"DELETED announcement '{announcement.title}'")
+
+
+def delete_zoom_events(canvas_course):
+    logger.info("Deleting Zoom events...")
+    events = get_calendar_events(canvas_course.id)
+    zoom_events = [event.id for event in events if is_zoom_event(event)]
+    for event_id in zoom_events:
+        delete_zoom_event(event_id)
+
+
+def delete_announcements(canvas_course):
+    logger.info("Deleting Announcements...")
+    announcements = canvas_course.get_discussion_topics(only_announcements=True)
+    announcements = [announcement for announcement in announcements]
+    for announcement in announcements:
+        delete_announcement(announcement)
