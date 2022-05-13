@@ -1,6 +1,7 @@
 from logging import getLogger
 from typing import Optional, Union
 
+from canvasapi.course import Course
 from django.contrib.auth.models import AbstractUser
 from django.db.models import (
     CASCADE,
@@ -17,9 +18,11 @@ from django.db.models import (
 )
 
 from .canvas import (
-    create_related_sections,
+    create_course_section,
+    enroll_users,
     get_all_canvas_accounts,
     get_canvas_enrollment_term_id,
+    get_canvas_main_account,
     get_canvas_user_id_by_pennkey,
     update_or_create_canvas_course,
 )
@@ -31,7 +34,6 @@ logger = getLogger(__name__)
 
 class User(AbstractUser):
     penn_id = IntegerField(unique=True, null=True)
-    canvas_id = IntegerField(unique=True, null=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.username})"
@@ -39,7 +41,6 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         if self._state.adding and not self.penn_id:
             self.sync_dw_info(save=False)
-            self.sync_canvas_id(save=False)
         super().save(*args, **kwargs)
 
     @staticmethod
@@ -73,14 +74,21 @@ class User(AbstractUser):
         if save:
             self.save()
 
-    def sync_canvas_id(self, save=True):
+    def get_canvas_id(self) -> int:
         logger.info(f"Getting Canvas user id for '{self.username}'...")
-        canvas_user_id = get_canvas_user_id_by_pennkey(self.username)
-        self.log_field(self.username, "Canvas user id", canvas_user_id)
-        if canvas_user_id:
-            self.canvas_id = canvas_user_id
-            if save:
-                self.save()
+        canvas_id = get_canvas_user_id_by_pennkey(self.username)
+        self.log_field(self.username, "Canvas user id", canvas_id)
+        if canvas_id:
+            return canvas_id
+        account = get_canvas_main_account()
+        pseudonym = {"unique_id": self.username, "sis_user_id": self.penn_id}
+        full_name = f"{self.first_name} {self.last_name}"
+        user = {"name": full_name}
+        communication_channel = {"type": "email", "address": self.email}
+        canvas_user = account.create_user(
+            pseudonym, user=user, communication_channel=communication_channel
+        )
+        return canvas_user.id
 
 
 class ScheduleType(Model):
@@ -339,10 +347,10 @@ class Section(Model):
         kwargs = {"section_id": f"{self.section_id}", "term": self.term}
         cursor = execute_query(query, kwargs)
         instructors = list()
-        for penn_key, first_name, last_name, penn_id, email in cursor:
+        for pennkey, first_name, last_name, penn_id, email in cursor:
             try:
                 user, created = User.objects.update_or_create(
-                    username=penn_key,
+                    username=pennkey,
                     defaults={
                         "first_name": first_name,
                         "last_name": last_name,
@@ -356,7 +364,7 @@ class Section(Model):
                 logger.info(f"{action} {user}")
             except Exception as error:
                 logger.error(
-                    f"FAILED to update or create instructor '{penn_key}': {error}"
+                    f"FAILED to update or create instructor '{pennkey}': {error}"
                 )
         self.instructors.set(instructors)
 
@@ -544,6 +552,25 @@ class Section(Model):
         return f"{canvas_course_code} {title}"
 
 
+class Enrollment(Model):
+    class CanvasRole(TextChoices):
+        TA = "TaEnrollment"
+        INSTRUCTOR = "TeacherEnrollment"
+        DESIGNER = "DesignerEnrollment"
+        LIBRARIAN = "Librarian"
+        OBSERVER = "Observer"
+
+    user = ForeignKey(User, on_delete=CASCADE)
+    role = CharField(max_length=18, choices=CanvasRole.choices, default=CanvasRole.TA)
+
+
+class AutoAdd(Enrollment):
+    school = ForeignKey(School, on_delete=CASCADE)
+    subject = ForeignKey(Subject, on_delete=CASCADE)
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
+
+
 class Request(Model):
     class Status(TextChoices):
         SUBMITTED = "Submitted"
@@ -567,7 +594,7 @@ class Request(Model):
     reserves = BooleanField(default=False)
     lps_online = BooleanField(default=False)
     exclude_announcements = BooleanField(default=False)
-    additional_enrollments = ManyToManyField(User, blank=True)
+    additional_enrollments = ManyToManyField(Enrollment, blank=True)
     additional_instructions = TextField(blank=True, default=None, null=True)
     admin_additional_instructions = TextField(blank=True, default=None, null=True)
     process_notes = TextField(blank=True, default="")
@@ -582,12 +609,11 @@ class Request(Model):
         self.status = status
         self.save()
 
-    def create_canvas_site(self):
+    def get_course_and_account_id(self) -> tuple[dict, int]:
         self.set_status(self.Status.IN_PROCESS)
         section = self.section
         sub_account_id = section.school.canvas_sub_account_id
-        title_override = self.title_override
-        name = section.get_canvas_name(title_override)
+        name = section.get_canvas_name(self.title_override)
         sis_course_id = section.get_canvas_sis_id()
         term_id = get_canvas_enrollment_term_id(section.term)
         course = {
@@ -597,11 +623,37 @@ class Request(Model):
             "term_id": term_id,
             "storage_quota_mb": self.STORAGE_QUOTA,
         }
+        return course, sub_account_id
+
+    def create_related_sections(self, canvas_course: Course):
+        related_sections = self.section.related_sections
+        for section in related_sections:
+            name = section.get_canvas_name(self.title_override, related_section=True)
+            sis_course_id = section.get_canvas_sis_id()
+            create_course_section(name, sis_course_id, canvas_course)
+
+    def get_enrollments(self):
+        section = self.section
+        instructors = section.instructors.all()
+        instructor_enrollments = [
+            Enrollment(instructor, Enrollment.CanvasRole.INSTRUCTOR)
+            for instructor in instructors
+        ]
+        additional_enrollments = self.additional_enrollments.all()
+        school = section.school
+        subject = section.subject
+        auto_adds = AutoAdd.objects.filter(school=school, subject=subject)
+        return instructor_enrollments + additional_enrollments + auto_adds
+
+    def create_canvas_site(self):
+        course, sub_account_id = self.get_course_and_account_id()
         canvas_course = update_or_create_canvas_course(course, sub_account_id)
         if not canvas_course:
             self.set_status(self.Status.ERROR)
             return
-        create_related_sections(self.included_sections, title_override, canvas_course)
+        self.create_related_sections(canvas_course)
+        user_enrollments = self.get_enrollments()
+        enroll_users(user_enrollments, canvas_course)
         logger.info(f"CREATED Canvas course '{canvas_course}'")
         self.set_status(self.Status.COMPLETED)
 
@@ -610,22 +662,3 @@ class Request(Model):
         approved_requests = cls.objects.filter(status=cls.Status.APPROVED)
         for request in approved_requests:
             request.create_cavas_site()
-
-
-class AdditionalEnrollment(Model):
-    class CanvasRole(TextChoices):
-        TA = "TaEnrollment"
-        INSTRUCTOR = "TeacherEnrollment"
-        DESIGNER = "DesignerEnrollment"
-        LIBRARIAN = "Librarian"
-        OBSERVER = "Observer"
-
-    user = ForeignKey(User, on_delete=CASCADE)
-    role = CharField(max_length=18, choices=CanvasRole.choices, default=CanvasRole.TA)
-
-
-class AutoAdd(AdditionalEnrollment):
-    school = ForeignKey(School, on_delete=CASCADE)
-    subject = ForeignKey(Subject, on_delete=CASCADE)
-    created_at = DateTimeField(auto_now_add=True)
-    updated_at = DateTimeField(auto_now=True)

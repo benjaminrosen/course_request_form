@@ -9,7 +9,7 @@ from form.terms import CURRENT_TERM, TWO_TERMS_AHEAD
 EXECUTE_QUERY = "form.models.execute_query"
 GET_CANVAS_USER_ID_BY_PENNKEY = "form.models.get_canvas_user_id_by_pennkey"
 GET_ALL_CANVAS_ACCOUNTS = "form.models.get_all_canvas_accounts"
-PENN_KEY = "testuser"
+PENNKEY = "testuser"
 FIRST_NAME = "Test"
 LAST_NAME = "User"
 PENN_ID = 1234567
@@ -26,7 +26,7 @@ SECTION_NUM = 200
 TERM = CURRENT_TERM
 TITLE = "Course Title"
 INSTRUCTORS = (
-    (PENN_KEY, FIRST_NAME, LAST_NAME, PENN_ID, EMAIL),
+    (PENNKEY, FIRST_NAME, LAST_NAME, PENN_ID, EMAIL),
     (None, None, None, None, None),
 )
 PRIMARY_SUBJECT_CODE = "PRIM"
@@ -35,7 +35,7 @@ PRIMARY_SUBJECT_DESC_LONG = f"Primary {SUBJECT_DESC_LONG}"
 
 def create_user():
     return User.objects.create(
-        username=PENN_KEY, first_name=FIRST_NAME, last_name=LAST_NAME
+        username=PENNKEY, first_name=FIRST_NAME, last_name=LAST_NAME
     )
 
 
@@ -137,13 +137,12 @@ class UserTest(TestCase):
     def test_create_user(self, mock_get_canvas_user_id_by_pennkey, mock_execute_query):
         mock_execute_query.return_value = self.get_mock_data_warehouse_response()
         mock_get_canvas_user_id_by_pennkey.return_value = CANVAS_ID
-        user = User(username=PENN_KEY)
+        user = User(username=PENNKEY)
         empty_values = (
             user.first_name,
             user.last_name,
             user.penn_id,
             user.email,
-            user.canvas_id,
         )
         self.assertFalse(any(empty_values))
         user.save()
@@ -151,7 +150,6 @@ class UserTest(TestCase):
         self.assertEqual(user.last_name, LAST_NAME)
         self.assertEqual(user.penn_id, PENN_ID)
         self.assertEqual(user.email, EMAIL)
-        self.assertEqual(user.canvas_id, CANVAS_ID)
 
     @patch(EXECUTE_QUERY)
     @patch(GET_CANVAS_USER_ID_BY_PENNKEY)
@@ -175,21 +173,6 @@ class UserTest(TestCase):
         self.assertFalse(user.last_name)
         self.assertIsNone(user.penn_id)
         self.assertFalse(user.email)
-
-    @patch(EXECUTE_QUERY)
-    @patch(GET_CANVAS_USER_ID_BY_PENNKEY)
-    def test_sync_canvas_id(
-        self, mock_get_canvas_user_id_by_pennkey, mock_execute_query
-    ):
-        mock_execute_query.return_value = self.get_mock_data_warehouse_response()
-        mock_get_canvas_user_id_by_pennkey.return_value = CANVAS_ID
-        user = create_user()
-        mock_execute_query.return_value = self.get_mock_data_warehouse_response(
-            new=True
-        )
-        mock_get_canvas_user_id_by_pennkey.return_value = self.new_canvas_id
-        user.sync_canvas_id()
-        self.assertEqual(user.canvas_id, self.new_canvas_id)
 
 
 class ScheduleTypeTest(TestCase):

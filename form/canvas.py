@@ -7,7 +7,6 @@ from canvasapi.account import Account
 from canvasapi.course import Course
 from canvasapi.exceptions import CanvasException
 from canvasapi.user import User as CanvasUser
-from django.db.models.query import QuerySet
 
 from config.config import DEBUG_VALUE, PROD_KEY, PROD_URL, TEST_KEY, TEST_URL
 
@@ -41,8 +40,12 @@ def get_canvas_user_by_login_id(login_id: str) -> Optional[CanvasUser]:
         return None
 
 
-def get_canvas_user_id_by_pennkey(login_id: str) -> Optional[int]:
-    user = get_canvas_user_by_login_id(login_id)
+def get_canvas_user_by_pennkey(pennkey: str) -> Optional[CanvasUser]:
+    return get_canvas_user_by_login_id(pennkey)
+
+
+def get_canvas_user_id_by_pennkey(pennkey: str) -> Optional[int]:
+    user = get_canvas_user_by_pennkey(pennkey)
     return user.id if user else None
 
 
@@ -86,10 +89,10 @@ def update_or_create_canvas_course(course: dict, account_id: int) -> Optional[Co
         return update_canvas_course(course)
 
 
-def create_related_sections(
-    related_sections: QuerySet, title_override: str, canvas_course: Course
-):
-    for section in related_sections:
-        name = section.get_canvas_name(title_override, related_section=True)
-        sis_course_id = section.get_canvas_sis_id()
-        create_course_section(name, sis_course_id, canvas_course)
+def enroll_users(user_enrollments: list, canvas_course: Course):
+    for user_enrollment in user_enrollments:
+        canvas_id = user_enrollment.user.get_canvas_id()
+        enrollment = {"enrollment_state": "active", "course_section_id": canvas_course}
+        canvas_course.enroll_user(
+            canvas_id, user_enrollment.role, enrollment=enrollment
+        )
