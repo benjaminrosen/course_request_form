@@ -767,4 +767,4 @@ class Request(Model):
     def create_all_approved_sites(cls):
         approved_requests = cls.get_approved_requests()
         for request in approved_requests:
-            request.create_cavas_site()
+            request.create_canvas_site()
