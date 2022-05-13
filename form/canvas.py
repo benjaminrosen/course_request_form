@@ -4,8 +4,11 @@ from typing import Optional
 
 from canvasapi import Canvas
 from canvasapi.account import Account
+from canvasapi.calendar_event import CalendarEvent
 from canvasapi.course import Course
+from canvasapi.discussion_topic import DiscussionTopic
 from canvasapi.exceptions import CanvasException
+from canvasapi.paginated_list import PaginatedList
 from canvasapi.user import User as CanvasUser
 
 from config.config import DEBUG_VALUE, PROD_KEY, PROD_URL, TEST_KEY, TEST_URL
@@ -96,3 +99,42 @@ def enroll_users(user_enrollments: list, canvas_course: Course):
         canvas_course.enroll_user(
             canvas_id, user_enrollment.role, enrollment=enrollment
         )
+
+
+def get_calendar_events(course_id: int) -> PaginatedList:
+    context_codes = [f"course_{course_id}"]
+    canvas = get_canvas()
+    return canvas.get_calendar_events(context_codes=context_codes, all_events=True)
+
+
+def event_location_contains_zoom(event: CalendarEvent) -> bool:
+    return event.location_name and "zoom" in event.location_name.lower()
+
+
+def event_description_contains_zoom(event: CalendarEvent) -> bool:
+    return event.description and "zoom" in event.description.lower()
+
+
+def event_title_contains_zoom(event: CalendarEvent) -> bool:
+    return event.title and "zoom" in event.title.lower()
+
+
+def is_zoom_event(event: CalendarEvent) -> bool:
+    return (
+        event_location_contains_zoom(event)
+        or event_description_contains_zoom(event)
+        or event_title_contains_zoom(event)
+    )
+
+
+def delete_zoom_event(event_id: int):
+    event = get_canvas().get_calendar_event(event_id)
+    cancel_reason = "Content migration"
+    deleted = event.delete(cancel_reason=cancel_reason)
+    deleted = deleted.title.encode("ascii", "ignore")
+    logger.info(f"DELETED event '{deleted}'")
+
+
+def delete_announcement(announcement: DiscussionTopic):
+    announcement.delete()
+    logger.info(f"DELETED announcement '{announcement.title}'")

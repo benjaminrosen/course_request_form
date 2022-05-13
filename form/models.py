@@ -1,7 +1,9 @@
 from logging import getLogger
+from time import sleep
 from typing import Optional, Union
 
 from canvasapi.course import Course
+from canvasapi.tab import Tab
 from django.contrib.auth.models import AbstractUser
 from django.db.models import (
     CASCADE,
@@ -19,11 +21,15 @@ from django.db.models import (
 
 from .canvas import (
     create_course_section,
+    delete_announcement,
+    delete_zoom_event,
     enroll_users,
     get_all_canvas_accounts,
+    get_calendar_events,
     get_canvas_enrollment_term_id,
     get_canvas_main_account,
     get_canvas_user_id_by_pennkey,
+    is_zoom_event,
     update_or_create_canvas_course,
 )
 from .data_warehouse import execute_query
@@ -645,6 +651,58 @@ class Request(Model):
         auto_adds = AutoAdd.objects.filter(school=school, subject=subject)
         return instructor_enrollments + additional_enrollments + auto_adds
 
+    def set_canvas_course_reserves(self, canvas_course: Course):
+        if not self.reserves:
+            return
+        requester = canvas_course._requester
+        reserves_tab = (
+            {
+                "course_id": canvas_course.id,
+                "id": "context_external_tool_139969",
+                "label": "Course Materials @ Penn Libraries",
+            },
+        )
+        tab = Tab(requester, reserves_tab)
+        tab.update(hidden=False)
+
+    def delete_zoom_events(self, canvas_course):
+        logger.info("Deleting Zoom events...")
+        events = get_calendar_events(canvas_course.id)
+        zoom_events = [event.id for event in events if is_zoom_event(event)]
+        for event_id in zoom_events:
+            delete_zoom_event(event_id)
+
+    def delete_announcements(self, canvas_course):
+        logger.info("Deleting Announcements...")
+        announcements = canvas_course.get_discussion_topics(only_announcements=True)
+        announcements = [announcement for announcement in announcements]
+        for announcement in announcements:
+            delete_announcement(announcement)
+
+    def migrate_course(self, canvas_course: Course):
+        try:
+            exclude_announcements = self.exclude_announcements
+            source_course_id = self.copy_from_course
+            announcements = " WITHOUT announcements" if exclude_announcements else ""
+            logger.info(
+                "Copying course data from course id"
+                f" {source_course_id} {announcements}..."
+            )
+            content_migration = canvas_course.create_content_migration(
+                migration_type="course_copy_importer",
+                settings={"source_course_id": source_course_id},
+            )
+            migration_state = content_migration.get_progress().workflow_state
+            while migration_state in {"queued", "running"}:
+                logger.info("Migration running...")
+                sleep(8)
+            logger.info("MIGRATION COMPLETE")
+            self.delete_zoom_events(canvas_course)
+            if exclude_announcements:
+                self.delete_announcements(canvas_course)
+        except Exception as error:
+            logger.error(f"FAILED to migrate course '{canvas_course}': {error}")
+
     def create_canvas_site(self):
         course, sub_account_id = self.get_course_and_account_id()
         canvas_course = update_or_create_canvas_course(course, sub_account_id)
@@ -654,6 +712,7 @@ class Request(Model):
         self.create_related_sections(canvas_course)
         user_enrollments = self.get_enrollments()
         enroll_users(user_enrollments, canvas_course)
+        self.set_canvas_course_reserves(canvas_course)
         logger.info(f"CREATED Canvas course '{canvas_course}'")
         self.set_status(self.Status.COMPLETED)
 
