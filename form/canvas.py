@@ -10,7 +10,6 @@ from canvasapi.discussion_topic import DiscussionTopic
 from canvasapi.exceptions import CanvasException
 from canvasapi.paginated_list import PaginatedList
 from canvasapi.user import User as CanvasUser
-from django.db.models.query import QuerySet
 
 from config.config import DEBUG_VALUE, PROD_KEY, PROD_URL, TEST_KEY, TEST_URL
 
@@ -77,29 +76,24 @@ def update_canvas_course(course: dict) -> Optional[Course]:
         canvas_course.update(course=course)
         return canvas_course
     except Exception as error:
-        logger.error(f"FAILED to create Canvas course '{sis_course_id}': {error}")
+        logger.error(f"FAILED to update Canvas course '{sis_course_id}': {error}")
         return None
 
 
-def update_or_create_canvas_course(course: dict, account_id: int) -> Optional[Course]:
+def update_or_create_canvas_course(
+    course: dict, account_id: int
+) -> tuple[bool, Optional[Course]]:
+    created = True
     try:
         account = get_canvas_account(account_id)
         canvas_course = account.create_course(course=course)
         name = canvas_course.name
         sis_course_id = canvas_course.sis_course_id
         create_course_section(name, sis_course_id, canvas_course)
-        return canvas_course
+        return created, canvas_course
     except Exception:
-        return update_canvas_course(course)
-
-
-def enroll_users(user_enrollments: QuerySet, canvas_course: Course):
-    for user_enrollment in user_enrollments:
-        canvas_id = user_enrollment.user.get_canvas_id()
-        enrollment = {"enrollment_state": "active", "course_section_id": canvas_course}
-        canvas_course.enroll_user(
-            canvas_id, user_enrollment.role, enrollment=enrollment
-        )
+        created = False
+        return created, update_canvas_course(course)
 
 
 def get_calendar_events(course_id: int) -> PaginatedList:
@@ -108,23 +102,15 @@ def get_calendar_events(course_id: int) -> PaginatedList:
     return canvas.get_calendar_events(context_codes=context_codes, all_events=True)
 
 
-def event_location_contains_zoom(event: CalendarEvent) -> bool:
-    return event.location_name and "zoom" in event.location_name.lower()
-
-
-def event_description_contains_zoom(event: CalendarEvent) -> bool:
-    return event.description and "zoom" in event.description.lower()
-
-
-def event_title_contains_zoom(event: CalendarEvent) -> bool:
-    return event.title and "zoom" in event.title.lower()
+def contains_zoom(event_property: Optional[str]) -> bool:
+    return bool(event_property and "zoom" in event_property.lower())
 
 
 def is_zoom_event(event: CalendarEvent) -> bool:
     return (
-        event_location_contains_zoom(event)
-        or event_description_contains_zoom(event)
-        or event_title_contains_zoom(event)
+        contains_zoom(event.location_name)
+        or contains_zoom(event.description)
+        or contains_zoom(event.title)
     )
 
 

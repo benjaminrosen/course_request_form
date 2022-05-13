@@ -1,3 +1,4 @@
+from enum import Enum
 from logging import getLogger
 from time import sleep
 from typing import Optional, Union
@@ -24,7 +25,6 @@ from .canvas import (
     create_course_section,
     delete_announcements,
     delete_zoom_events,
-    enroll_users,
     get_all_canvas_accounts,
     get_canvas_enrollment_term_id,
     get_canvas_main_account,
@@ -150,6 +150,7 @@ class School(Model):
             SELECT school_code, school_desc_long
             FROM dwngss.v_school
             """
+    LPS_ONLINE_ACCOUNT_ID = 132413
     school_code = CharField(max_length=10, primary_key=True)
     school_desc_long = CharField(max_length=50, unique=True)
     visible = BooleanField(default=True)
@@ -558,15 +559,23 @@ class Section(Model):
 
 
 class Enrollment(Model):
-    class CanvasRole(TextChoices):
+    class CanvasRole(Enum):
         TA = "TaEnrollment"
         INSTRUCTOR = "TeacherEnrollment"
         DESIGNER = "DesignerEnrollment"
-        LIBRARIAN = "Librarian"
-        OBSERVER = "Observer"
+        LIBRARIAN = "DesignerEnrollment"
 
+        @classmethod
+        @property
+        def choices(cls):
+            return [(member.name, member.value) for member in cls]
+
+    LIBRARIAN_ROLE_ID = 1383
     user = ForeignKey(User, on_delete=CASCADE)
     role = CharField(max_length=18, choices=CanvasRole.choices, default=CanvasRole.TA)
+
+    class Meta:
+        managed = False
 
 
 class AutoAdd(Enrollment):
@@ -588,6 +597,10 @@ class Request(Model):
 
     RELATED_NAME = "requests"
     STORAGE_QUOTA = 2000
+    RESERVES_TAB_ID = "context_external_tool_139969"
+    RESERVES_TAB_LABEL = "Course Materials @ Penn Libraries"
+    MAX_MIGRATION_ATTEMPTS = 180
+    MIGRATION_SLEEP_TIME = 5
     section = OneToOneField(Section, on_delete=CASCADE, primary_key=True)
     included_sections = ManyToManyField(Section, blank=True, related_name=RELATED_NAME)
     requester = ForeignKey(User, on_delete=CASCADE, related_name=RELATED_NAME)
@@ -614,20 +627,24 @@ class Request(Model):
         self.status = status
         self.save()
 
-    def get_course_data_and_account_id(self) -> tuple[dict, int]:
+    def get_canvas_course_data(self) -> dict:
         section = self.section
-        sub_account_id = section.school.canvas_sub_account_id
         name = section.get_canvas_name(self.title_override)
         sis_course_id = section.get_canvas_sis_id()
         term_id = get_canvas_enrollment_term_id(section.term)
-        course = {
+        return {
             "name": name,
             "sis_course_id": sis_course_id,
             "course_code": sis_course_id,
             "term_id": term_id,
             "storage_quota_mb": self.STORAGE_QUOTA,
         }
-        return course, sub_account_id
+
+    def get_canvas_sub_account_id(self) -> int:
+        if self.lps_online and self.section.school.school_code == "SAS":
+            return School.LPS_ONLINE_ACCOUNT_ID
+        else:
+            return self.section.school.canvas_sub_account_id
 
     def create_related_sections(self, canvas_course: Course):
         related_sections = self.section.related_sections
@@ -647,58 +664,86 @@ class Request(Model):
         school = section.school
         subject = section.subject
         auto_adds = AutoAdd.objects.filter(school=school, subject=subject)
-        return instructor_enrollments + additional_enrollments + auto_adds
+        enrollments = instructor_enrollments + additional_enrollments + auto_adds
+        return enrollments
+
+    def enroll_users(
+        self, enrollments: QuerySet[Union[Enrollment, AutoAdd]], canvas_course: Course
+    ):
+        for enrollment in enrollments:
+            canvas_id = enrollment.user.get_canvas_id()
+            enrollment_data = {
+                "enrollment_state": "active",
+                "course_section_id": canvas_course,
+            }
+            if enrollment.role == Enrollment.CanvasRole.LIBRARIAN:
+                enrollment_data["role_id"] = Enrollment.LIBRARIAN_ROLE_ID
+            canvas_course.enroll_user(
+                canvas_id, enrollment.role, enrollment=enrollment_data
+            )
 
     def set_canvas_course_reserves(self, canvas_course: Course):
         if not self.reserves:
             return
         requester = canvas_course._requester
-        reserves_tab = (
-            {
-                "course_id": canvas_course.id,
-                "id": "context_external_tool_139969",
-                "label": "Course Materials @ Penn Libraries",
-            },
-        )
+        reserves_tab = {
+            "course_id": canvas_course.id,
+            "id": self.RESERVES_TAB_ID,
+            "label": self.RESERVES_TAB_LABEL,
+        }
         tab = Tab(requester, reserves_tab)
         tab.update(hidden=False)
 
     def migrate_course(self, canvas_course: Course):
+        source_course_id = self.copy_from_course
+        if not source_course_id:
+            return
+        error_message = f"FAILED to migrate course '{canvas_course}'"
         try:
             exclude_announcements = self.exclude_announcements
-            source_course_id = self.copy_from_course
             announcements = " WITHOUT announcements" if exclude_announcements else ""
             logger.info(
                 "Copying course data from course id"
-                f" {source_course_id} {announcements}..."
+                f" '{source_course_id}'{announcements}..."
             )
             content_migration = canvas_course.create_content_migration(
                 migration_type="course_copy_importer",
                 settings={"source_course_id": source_course_id},
             )
-            migration_state = content_migration.get_progress().workflow_state
-            while migration_state in {"queued", "running"}:
-                logger.info("Migration running...")
-                sleep(5)
-            logger.info("MIGRATION COMPLETE")
+            migration_status = content_migration.get_progress().workflow_state
+            attempts = 0
+            while (
+                migration_status in {"queued", "running"}
+                and attempts <= self.MAX_MIGRATION_ATTEMPTS
+            ):
+                logger.info(f"Migration {migration_status}...")
+                sleep(self.MIGRATION_SLEEP_TIME)
+                migration_status = content_migration.get_progress().workflow_state
+                attempts += 1
+            if not migration_status == "complete":
+                logger.error(error_message)
+                return
+            logger.info("COMPLETED content migration")
             delete_zoom_events(canvas_course)
             if exclude_announcements:
                 delete_announcements(canvas_course)
         except Exception as error:
-            logger.error(f"FAILED to migrate course '{canvas_course}': {error}")
+            logger.error(f"{error_message}: {error}")
 
     def create_canvas_site(self):
         self.set_status(self.Status.IN_PROCESS)
-        course, sub_account_id = self.get_course_data_and_account_id()
-        canvas_course = update_or_create_canvas_course(course, sub_account_id)
+        course = self.get_canvas_course_data()
+        sub_account_id = self.get_canvas_sub_account_id()
+        created, canvas_course = update_or_create_canvas_course(course, sub_account_id)
         if not canvas_course:
             self.set_status(self.Status.ERROR)
             return
         self.create_related_sections(canvas_course)
-        user_enrollments = self.get_enrollments()
-        enroll_users(user_enrollments, canvas_course)
+        enrollments = self.get_enrollments()
+        self.enroll_users(enrollments, canvas_course)
         self.set_canvas_course_reserves(canvas_course)
-        logger.info(f"CREATED Canvas course '{canvas_course}'")
+        action = "CREATED" if created else "UPDATED"
+        logger.info(f"{action} Canvas course '{canvas_course}'")
         self.set_status(self.Status.COMPLETED)
 
     @classmethod
