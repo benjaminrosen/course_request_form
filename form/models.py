@@ -150,6 +150,7 @@ class School(Model):
             SELECT school_code, school_desc_long
             FROM dwngss.v_school
             """
+    SAS_SCHOOL_CODE = "A"
     LPS_ONLINE_ACCOUNT_ID = 132413
     school_code = CharField(max_length=10, primary_key=True)
     school_desc_long = CharField(max_length=50, unique=True)
@@ -315,10 +316,12 @@ class Section(Model):
     section_code = CharField(max_length=150, primary_key=True, editable=False)
     section_id = CharField(max_length=150, editable=False)
     school = ForeignKey(School, on_delete=CASCADE, related_name=RELATED_NAME)
-    subject = ForeignKey(Subject, on_delete=CASCADE, related_name=RELATED_NAME)
-    course_num = CharField(max_length=4)
-    section_num = CharField(max_length=4)
-    term = IntegerField()
+    subject = ForeignKey(
+        Subject, on_delete=CASCADE, related_name=RELATED_NAME, editable=False
+    )
+    course_num = CharField(max_length=4, editable=False)
+    section_num = CharField(max_length=4, editable=False)
+    term = IntegerField(editable=False)
     title = CharField(max_length=250)
     schedule_type = ForeignKey(
         ScheduleType, on_delete=CASCADE, related_name=RELATED_NAME
@@ -327,7 +330,7 @@ class Section(Model):
     primary_course_id = CharField(max_length=150)
     primary_section = ForeignKey("self", on_delete=CASCADE, blank=True, null=True)
     primary_subject = ForeignKey(Subject, on_delete=CASCADE)
-    xlist_family = CharField(max_length=255, blank=True, null=True)
+    xlist_family = CharField(max_length=255, blank=True, null=True, editable=False)
     also_offered_as = ManyToManyField("self", blank=True)
     course_sections = ManyToManyField("self", blank=True)
     created_at = DateTimeField(auto_now_add=True)
@@ -641,7 +644,10 @@ class Request(Model):
         }
 
     def get_canvas_sub_account_id(self) -> int:
-        if self.lps_online and self.section.school.school_code == "SAS":
+        if (
+            self.lps_online
+            and self.section.school.school_code == School.SAS_SCHOOL_CODE
+        ):
             return School.LPS_ONLINE_ACCOUNT_ID
         else:
             return self.section.school.canvas_sub_account_id
