@@ -149,7 +149,13 @@ class School(Model):
             SELECT school_code, school_desc_long
             FROM dwngss.v_school
             """
+    DENTAL_MEDICINE_CODE = "D"
+    DENTAL_MEDICINE_NAME = "Penn Dental Medicine"
+    LAW_SCHOOL_CODE = "L"
+    PROVOST_CENTER_CODE = "P"
     SAS_SCHOOL_CODE = "A"
+    VETERINARY_MEDICINE_CODE = "V"
+    VETERINARY_MEDICINE_NAME = "Penn Vet"
     LPS_ONLINE_ACCOUNT_ID = 132413
     school_code = CharField(max_length=10, primary_key=True)
     school_desc_long = CharField(max_length=50, unique=True)
@@ -168,11 +174,19 @@ class School(Model):
     def get_subjects(self):
         return Subject.objects.filter(school=self)
 
+    def get_canvas_school_name(self) -> str:
+        if self.school_code == self.VETERINARY_MEDICINE_CODE:
+            return self.VETERINARY_MEDICINE_NAME
+        elif self.school_code == self.DENTAL_MEDICINE_CODE:
+            return self.DENTAL_MEDICINE_NAME
+        else:
+            return self.school_desc_long.replace("&", "and")
+
     def get_canvas_sub_account(self):
         accounts = get_all_canvas_accounts()
-        school_name = self.school_desc_long.replace("&", "and")
+        school_name = self.get_canvas_school_name()
         account_ids = (
-            account.id for account in accounts if school_name in account.name
+            account.id for account in accounts if account.name in school_name
         )
         account_id = next(account_ids, None)
         if account_id:
@@ -180,10 +194,19 @@ class School(Model):
             self.save()
 
     @classmethod
+    def is_canvas_school(cls, school_code: str) -> bool:
+        return not (
+            school_code == cls.LAW_SCHOOL_CODE or school_code == cls.PROVOST_CENTER_CODE
+        )
+
+    @classmethod
     def update_or_create(cls, query: str, kwargs: Optional[dict] = None):
         cursor = execute_query(query, kwargs)
         school = None
         for school_code, school_desc_long in cursor:
+            if not cls.is_canvas_school(school_code):
+                logger.info(f"SKIPPING school '{school_desc_long}' (not in Canvas)")
+                continue
             try:
                 school, created = cls.objects.update_or_create(
                     school_code=school_code,
