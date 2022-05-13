@@ -10,6 +10,7 @@ from canvasapi.discussion_topic import DiscussionTopic
 from canvasapi.exceptions import CanvasException
 from canvasapi.paginated_list import PaginatedList
 from canvasapi.user import User as CanvasUser
+from django.db.models.query import QuerySet
 
 from config.config import DEBUG_VALUE, PROD_KEY, PROD_URL, TEST_KEY, TEST_URL
 
@@ -92,7 +93,7 @@ def update_or_create_canvas_course(course: dict, account_id: int) -> Optional[Co
         return update_canvas_course(course)
 
 
-def enroll_users(user_enrollments: list, canvas_course: Course):
+def enroll_users(user_enrollments: QuerySet, canvas_course: Course):
     for user_enrollment in user_enrollments:
         canvas_id = user_enrollment.user.get_canvas_id()
         enrollment = {"enrollment_state": "active", "course_section_id": canvas_course}
