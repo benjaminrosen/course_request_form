@@ -574,7 +574,7 @@ class Enrollment(Model):
             return [(member.name, member.value) for member in cls]
 
     LIBRARIAN_ROLE_ID = 1383
-    user = ForeignKey(User, on_delete=CASCADE)
+    user = ForeignKey(User, on_delete=CASCADE, related_name="auto_adds")
     role = CharField(max_length=18, choices=CanvasRole.choices, default=CanvasRole.TA)
 
     class Meta:
