@@ -1,5 +1,6 @@
-from django.http import HttpResponse
+from django.views.generic import ListView
+from .models import Section
 
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the CRF index.")
+class SectionListView(ListView):
+    model = Section

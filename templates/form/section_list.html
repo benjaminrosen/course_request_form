@@ -1,0 +1,12 @@
+{% extends "./index.html" %}
+
+{% block content %}
+    <div>
+        <h2>Sections</h2>
+        <ul>
+            {% for section in object_list %}
+                <li>{{ section.section_code }}:  {{ section.title }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

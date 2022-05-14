@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from form.views import SectionListView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("sections/", SectionListView.as_view()),
 ]
