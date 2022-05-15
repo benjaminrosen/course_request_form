@@ -1,0 +1,29 @@
+{% load static %}
+
+<!doctype html>
+<html class="no-js" lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Course Request Form</title>
+        <meta name="description" content="UPenn Canvas Course Request Form">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{% static "css/style.css" %}">
+    </head>
+    <body>
+        <div class="flex">
+            <div class="sidebar">
+                <h1>Course Request Form</h1>
+                <nav class="nav">
+                    <a href="#">Home</a>
+                    <a href="#">Courses</a>
+                    <a href="#">Requests</a>
+                </nav>
+            </div>
+            <div class="content">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </body>
+</html>

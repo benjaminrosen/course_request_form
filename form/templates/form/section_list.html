@@ -1,0 +1,12 @@
+{% extends "./base.html" %}
+
+{% block content %}
+    <h1>Sections</h1>
+    <ul>
+        {% for section in object_list %}
+            <li>{{ section.title }} ({{ section.section_code }})</li>
+        {% empty %}
+            <li>No sections found.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
