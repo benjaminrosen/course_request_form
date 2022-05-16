@@ -557,12 +557,14 @@ class Section(Model):
         except Exception:
             return cls.sync_section(section_id, term, sync_related_data)
 
-    def get_canvas_course_code(self, sis_format=False, related_section=False) -> str:
+    def get_canvas_course_code(
+        self, sis_format=False, include_schedule_type=False
+    ) -> str:
         subject = self.subject.subject_code
         divider = "-" if sis_format else " "
         course_and_section = f"{self.course_num}-{self.section_num}"
         canvas_course_code = f"{subject}{divider}{course_and_section} {self.term}"
-        if related_section:
+        if include_schedule_type:
             is_lecture_section = self.schedule_type.sched_type_code == self.LECTURE_CODE
             if not is_lecture_section:
                 schedule_type = self.schedule_type.sched_type_code
@@ -579,7 +581,7 @@ class Section(Model):
     ) -> str:
         title = title_override if title_override else self.title
         canvas_course_code = self.get_canvas_course_code(
-            related_section=related_section
+            include_schedule_type=related_section
         )
         return f"{canvas_course_code} {title}"
 

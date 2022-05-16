@@ -16,7 +16,7 @@ from platform import system
 
 from cx_Oracle import init_oracle_client
 
-from config.config import LIB_DIR, DEBUG_VALUE
+from config.config import DEBUG_VALUE, LIB_DIR
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
