@@ -297,6 +297,9 @@ class SubjectTest(TestCase):
 
 
 class SectionTest(TestCase):
+    mock_instructors_response = (INSTRUCTORS[0],)
+    mock_empty_response = ()
+
     @classmethod
     def setUpTestData(cls):
         cls.section = create_section(
@@ -371,21 +374,24 @@ class SectionTest(TestCase):
 
     @classmethod
     def get_mock_section_data(
-        cls, scheduled_with=False, active=True, unsynced=False, new_schedule_type=False
+        cls,
+        primary=True,
+        other_course_section=False,
+        canceled=False,
+        unsynced=False,
+        new_schedule_type=False,
     ):
-        primary_course_id = f"{PRIMARY_SUBJECT_CODE}{COURSE_NUM}"
-        course_id = (
-            f"{SUBJECT_CODE}{COURSE_NUM}" if scheduled_with else primary_course_id
-        )
-        primary_section_id = f"{primary_course_id}{SECTION_NUM}"
-        section_id = (
-            f"{course_id}{SECTION_NUM}" if scheduled_with else primary_section_id
-        )
-        section_code = "RAND1234567" if unsynced else f"{section_id}{TERM}"
+        course_num = "9999" if unsynced else COURSE_NUM
+        section_num = SECTION_NUM + 1 if other_course_section else SECTION_NUM
+        primary_course_id = f"{PRIMARY_SUBJECT_CODE}{course_num}"
+        course_id = primary_course_id if primary else f"{SUBJECT_CODE}{course_num}"
+        primary_section_id = f"{primary_course_id}{section_num}"
+        section_id = primary_section_id if primary else f"{course_id}{section_num}"
+        section_code = f"{section_id}{TERM}"
         primary_subject = PRIMARY_SUBJECT_CODE
-        subject = SUBJECT_CODE if scheduled_with else primary_subject
+        subject = primary_subject if primary else SUBJECT_CODE
         schedule_type = "NEW" if new_schedule_type else SCHED_TYPE_CODE
-        status_code = "A" if active else "X"
+        status_code = "X" if canceled else "A"
         xlist_family = f"{CURRENT_TERM}A1234"
         return (
             section_code,
@@ -420,57 +426,60 @@ class SectionTest(TestCase):
             subject_code=PRIMARY_SUBJECT_CODE,
             subject_desc_long=PRIMARY_SUBJECT_DESC_LONG,
         )
-        instructors = INSTRUCTORS[0]
-        mock_active_section = self.get_mock_section_data()
-        mock_canceled_section = self.get_mock_section_data(active=False)
+        mock_primary_section = self.get_mock_section_data()
+        mock_canceled_section = self.get_mock_section_data(canceled=True)
         mock_unsynced_canceled_section = self.get_mock_section_data(
-            active=False, unsynced=True
+            canceled=True, unsynced=True
         )
-        mock_scheduled_with_section = self.get_mock_section_data(scheduled_with=True)
+        mock_secondary_section = self.get_mock_section_data(primary=False)
         mock_new_schedule_type_section = self.get_mock_section_data(
             new_schedule_type=True
         )
-        also_offered_with = (("PRIM1000200",),)
-        course_sections = (("SUBJ1000201",),)
         new_schedule_type = (("NEW", f"New {SCHED_TYPE_DESC}"),)
-        mock_execute_query.side_effect = [
+        mock_primary_query_responses = [
+            self.mock_instructors_response,
+            self.mock_empty_response,
+            self.mock_empty_response,
+        ]
+        mock_secondary_query_responses = [
+            (mock_primary_section,),
+            self.mock_instructors_response,
+            self.mock_empty_response,
+            self.mock_empty_response,
+        ]
+        mock_new_schedule_type_responses = [
+            new_schedule_type,
+            self.mock_instructors_response,
+            self.mock_empty_response,
+            self.mock_empty_response,
+        ]
+        mock_query_responses = (
+            mock_primary_query_responses
+            + mock_secondary_query_responses
+            + mock_new_schedule_type_responses
+        )
+        mock_sections = [
             (
-                mock_active_section,
+                mock_primary_section,
                 mock_canceled_section,
                 mock_unsynced_canceled_section,
-                mock_scheduled_with_section,
+                mock_secondary_section,
                 mock_new_schedule_type_section,
-            ),
-            (instructors,),
-            (mock_active_section,),
-            (mock_active_section,),
-            (instructors,),
-            (mock_active_section,),
-            (mock_active_section,),
-            (instructors,),
-            course_sections,
-            (mock_active_section,),
-            (instructors,),
-            (mock_active_section,),
-            (instructors,),
-            new_schedule_type,
-            (mock_active_section,),
-            (instructors,),
-            (mock_active_section,),
-            new_schedule_type,
-            (instructors,),
-            also_offered_with,
-            course_sections,
-            (mock_active_section,),
+            )
         ]
+        side_effect = mock_sections + mock_query_responses
+        mock_execute_query.side_effect = side_effect
         Section.sync_all()
 
     @patch(EXECUTE_QUERY)
     def test_sync(self, mock_execute_query):
         mock_execute_query.side_effect = [
-            (self.get_mock_section_data(scheduled_with=True),),
+            (self.get_mock_section_data(primary=False),),
             ((PRIMARY_SUBJECT_CODE, PRIMARY_SUBJECT_DESC_LONG, SCHOOL_CODE),),
             (self.get_mock_section_data(),),
+            self.mock_instructors_response,
+            self.mock_empty_response,
+            self.mock_empty_response,
         ]
         self.section.sync()
         section = Section.objects.get(section_code=self.section.section_code)

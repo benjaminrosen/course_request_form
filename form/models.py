@@ -478,7 +478,9 @@ class Section(Model):
             primary_subject = Subject.get_subject(primary_subject_code) or subject
             schedule_type = ScheduleType.get_schedule_type(sched_type_code)
             if primary_section_id != section_id:
-                primary_section = cls.get_section(primary_section_id, term)
+                primary_section = cls.get_section(
+                    primary_section_id, term, sync_related_data=False
+                )
             else:
                 primary_section = None
             try:
@@ -499,12 +501,12 @@ class Section(Model):
                         "xlist_family": xlist_family,
                     },
                 )
-                action = "ADDED" if created else "UPDATED"
-                logger.info(f"{action} {section}")
                 if sync_related_data:
                     section.sync_instructors()
                     section.sync_also_offered_as_sections()
                     section.sync_course_sections()
+                action = "ADDED" if created else "UPDATED"
+                logger.info(f"{action} {section}")
             except Exception as error:
                 logger.error(
                     f"FAILED to update or create section '{section_code}': {error}"
