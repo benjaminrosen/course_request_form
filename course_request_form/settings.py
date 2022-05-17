@@ -14,9 +14,8 @@ import os
 from pathlib import Path
 from platform import system
 
+from config.config import DEBUG_VALUE, LIB_DIR, SECRET_KEY_VALUE
 from cx_Oracle import init_oracle_client
-
-from config.config import DEBUG_VALUE, LIB_DIR
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-b^0uxn&)x_jxl&*2ot9p*&qmeyw7abj!q7#!+abzd5nhg%zdd1"
+SECRET_KEY = SECRET_KEY_VALUE
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DEBUG_VALUE
