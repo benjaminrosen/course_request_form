@@ -1,10 +1,17 @@
 from dataclasses import dataclass, field
-from canvasapi.course import Course
 from unittest.mock import patch
 
 from django.test import TestCase
 
-from form.models import Request, ScheduleType, School, Section, Subject, User
+from form.models import (
+    Enrollment,
+    Request,
+    ScheduleType,
+    School,
+    Section,
+    Subject,
+    User,
+)
 from form.terms import CURRENT_TERM, TWO_TERMS_AHEAD
 
 EXECUTE_QUERY = "form.models.execute_query"
@@ -48,6 +55,16 @@ class MockSection:
     id: int
     name: str
     sis_course_id: str
+    sis_section_id: str
+    enable_sis_reactivation: bool
+
+
+@dataclass
+class MockEnrollment:
+    canvas_id: int
+    enrollment_type: str
+    enrollment_state: str
+    course_section_id: int
 
 
 @dataclass
@@ -59,6 +76,36 @@ class MockCourse:
     storage_quota_mb: int
     _requester: str = ""
     sections: list[MockSection] = field(default_factory=list)
+    enrollments: list[MockEnrollment] = field(default_factory=list)
+
+    def get_sections(self) -> list[MockSection]:
+        return self.sections
+
+    def enroll_user(
+        self, canvas_id: int, enrollment_type: str, enrollment: dict
+    ) -> MockEnrollment:
+        enrollment_state = enrollment["enrollment_state"]
+        course_section_id = enrollment["course_section_id"]
+        mock_enrollment = MockEnrollment(
+            canvas_id, enrollment_type, enrollment_state, course_section_id
+        )
+        self.enrollments.append(mock_enrollment)
+        return mock_enrollment
+
+    def create_course_section(
+        self, course_section: dict, enable_sis_reactivation: bool
+    ):
+        name = course_section["name"]
+        sis_section_id = course_section["sis_section_id"]
+        section_id = len(self.sections) + 1
+        mock_section = MockSection(
+            section_id,
+            name,
+            self.sis_course_id,
+            sis_section_id,
+            enable_sis_reactivation,
+        )
+        self.sections.append(mock_section)
 
 
 @dataclass
@@ -93,9 +140,9 @@ class MockAccount:
         return mock_course
 
 
-def create_user():
+def create_user(username=PENNKEY, first_name=FIRST_NAME, last_name=LAST_NAME):
     return User.objects.create(
-        username=PENNKEY, first_name=FIRST_NAME, last_name=LAST_NAME
+        username=username, first_name=first_name, last_name=last_name
     )
 
 
@@ -635,14 +682,24 @@ class RequestTest(TestCase):
     @patch(EXECUTE_QUERY)
     @patch(GET_CANVAS_USER_ID_BY_PENNKEY)
     def setUpTestData(cls, mock_get_canvas_user_id_by_pennkey, mock_execute_query):
-        mock_execute_query.return_value = (
+        mock_execute_query.side_effect = [
             (
-                FIRST_NAME.upper(),
-                LAST_NAME.upper(),
-                PENN_ID,
-                f"{EMAIL}    ",
+                (
+                    FIRST_NAME.upper(),
+                    LAST_NAME.upper(),
+                    PENN_ID,
+                    f"{EMAIL}    ",
+                ),
             ),
-        )
+            (
+                (
+                    "LIBRARIAN",
+                    "USER",
+                    2222222,
+                    f"{EMAIL}    ",
+                ),
+            ),
+        ]
         mock_get_canvas_user_id_by_pennkey.return_value = CANVAS_ID
         section = create_section(
             SCHOOL_CODE,
@@ -656,16 +713,7 @@ class RequestTest(TestCase):
             TERM,
             TITLE,
         )
-        user = create_user()
-        cls.request = Request.objects.create(section=section, requester=user)
-
-    def test_str(self):
-        request_string = str(self.request)
-        section_code = f"SUBJ1000200{TERM}"
-        self.assertEqual(request_string, section_code)
-
-    def test_get_canvas_sub_account_id(self):
-        section = create_section(
+        related_section = create_section(
             School.SAS_SCHOOL_CODE,
             "School of Arts and Sciences",
             SUBJECT_CODE,
@@ -677,6 +725,19 @@ class RequestTest(TestCase):
             TERM,
             TITLE,
         )
+        user = create_user()
+        section.instructors.add(user)
+        section.course_sections.add(related_section)
+        cls.request = Request.objects.create(section=section, requester=user)
+
+    def test_str(self):
+        request_string = str(self.request)
+        section_code = f"SUBJ1000200{TERM}"
+        self.assertEqual(request_string, section_code)
+
+    def test_get_canvas_sub_account_id(self):
+        school = School.objects.get(school_code="A")
+        section = Section.objects.filter(school=school).first()
         user = User.objects.first()
         request = Request.objects.create(section=section, requester=user)
         request.lps_online = True
@@ -686,14 +747,18 @@ class RequestTest(TestCase):
     @staticmethod
     def create_course_section(name: str, sis_course_id: str, canvas_course: MockCourse):
         section_id = len(canvas_course.sections) + 1
-        mock_section = MockSection(section_id, name, sis_course_id)
+        mock_section = MockSection(
+            section_id, name, sis_course_id, sis_course_id, enable_sis_reactivation=True
+        )
         canvas_course.sections.append(mock_section)
 
     @patch("form.models.get_canvas_enrollment_term_id")
     @patch("form.canvas.get_canvas_account")
     @patch("form.canvas.update_canvas_course")
+    @patch(GET_CANVAS_USER_ID_BY_PENNKEY)
     def test_create_canvas_site(
         self,
+        mock_get_canvas_user_id_by_pennkey,
         mock_update_canvas_course,
         mock_get_canvas_account,
         mock_get_canvas_enrollment_term_id,
@@ -702,17 +767,31 @@ class RequestTest(TestCase):
             "form.canvas.create_course_section", wraps=self.create_course_section
         ):
             account = MockAccount(1, "Mock Account")
+            course_name = "SUBJ 1000-200 202220 Course Title"
+            sis_course_id = "BAN_SUBJ-1000-200 202220"
+            course = MockCourse(1, course_name, sis_course_id, 1, 2000)
             mock_get_canvas_enrollment_term_id.return_value = 1
-            mock_get_canvas_account.return_value = account
-            mock_update_canvas_course.return_value = MockCourse(
-                1,
-                "SUBJ 1000-200 202220 Course Title",
-                "BAN_SUBJ-1000-200 202220",
-                1,
-                2000,
-            )
+            mock_get_canvas_account.side_effect = [account, None]
+            mock_update_canvas_course.return_value = None
+            mock_get_canvas_user_id_by_pennkey.return_value = 1234567
             self.assertFalse(len(account.courses))
             self.assertEqual(self.request.status, Request.Status.SUBMITTED)
             self.request.create_canvas_site()
             self.assertEqual(self.request.status, Request.Status.COMPLETED)
             self.assertEqual(len(account.courses), 1)
+            course = next(iter(account.courses))
+            self.assertEqual(course.name, course_name)
+            self.assertEqual(course.sis_course_id, sis_course_id)
+            self.assertEqual(len(course.enrollments), 1)
+            self.request.create_canvas_site()
+            self.assertEqual(self.request.status, Request.Status.ERROR)
+            self.request.reserves = True
+            self.request.save()
+            self.request.create_canvas_site()
+
+    def test_get_approved_requests(self):
+        approved_requests = self.request.get_approved_requests()
+        self.assertFalse(approved_requests)
+        self.request.set_status(Request.Status.APPROVED)
+        approved_requests = self.request.get_approved_requests()
+        self.assertEqual(len(approved_requests), 1)

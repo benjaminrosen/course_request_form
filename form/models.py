@@ -19,6 +19,7 @@ from django.db.models import (
     TextChoices,
     TextField,
 )
+from django.db.models.fields import AutoField, BigAutoField
 
 from .canvas import (
     create_course_section,
