@@ -18,8 +18,8 @@ from django.db.models import (
     OneToOneField,
     TextChoices,
     TextField,
+    UniqueConstraint,
 )
-from django.db.models.fields import AutoField, BigAutoField
 
 from .canvas import (
     create_course_section,
@@ -602,11 +602,23 @@ class Enrollment(Model):
             return [(member.name, member.value) for member in cls]
 
     LIBRARIAN_ROLE_ID = 1383
-    user = ForeignKey(User, on_delete=CASCADE, related_name="auto_adds")
+    user = ForeignKey(User, on_delete=CASCADE)
     role = CharField(max_length=18, choices=CanvasRole.choices, default=CanvasRole.TA)
 
     class Meta:
         managed = False
+        abstract = True
+
+
+class SectionEnrollment(Enrollment):
+    request = ForeignKey("form.Request", on_delete=CASCADE)
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=["user", "role", "request"], name="unique_section_enrollment"
+            )
+        ]
 
 
 class AutoAdd(Enrollment):
@@ -614,6 +626,13 @@ class AutoAdd(Enrollment):
     subject = ForeignKey(Subject, on_delete=CASCADE)
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=["school", "subject", "user", "role"], name="unique_auto_add"
+            )
+        ]
 
 
 class Request(Model):
@@ -643,7 +662,9 @@ class Request(Model):
     reserves = BooleanField(default=False)
     lps_online = BooleanField(default=False)
     exclude_announcements = BooleanField(default=False)
-    additional_enrollments = ManyToManyField(Enrollment, blank=True)
+    additional_enrollments = ManyToManyField(
+        SectionEnrollment, blank=True, related_name="section_enrollments"
+    )
     additional_instructions = TextField(blank=True, default=None, null=True)
     admin_additional_instructions = TextField(blank=True, default=None, null=True)
     process_notes = TextField(blank=True, default="")
@@ -687,11 +708,13 @@ class Request(Model):
             sis_course_id = section.get_canvas_sis_id()
             create_course_section(name, sis_course_id, canvas_course)
 
-    def get_enrollments(self) -> list[Union[Enrollment, AutoAdd]]:
+    def get_enrollments(self) -> list[SectionEnrollment]:
         section = self.section
         instructors = section.instructors.all()
         instructor_enrollments = [
-            Enrollment(user=instructor, role=Enrollment.CanvasRole.INSTRUCTOR)
+            SectionEnrollment(
+                user=instructor, role=Enrollment.CanvasRole.INSTRUCTOR, request=self
+            )
             for instructor in instructors
         ]
         additional_enrollments = list(self.additional_enrollments.all())
@@ -701,9 +724,7 @@ class Request(Model):
         enrollments = instructor_enrollments + additional_enrollments + auto_adds
         return enrollments
 
-    def enroll_users(
-        self, enrollments: list[Union[Enrollment, AutoAdd]], canvas_course: Course
-    ):
+    def enroll_users(self, enrollments: list[SectionEnrollment], canvas_course: Course):
         for enrollment in enrollments:
             canvas_id = enrollment.user.get_canvas_id()
             sections = canvas_course.get_sections()
@@ -715,10 +736,10 @@ class Request(Model):
                 "enrollment_state": "active",
                 "course_section_id": course_section.id,
             }
-            if enrollment.role == Enrollment.CanvasRole.LIBRARIAN:
+            if enrollment.role == Enrollment.CanvasRole.LIBRARIAN.value:
                 enrollment_data["role_id"] = Enrollment.LIBRARIAN_ROLE_ID
             canvas_course.enroll_user(
-                canvas_id, enrollment.role.value, enrollment=enrollment_data
+                canvas_id, enrollment.role, enrollment=enrollment_data
             )
 
     def set_canvas_course_reserves(self, canvas_course: Course):

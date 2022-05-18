@@ -5,10 +5,12 @@ from unittest.mock import patch
 from django.test import TestCase
 
 from form.models import (
+    Enrollment,
     Request,
     ScheduleType,
     School,
     Section,
+    SectionEnrollment,
     Subject,
     User,
 )
@@ -770,9 +772,18 @@ class RequestTest(TestCase):
             TITLE,
         )
         user = create_user()
+        librarian = create_user(
+            username="librarian", first_name="Librarian", last_name="User"
+        )
         section.instructors.add(user)
         section.course_sections.add(related_section)
         cls.request = Request.objects.create(section=section, requester=user)
+        librarian_enrollment = SectionEnrollment.objects.create(
+            user=librarian,
+            role=Enrollment.CanvasRole.LIBRARIAN.value,
+            request=cls.request,
+        )
+        cls.request.additional_enrollments.add(librarian_enrollment)
 
     def test_str(self):
         request_string = str(self.request)
@@ -828,7 +839,7 @@ class RequestTest(TestCase):
             course = next(iter(account.courses))
             self.assertEqual(course.name, course_name)
             self.assertEqual(course.sis_course_id, sis_course_id)
-            self.assertEqual(len(course.enrollments), 1)
+            self.assertEqual(len(course.enrollments), 2)
             self.request.create_canvas_site()
             self.assertEqual(self.request.status, Request.Status.ERROR)
             self.request.reserves = True
