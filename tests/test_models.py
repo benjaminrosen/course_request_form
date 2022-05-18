@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field
+from typing import Optional
 from unittest.mock import patch
 
 from django.test import TestCase
 
 from form.models import (
-    Enrollment,
     Request,
     ScheduleType,
     School,
@@ -68,15 +68,51 @@ class MockEnrollment:
 
 
 @dataclass
+class MockMigration:
+    migration_type: str
+    source_course_id: str
+    workflow_state: str
+
+    def get_progress(self):
+        return self.workflow_state
+
+
+@dataclass
+class MockCalendarEvent:
+    id: int
+    location_name: str
+    description: str
+    title: str
+
+
+def create_mock_calendar_event():
+    return [MockCalendarEvent(1, "Zoom", "Zoom Event", "Zoom Class")]
+
+
+@dataclass
+class MockTab:
+    requester: str
+    reserves_tab: dict
+    hidden: Optional[bool] = True
+
+    def update(self, hidden: bool):
+        self.hidden = hidden
+
+
+@dataclass
 class MockCourse:
     id: int
     name: str
     sis_course_id: str
     term_id: int
     storage_quota_mb: int
+    migration: Optional[MockMigration] = None
     _requester: str = ""
     sections: list[MockSection] = field(default_factory=list)
     enrollments: list[MockEnrollment] = field(default_factory=list)
+    calendar_events: list[MockCalendarEvent] = field(
+        default_factory=create_mock_calendar_event
+    )
 
     def get_sections(self) -> list[MockSection]:
         return self.sections
@@ -106,6 +142,14 @@ class MockCourse:
             enable_sis_reactivation,
         )
         self.sections.append(mock_section)
+
+    def create_content_migration(
+        self, migration_type: str, settings: dict, complete=True
+    ):
+        source_course_id = settings["source_course_id"]
+        workflow_state = "complete" if complete else "error"
+        mock_migration = MockMigration(migration_type, source_course_id, workflow_state)
+        self.migration = mock_migration
 
 
 @dataclass
@@ -756,8 +800,10 @@ class RequestTest(TestCase):
     @patch("form.canvas.get_canvas_account")
     @patch("form.canvas.update_canvas_course")
     @patch(GET_CANVAS_USER_ID_BY_PENNKEY)
+    @patch("form.models.Tab")
     def test_create_canvas_site(
         self,
+        _,
         mock_get_canvas_user_id_by_pennkey,
         mock_update_canvas_course,
         mock_get_canvas_account,
@@ -771,7 +817,7 @@ class RequestTest(TestCase):
             sis_course_id = "BAN_SUBJ-1000-200 202220"
             course = MockCourse(1, course_name, sis_course_id, 1, 2000)
             mock_get_canvas_enrollment_term_id.return_value = 1
-            mock_get_canvas_account.side_effect = [account, None]
+            mock_get_canvas_account.side_effect = [account, None, account]
             mock_update_canvas_course.return_value = None
             mock_get_canvas_user_id_by_pennkey.return_value = 1234567
             self.assertFalse(len(account.courses))
@@ -795,3 +841,28 @@ class RequestTest(TestCase):
         self.request.set_status(Request.Status.APPROVED)
         approved_requests = self.request.get_approved_requests()
         self.assertEqual(len(approved_requests), 1)
+
+    @patch("form.models.get_canvas_enrollment_term_id")
+    @patch("form.canvas.get_canvas_account")
+    @patch("form.canvas.update_canvas_course")
+    @patch(GET_CANVAS_USER_ID_BY_PENNKEY)
+    def test_create_all_approved_sites(
+        self,
+        mock_get_canvas_user_id_by_pennkey,
+        mock_update_canvas_course,
+        mock_get_canvas_account,
+        mock_get_canvas_enrollment_term_id,
+    ):
+        account = MockAccount(1, "Mock Account")
+        mock_get_canvas_enrollment_term_id.return_value = 1
+        mock_get_canvas_account.side_effect = [account, None]
+        mock_update_canvas_course.return_value = None
+        mock_get_canvas_user_id_by_pennkey.return_value = 1234567
+        Request.objects.update(status=Request.Status.CANCELED)
+        Request.create_all_approved_sites()
+        completed_requests = Request.objects.filter(status=Request.Status.COMPLETED)
+        self.assertFalse(completed_requests)
+        Request.objects.update(status=Request.Status.APPROVED)
+        Request.create_all_approved_sites()
+        completed_requests = Request.objects.filter(status=Request.Status.COMPLETED)
+        self.assertTrue(completed_requests)

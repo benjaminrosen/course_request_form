@@ -726,8 +726,8 @@ class Request(Model):
             return
         requester = canvas_course._requester
         reserves_tab = {
-            "course_id": canvas_course.id,
             "id": self.RESERVES_TAB_ID,
+            "course_id": canvas_course.id,
             "label": self.RESERVES_TAB_LABEL,
         }
         tab = Tab(requester, reserves_tab)
@@ -781,6 +781,7 @@ class Request(Model):
         enrollments = self.get_enrollments()
         self.enroll_users(enrollments, canvas_course)
         self.set_canvas_course_reserves(canvas_course)
+        # self.migrate_course(canvas_course)
         action = "CREATED" if created else "UPDATED"
         name = canvas_course.name
         canvas_id = canvas_course.id
