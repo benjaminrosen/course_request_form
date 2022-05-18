@@ -1,5 +1,3 @@
-from dataclasses import dataclass, field
-from typing import Optional
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -15,16 +13,26 @@ from form.models import (
     User,
 )
 from form.terms import CURRENT_TERM, TWO_TERMS_AHEAD
+from tests.mocks import (
+    CANVAS_ID,
+    MockAccount,
+    MockCanvas,
+    MockCourse,
+    MockSection,
+    MockTab,
+)
 
 EXECUTE_QUERY = "form.models.execute_query"
 GET_CANVAS_USER_ID_BY_PENNKEY = "form.models.get_canvas_user_id_by_pennkey"
 GET_ALL_CANVAS_ACCOUNTS = "form.models.get_all_canvas_accounts"
+GET_CANVAS_ENROLLMENT_TERM_ID = "form.models.get_canvas_enrollment_term_id"
+GET_CANVAS_ACCOUNT = "form.canvas.get_canvas_account"
+UPDATE_CANVAS_COURSE = "form.canvas.update_canvas_course"
 PENNKEY = "testuser"
 FIRST_NAME = "Test"
 LAST_NAME = "User"
 PENN_ID = 1234567
 EMAIL = "testuser@upenn.edu"
-CANVAS_ID = 7654321
 SCHED_TYPE_CODE = "SCH"
 SCHED_TYPE_DESC = "Schedule Type Description"
 SCHOOL_CODE = "SCHL"
@@ -41,149 +49,6 @@ INSTRUCTORS = (
 )
 PRIMARY_SUBJECT_CODE = "PRIM"
 PRIMARY_SUBJECT_DESC_LONG = f"Primary {SUBJECT_DESC_LONG}"
-
-
-@dataclass
-class MockUser:
-    id: int
-    unique_id: str
-    sis_user_id: str
-    name: str
-    email: str
-
-
-@dataclass
-class MockSection:
-    id: int
-    name: str
-    sis_course_id: str
-    sis_section_id: str
-    enable_sis_reactivation: bool
-
-
-@dataclass
-class MockEnrollment:
-    canvas_id: int
-    enrollment_type: str
-    enrollment_state: str
-    course_section_id: int
-
-
-@dataclass
-class MockMigration:
-    migration_type: str
-    source_course_id: str
-    workflow_state: str
-
-    def get_progress(self):
-        return self.workflow_state
-
-
-@dataclass
-class MockCalendarEvent:
-    id: int
-    location_name: str
-    description: str
-    title: str
-
-
-def create_mock_calendar_event():
-    return [MockCalendarEvent(1, "Zoom", "Zoom Event", "Zoom Class")]
-
-
-@dataclass
-class MockTab:
-    requester: str
-    reserves_tab: dict
-    hidden: Optional[bool] = True
-
-    def update(self, hidden: bool):
-        self.hidden = hidden
-
-
-@dataclass
-class MockCourse:
-    id: int
-    name: str
-    sis_course_id: str
-    term_id: int
-    storage_quota_mb: int
-    migration: Optional[MockMigration] = None
-    _requester: str = ""
-    sections: list[MockSection] = field(default_factory=list)
-    enrollments: list[MockEnrollment] = field(default_factory=list)
-    calendar_events: list[MockCalendarEvent] = field(
-        default_factory=create_mock_calendar_event
-    )
-
-    def get_sections(self) -> list[MockSection]:
-        return self.sections
-
-    def enroll_user(
-        self, canvas_id: int, enrollment_type: str, enrollment: dict
-    ) -> MockEnrollment:
-        enrollment_state = enrollment["enrollment_state"]
-        course_section_id = enrollment["course_section_id"]
-        mock_enrollment = MockEnrollment(
-            canvas_id, enrollment_type, enrollment_state, course_section_id
-        )
-        self.enrollments.append(mock_enrollment)
-        return mock_enrollment
-
-    def create_course_section(
-        self, course_section: dict, enable_sis_reactivation: bool
-    ):
-        name = course_section["name"]
-        sis_section_id = course_section["sis_section_id"]
-        section_id = len(self.sections) + 1
-        mock_section = MockSection(
-            section_id,
-            name,
-            self.sis_course_id,
-            sis_section_id,
-            enable_sis_reactivation,
-        )
-        self.sections.append(mock_section)
-
-    def create_content_migration(
-        self, migration_type: str, settings: dict, complete=True
-    ):
-        source_course_id = settings["source_course_id"]
-        workflow_state = "complete" if complete else "error"
-        mock_migration = MockMigration(migration_type, source_course_id, workflow_state)
-        self.migration = mock_migration
-
-
-@dataclass
-class MockAccount:
-    id: int
-    name: str
-    users: list[MockUser] = field(default_factory=list)
-    courses: list[MockCourse] = field(default_factory=list)
-
-    def create_user(
-        self, pseudonym: dict, user: dict, communication_channel: dict
-    ) -> MockUser:
-        unique_id = pseudonym["unique_id"]
-        sis_user_id = pseudonym["sis_user_id"]
-        name = user["name"]
-        email = communication_channel["address"]
-        user_id = len(self.users) + CANVAS_ID
-        mock_user = MockUser(user_id, unique_id, sis_user_id, name, email)
-        self.users.append(mock_user)
-        return mock_user
-
-    def create_course(self, course: dict) -> MockCourse:
-        name = course["name"]
-        sis_course_id = course["sis_course_id"]
-        term_id = course["term_id"]
-        storage_quota_mb = course["storage_quota_mb"]
-        course_id = len(self.courses) + 1
-        mock_course = MockCourse(
-            course_id, name, sis_course_id, term_id, storage_quota_mb
-        )
-        self.courses.append(mock_course)
-        return mock_course
 
 
 def create_user(username=PENNKEY, first_name=FIRST_NAME, last_name=LAST_NAME):
@@ -338,7 +203,7 @@ class UserTest(TestCase):
     ):
         mock_execute_query.return_value = self.get_mock_user()
         mock_get_canvas_user_id_by_pennkey.side_effect = [None, CANVAS_ID]
-        mock_get_canvas_main_account.return_value = MockAccount(1, "Mock Account")
+        mock_get_canvas_main_account.return_value = MockAccount(1)
         user = create_user()
         canvas_id = user.get_canvas_id()
         self.assertEqual(canvas_id, CANVAS_ID)
@@ -807,13 +672,15 @@ class RequestTest(TestCase):
         )
         canvas_course.sections.append(mock_section)
 
-    @patch("form.models.get_canvas_enrollment_term_id")
-    @patch("form.canvas.get_canvas_account")
-    @patch("form.canvas.update_canvas_course")
+    @patch(GET_CANVAS_ENROLLMENT_TERM_ID)
+    @patch(GET_CANVAS_ACCOUNT)
+    @patch(UPDATE_CANVAS_COURSE)
     @patch(GET_CANVAS_USER_ID_BY_PENNKEY)
-    @patch("form.models.Tab")
+    @patch("form.models.Tab", wraps=MockTab)
+    @patch("form.canvas.get_canvas")
     def test_create_canvas_site(
         self,
+        mock_get_canvas,
         _,
         mock_get_canvas_user_id_by_pennkey,
         mock_update_canvas_course,
@@ -823,7 +690,7 @@ class RequestTest(TestCase):
         with patch(
             "form.canvas.create_course_section", wraps=self.create_course_section
         ):
-            account = MockAccount(1, "Mock Account")
+            account = MockAccount(1)
             course_name = "SUBJ 1000-200 202220 Course Title"
             sis_course_id = "BAN_SUBJ-1000-200 202220"
             course = MockCourse(1, course_name, sis_course_id, 1, 2000)
@@ -831,20 +698,28 @@ class RequestTest(TestCase):
             mock_get_canvas_account.side_effect = [account, None, account]
             mock_update_canvas_course.return_value = None
             mock_get_canvas_user_id_by_pennkey.return_value = 1234567
+            mock_get_canvas.return_value = MockCanvas()
             self.assertFalse(len(account.courses))
             self.assertEqual(self.request.status, Request.Status.SUBMITTED)
             self.request.create_canvas_site()
             self.assertEqual(self.request.status, Request.Status.COMPLETED)
             self.assertEqual(len(account.courses), 1)
             course = next(iter(account.courses))
+            self.assertFalse(course.migration)
             self.assertEqual(course.name, course_name)
             self.assertEqual(course.sis_course_id, sis_course_id)
             self.assertEqual(len(course.enrollments), 2)
             self.request.create_canvas_site()
+            self.assertEqual(len(account.courses), 1)
             self.assertEqual(self.request.status, Request.Status.ERROR)
             self.request.reserves = True
-            self.request.save()
+            self.request.copy_from_course = 1234567
+            self.request.exclude_announcements = True
             self.request.create_canvas_site()
+            self.assertEqual(len(account.courses), 2)
+            course = account.courses[1]
+            self.assertTrue(course.migration)
+            self.assertEqual(course.migration.workflow_state, "complete")
 
     def test_get_approved_requests(self):
         approved_requests = self.request.get_approved_requests()
@@ -853,9 +728,9 @@ class RequestTest(TestCase):
         approved_requests = self.request.get_approved_requests()
         self.assertEqual(len(approved_requests), 1)
 
-    @patch("form.models.get_canvas_enrollment_term_id")
-    @patch("form.canvas.get_canvas_account")
-    @patch("form.canvas.update_canvas_course")
+    @patch(GET_CANVAS_ENROLLMENT_TERM_ID)
+    @patch(GET_CANVAS_ACCOUNT)
+    @patch(UPDATE_CANVAS_COURSE)
     @patch(GET_CANVAS_USER_ID_BY_PENNKEY)
     def test_create_all_approved_sites(
         self,
@@ -864,7 +739,7 @@ class RequestTest(TestCase):
         mock_get_canvas_account,
         mock_get_canvas_enrollment_term_id,
     ):
-        account = MockAccount(1, "Mock Account")
+        account = MockAccount(1)
         mock_get_canvas_enrollment_term_id.return_value = 1
         mock_get_canvas_account.side_effect = [account, None]
         mock_update_canvas_course.return_value = None
@@ -877,3 +752,20 @@ class RequestTest(TestCase):
         Request.create_all_approved_sites()
         completed_requests = Request.objects.filter(status=Request.Status.COMPLETED)
         self.assertTrue(completed_requests)
+
+    @patch("form.models.delete_zoom_events")
+    def test_migrate_course(self, mock_delete_zoom_events):
+        course = MockCourse(
+            1,
+            "Mock Course",
+            f"BAN_SUBJ-1000-200 {CURRENT_TERM}",
+            1,
+            2000,
+            workflow_state="queued",
+        )
+        self.request.copy_from_course = 1234567
+        self.request.migrate_course(course, sleep_time=0.001, max_attempts=1)
+        self.assertTrue(course.migration)
+        mock_delete_zoom_events.assert_not_called()
+        self.request.migrate_course(None, sleep_time=0.001, max_attempts=1)
+        mock_delete_zoom_events.assert_not_called()

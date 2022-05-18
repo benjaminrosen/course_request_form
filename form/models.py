@@ -649,8 +649,6 @@ class Request(Model):
     STORAGE_QUOTA = 2000
     RESERVES_TAB_ID = "context_external_tool_139969"
     RESERVES_TAB_LABEL = "Course Materials @ Penn Libraries"
-    MAX_MIGRATION_ATTEMPTS = 180
-    MIGRATION_SLEEP_TIME = 5
     section = OneToOneField(Section, on_delete=CASCADE, primary_key=True)
     included_sections = ManyToManyField(Section, blank=True, related_name=RELATED_NAME)
     requester = ForeignKey(User, on_delete=CASCADE, related_name=RELATED_NAME)
@@ -754,7 +752,7 @@ class Request(Model):
         tab = Tab(requester, reserves_tab)
         tab.update(hidden=False)
 
-    def migrate_course(self, canvas_course: Course):
+    def migrate_course(self, canvas_course: Course, sleep_time=5, max_attempts=180):
         source_course_id = self.copy_from_course
         if not source_course_id:
             return
@@ -773,11 +771,10 @@ class Request(Model):
             migration_status = content_migration.get_progress().workflow_state
             attempts = 0
             while (
-                migration_status in {"queued", "running"}
-                and attempts <= self.MAX_MIGRATION_ATTEMPTS
+                migration_status in {"queued", "running"} and attempts <= max_attempts
             ):
                 logger.info(f"Migration {migration_status}...")
-                sleep(self.MIGRATION_SLEEP_TIME)
+                sleep(sleep_time)
                 migration_status = content_migration.get_progress().workflow_state
                 attempts += 1
             if not migration_status == "complete":
@@ -802,7 +799,7 @@ class Request(Model):
         enrollments = self.get_enrollments()
         self.enroll_users(enrollments, canvas_course)
         self.set_canvas_course_reserves(canvas_course)
-        # self.migrate_course(canvas_course)
+        self.migrate_course(canvas_course)
         action = "CREATED" if created else "UPDATED"
         name = canvas_course.name
         canvas_id = canvas_course.id

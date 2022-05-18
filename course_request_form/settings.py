@@ -14,8 +14,9 @@ import os
 from pathlib import Path
 from platform import system
 
-from config.config import DEBUG_VALUE, LIB_DIR, SECRET_KEY_VALUE
 from cx_Oracle import init_oracle_client
+
+from config.config import DEBUG_VALUE, LIB_DIR, SECRET_KEY_VALUE
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
