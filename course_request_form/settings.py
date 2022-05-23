@@ -134,6 +134,8 @@ STATIC_ROOT = BASE_DIR / "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+LOGOUT_REDIRECT_URL = "home"
+
 LOGGER = {
     "handlers": ["course_request_form", "console"],
     "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),

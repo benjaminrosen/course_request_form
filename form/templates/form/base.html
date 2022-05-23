@@ -8,7 +8,7 @@
         <link rel="stylesheet" href="{% static "css/style.css" %}">
     </head>
     <body>
-        {% block body %}
+        {% if user.is_authenticated %}
             <div class="main">
                 <div class="sidebar">
                     <img class="logo" src="{% static 'img/UniversityofPennsylvania_FullLogo_Reverse_RGB.png' %}" alt="UPenn logo">
@@ -17,6 +17,7 @@
                         <a href="/">Home</a>
                         <a href="/sections">Courses</a>
                         <a href="#">Requests</a>
+                        <a href="{% url 'logout' %}">Log Out</a>
                     </nav>
                 </div>
                 <div class="content">
@@ -24,6 +25,12 @@
                     {% endblock %}
                 </div>
             </div>
-        {% endblock %}
+        {% else %}
+            <div class="header">
+                <img class="header-logo" src="{% static 'img/UniversityofPennsylvania_FullLogo_Reverse_RGB.png' %}" alt="UPenn logo">
+                <h1>Course Request Form</h1>
+            </div>
+            {% block body %}{% endblock %}
+        {% endif %}
     </body>
 </html>
