@@ -45,7 +45,7 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         if self._state.adding and not self.penn_id:
-            self.sync_dw_info(save=False)
+            self.sync_dw_info()
         super().save(*args, **kwargs)
 
     @staticmethod
@@ -55,29 +55,35 @@ class User(AbstractUser):
         else:
             logger.warning(f"{field} NOT FOUND for '{username}'")
 
-    def sync_dw_info(self, save=True):
-        logger.info(f"Getting {self.username}'s info from Data Warehouse...")
+    @classmethod
+    def sync_user(cls, pennkey: str):
+        logger.info(f"Getting {pennkey}'s info from Data Warehouse...")
         query = """
                 SELECT first_name, last_name, penn_id, email_address
                 FROM employee_general
                 WHERE pennkey = :username
                 """
-        cursor = execute_query(query, {"username": self.username})
+        cursor = execute_query(query, {"username": pennkey})
         for first_name, last_name, penn_id, email in cursor:
             first_name = first_name.title() if first_name else ""
-            self.log_field(self.username, "first name", first_name)
-            self.first_name = first_name
+            cls.log_field(pennkey, "first name", first_name)
             last_name = last_name.title() if last_name else ""
-            self.log_field(self.username, "last name", last_name)
-            self.last_name = last_name
-            self.log_field(self.username, "Penn id", penn_id)
-            self.penn_id = penn_id
-            email = email.strip().lower() if email else None
-            self.log_field(self.username, "email", email)
-            self.email = email or ""
+            cls.log_field(pennkey, "last name", last_name)
+            cls.log_field(pennkey, "Penn id", penn_id)
+            email = email.strip().lower() if email else ""
+            cls.log_field(pennkey, "email", email)
+            User.objects.update_or_create(
+                username=pennkey,
+                defaults={
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "penn_id": penn_id,
+                    "email": email,
+                },
+            )
 
-        if save:
-            self.save()
+    def sync_dw_info(self):
+        self.sync_user(self.username)
 
     def get_canvas_id(self) -> int:
         logger.info(f"Getting Canvas user id for '{self.username}'...")
@@ -388,7 +394,7 @@ class Section(Model):
                         "first_name": first_name,
                         "last_name": last_name,
                         "penn_id": penn_id,
-                        "email": email,
+                        "email": email or "",
                     },
                 )
                 if user:
