@@ -24,6 +24,9 @@ class HomePageView(LoginRequiredMixin, TemplateView):
 class SectionListView(ListView):
     model = Section
 
+    def get_queryset(self):
+        return Section.objects.filter(primary_section__isnull=True)
+
 
 class SectionDetailView(DetailView):
     model = Section
