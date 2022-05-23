@@ -1,5 +1,19 @@
 {% extends "./base.html" %}
 
 {% block content %}
-    <h1>Welcome</h1>
+    <h1>Home</h1>
+    <div class="my-info">
+        <h2>Contact info</h2>
+        <p>Email: {{ request.user.email }}</p>
+        <button>Change email</button>
+    </div>
+    <div class="my-courses">
+        <h2>My courses</h2>
+    </div>
+    <div class="my-requests">
+        <h2>My requests</h2>
+    </div>
+    <div class="my-canvas-sites">
+        <h2>My Canvas sites</h2>
+    </div>
 {% endblock %}

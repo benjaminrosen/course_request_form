@@ -17,10 +17,12 @@ from django.contrib import admin
 from django.urls import path
 
 from form.views import HomePageView, SectionDetailView, SectionListView
+from django.contrib.auth import views
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("accounts/login/", views.LoginView.as_view()),
     path("", HomePageView.as_view()),
     path("sections/", SectionListView.as_view()),
     path("sections/<pk>", SectionDetailView.as_view()),
+    path("admin/", admin.site.urls),
 ]
