@@ -339,7 +339,7 @@ class Section(Model):
                 'MST',
                 'SRT'
             )
-            AND school NOT IN ('W', 'L')
+            AND school NOT IN ('W', 'L', 'P')
             """
     QUERY_SECTION_ID = f"{QUERY} AND term = :term AND section_id = :section_id"
     DEFAULT_TERMS = [CURRENT_TERM, NEXT_TERM]
