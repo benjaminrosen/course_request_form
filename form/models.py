@@ -439,7 +439,7 @@ class Section(Model):
                 AND section_id != :section_id
                 """
         term = self.term
-        course_id = f"{self.subject}{self.course_num}"
+        course_id = f"{self.subject.subject_code}{self.course_num}"
         kwargs = {"term": term, "course_id": course_id, "section_id": self.section_id}
         cursor = execute_query(query, kwargs)
         course_sections = self.get_related_sections(cursor)

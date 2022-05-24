@@ -46,8 +46,12 @@ class SectionListView(ListView):
                     lambda a, b: a & b,
                     [
                         Q(section_code__icontains=search_term)
+                        | Q(also_offered_as__section_code__icontains=search_term)
                         | Q(title__icontains=search_term)
                         | Q(schedule_type__sched_type_code__icontains=search_term)
+                        | Q(instructors__username__icontains=search_term)
+                        | Q(instructors__first_name__icontains=search_term)
+                        | Q(instructors__last_name__icontains=search_term)
                         for search_term in search_terms
                     ],
                 )
@@ -61,7 +65,7 @@ class SectionListView(ListView):
             term = search = ""
         else:
             term = self.request.GET.get("term")
-            search = self.request.GET.get("search")
+            search = self.request.GET.get("search") or ""
         context["current_term"] = str(CURRENT_TERM)
         context["next_term"] = str(NEXT_TERM)
         context["search"] = search

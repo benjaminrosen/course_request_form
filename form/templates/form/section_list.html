@@ -5,7 +5,7 @@
     <form method="get" action="{% url 'sections' %}">
         <fieldset>
             <legend>Filter sections</legend>
-            <div>
+            <div class="filter-term">
                 <label for="pet-select">Term:</label>
                 <select name="term" id="term">
                     <option value="" {% if not term %} selected {% endif %}>All available terms</option>
@@ -19,7 +19,7 @@
                     </option>
                 </select>
             </div>
-            <div>
+            <div class="filter">
                 <label for="search">Search:</label>
                 <input type="text" id="search" name="search" value="{{ search }}">
             </div>
@@ -47,7 +47,7 @@
                 </td>
                 <td>{{ section.title }}</td>
                 <td>{{ section.schedule_type.sched_type_code }}</td>
-                <td>{{ section.get_instructors_list }}</td>
+                <td class="instructors">{{ section.get_instructors_list }}</td>
                 <td>
                     <button>
                         {% if section.request %}View Request{% else %}Request site{% endif %}
