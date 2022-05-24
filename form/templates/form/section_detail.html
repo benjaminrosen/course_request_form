@@ -1,15 +1,14 @@
 {% extends "./base.html" %}
 
 {% block content %}
-    <h1>Sections</h1>
-    <h2>{{ object.section_code  }}</h2>
+    <h2>{{ object.get_canvas_course_code  }}</h2>
     <p>School: {{ object.school.school_desc_long }}</p>
     <p>Subject: {{ object.subject }}</p>
     <p>Term: {{ object.term }}</p>
     <p>Schedule Type: {{ object.schedule_type }}</p>
     <p>Instructors:
         {% for instructor in object.instructors.all %}
-            {{ instructor.first_name }} {{ instructor.last_name  }}
+            {{ instructor.first_name }} {{ instructor.last_name }} ({{ instructor.username }})
         {% endfor %}
     </p>
     <p>Also offered as:

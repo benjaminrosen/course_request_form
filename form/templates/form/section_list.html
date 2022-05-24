@@ -13,7 +13,7 @@
         </tr>
         {% for section in object_list %}
             <tr>
-                <td><a href="/sections/{{ section.section_code }}">{{ section.section_code }}</a></td>
+                <td><a href="/sections/{{ section.section_code }}">{{ section.get_canvas_course_code }}</a></td>
                 <td>{{ section.title }}</td>
                 <td>{{ section.schedule_type.sched_type_code }}</td>
                 <td>{{ section.instructors.first }}</td>
