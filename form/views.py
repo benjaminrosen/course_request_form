@@ -6,6 +6,7 @@ from config.config import PROD_URL
 from django.db.models import Q
 
 from form.canvas import get_user_canvas_sites
+from form.terms import CURRENT_TERM, NEXT_TERM
 
 from .models import Section, User
 
@@ -28,27 +29,44 @@ class SectionListView(ListView):
     paginate_by = 30
 
     def get_queryset(self):
-        current = self.request.GET.get("202220")
-        next_term = self.request.GET.get("202230")
-        search = self.request.GET.get("search")
         sections = Section.objects.filter(primary_section__isnull=True)
-        if current and not next_term:
-            sections = sections.filter(term=202220)
-        elif next_term and not current:
-            sections = sections.filter(term=202230)
+        clear = self.request.GET.get("clear")
+        if clear:
+            return sections
+        term = self.request.GET.get("term")
+        search = self.request.GET.get("search")
+        if term == str(CURRENT_TERM):
+            sections = sections.filter(term=CURRENT_TERM)
+        elif term == str(NEXT_TERM):
+            sections = sections.filter(term=NEXT_TERM)
         if search:
-            search = search.split()
+            search_terms = search.split()
             sections = sections.filter(
                 reduce(
-                    lambda first, second: first | second,
+                    lambda a, b: a & b,
                     [
                         Q(section_code__icontains=search_term)
                         | Q(title__icontains=search_term)
-                        for search_term in search
+                        | Q(schedule_type__sched_type_code__icontains=search_term)
+                        for search_term in search_terms
                     ],
                 )
             )
         return sections
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        clear = self.request.GET.get("clear")
+        if clear:
+            term = search = ""
+        else:
+            term = self.request.GET.get("term")
+            search = self.request.GET.get("search")
+        context["current_term"] = str(CURRENT_TERM)
+        context["next_term"] = str(NEXT_TERM)
+        context["search"] = search
+        context["term"] = term
+        return context
 
 
 class SectionDetailView(DetailView):

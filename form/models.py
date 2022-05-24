@@ -597,6 +597,12 @@ class Section(Model):
         )
         return f"{canvas_course_code} {title}"
 
+    def get_instructors_list(self) -> str:
+        instructors = self.instructors.all()
+        if not instructors:
+            return "STAFF"
+        return ", ".join([str(instructor) for instructor in instructors])
+
 
 class Enrollment(Model):
     class CanvasRole(Enum):
