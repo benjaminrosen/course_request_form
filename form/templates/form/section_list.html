@@ -2,6 +2,21 @@
 
 {% block content %}
     <h1>Course Sections</h1>
+    <form method="get" action="{% url 'sections' %}">
+        <fieldset>
+            <legend>Select terms</legend>
+            <label for="202220">202220</label>
+            <input type="checkbox" id="202220" name="202220" value="202220">
+            <label for="202230">202230</label>
+            <input type="checkbox" id="202230" name="202230" value="202230">
+        </fieldset>
+        <fieldset>
+            <legend>Search</legend>
+            <label for="search">Search:</label>
+            <input type="text" id="search" name="search" value="">
+        </fieldset>
+        <p><input type="submit" name="submit" value="Filter"/></p>
+    </form>
     <table>
         <colgroup span="5"></colgroup>
         <tr>
@@ -13,11 +28,19 @@
         </tr>
         {% for section in object_list %}
             <tr>
-                <td><a href="/sections/{{ section.section_code }}">{{ section.get_canvas_course_code }}</a></td>
+                <td>
+                    <a href="/sections/{{ section.section_code }}">
+                        {{ section.get_canvas_course_code }}
+                    </a>
+                </td>
                 <td>{{ section.title }}</td>
                 <td>{{ section.schedule_type.sched_type_code }}</td>
                 <td>{{ section.instructors.first }}</td>
-                <td>{{ section.request }}</td>
+                <td>
+                    <button>
+                        {% if section.request %}View Request{% else %}Request site{% endif %}
+                    </button>
+                </td>
             </tr>
         {% endfor %}
     </table>

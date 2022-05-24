@@ -21,7 +21,7 @@ from form.views import HomePageView, SectionDetailView, SectionListView
 urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("", HomePageView.as_view(), name="home"),
-    path("sections/", SectionListView.as_view()),
+    path("sections/", SectionListView.as_view(), name="sections"),
     path("sections/<pk>", SectionDetailView.as_view()),
     path("admin/", admin.site.urls),
 ]

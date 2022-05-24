@@ -366,6 +366,9 @@ class Section(Model):
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ["term", "section_code"]
+
     def __str__(self):
         return self.section_code
 

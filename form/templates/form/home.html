@@ -20,7 +20,14 @@
     <div class="my-canvas-sites">
         <h3>My Canvas sites</h3>
         {% for site in canvas_sites %}
-            <p><a href="{{ canvas_url }}/{{ site.id }}">{{ site }}</a><p>
+            <p>
+                <a href="{{ canvas_url }}/{{ site.id }}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                >
+                    {{ site }}
+                </a>
+            </p>
         {% endfor %}
     </div>
 {% endblock %}

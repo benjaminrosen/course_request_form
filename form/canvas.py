@@ -142,21 +142,8 @@ def delete_announcements(canvas_course):
         delete_announcement(announcement)
 
 
-def get_canvas_course(course_id: int) -> Course:
-    return get_canvas().get_course(course_id)
-
-
-def get_user_canvas_sites(user: str) -> Optional[list[Course]]:
-    instructor = get_canvas_user_by_pennkey(user)
-    if not instructor:
+def get_user_canvas_sites(username: str) -> Optional[list[Course]]:
+    user = get_canvas_user_by_pennkey(username)
+    if not user:
         return None
-    enrollments = instructor.get_enrollments(
-        role=[
-            "TeacherEnrollment",
-            "TaEnrollment",
-            "ObserverEnrollment",
-            "DesignerEnrollment",
-        ]
-    )
-    courses = [get_canvas_course(enrollment.course_id) for enrollment in enrollments]
-    return courses
+    return list(user.get_courses(enrollment_type="teacher"))
