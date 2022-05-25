@@ -56,7 +56,7 @@ class User(AbstractUser):
             logger.warning(f"{field} NOT FOUND for '{username}'")
 
     @classmethod
-    def sync_user(cls, pennkey: str):
+    def sync_user(cls, pennkey: str, user_object=None):
         logger.info(f"Getting {pennkey}'s info from Data Warehouse...")
         query = """
                 SELECT first_name, last_name, penn_id, email_address
@@ -72,18 +72,24 @@ class User(AbstractUser):
             cls.log_field(pennkey, "Penn id", penn_id)
             email = email.strip().lower() if email else ""
             cls.log_field(pennkey, "email", email)
-            User.objects.update_or_create(
-                username=pennkey,
-                defaults={
-                    "first_name": first_name,
-                    "last_name": last_name,
-                    "penn_id": penn_id,
-                    "email": email,
-                },
-            )
+            if user_object:
+                user_object.first_name = first_name
+                user_object.last_name = last_name
+                user_object.penn_id = penn_id
+                user_object.email = email
+            else:
+                User.objects.update_or_create(
+                    username=pennkey,
+                    defaults={
+                        "first_name": first_name,
+                        "last_name": last_name,
+                        "penn_id": penn_id,
+                        "email": email,
+                    },
+                )
 
     def sync_dw_info(self):
-        self.sync_user(self.username)
+        self.sync_user(self.username, self)
 
     def get_canvas_id(self) -> int:
         logger.info(f"Getting Canvas user id for '{self.username}'...")
