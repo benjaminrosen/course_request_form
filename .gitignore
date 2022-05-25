@@ -1,7 +1,7 @@
 .python-version
 migrations/0*.py
 __pycache__/
-static/
+/static/
 .coverage
 *.ini
 *.log*
