@@ -1,7 +1,7 @@
 {% extends "./base.html" %}
 
 {% block content %}
-    <h2>{{ object.get_canvas_course_code  }}</h2>
+    <h2>{{ object.get_canvas_course_code }}: {{ object.title }}</h2>
     <p>School: {{ object.school.school_desc_long }}</p>
     <p>Subject: {{ object.subject }}</p>
     <p>Term: {{ object.term }}</p>
@@ -9,11 +9,7 @@
     <p>Instructors: {{ object.get_instructors_list }}</p>
     <p>Also offered as:
         {% for section in object.also_offered_as.all %}
-            <p>
-                <a href="{% url "sections" %}{{ section.section_code }}">
-                    {{ section.get_canvas_course_code }}
-                </a>
-            </p>
+            <p>{{ section.get_canvas_course_code }}</p>
         {% endfor %}
     </p>
     <p>Course sections:
