@@ -16,12 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from form.views import HomePageView, SectionDetailView, SectionListView
+from form.views import HomePageView, RequestFormView, SectionDetailView, SectionListView
 
 urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("", HomePageView.as_view(), name="home"),
     path("sections/", SectionListView.as_view(), name="sections"),
-    path("sections/<pk>", SectionDetailView.as_view()),
+    path("sections/<pk>", RequestFormView.as_view()),
     path("admin/", admin.site.urls),
 ]

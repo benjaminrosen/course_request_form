@@ -1,13 +1,15 @@
-from typing import cast
 from functools import reduce
-from django.views.generic import DetailView, ListView, TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from typing import cast
+
 from config.config import PROD_URL
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
+from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from form.canvas import get_user_canvas_sites
 from form.terms import CURRENT_TERM, NEXT_TERM
 
+from .forms import RequestForm
 from .models import Section, User
 
 
@@ -75,3 +77,9 @@ class SectionListView(ListView):
 
 class SectionDetailView(DetailView):
     model = Section
+
+
+class RequestFormView(FormView):
+    form_class = RequestForm
+    template_name = "form/section_request.html"
+    succes_url = ""
