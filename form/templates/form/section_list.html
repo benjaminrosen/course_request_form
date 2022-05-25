@@ -41,7 +41,7 @@
         {% for section in object_list %}
             <tr>
                 <td>
-                    <a href="/sections/{{ section.section_code }}">
+                    <a href="/sections/{{ section.section_code }}{% if not section.request %}/request{% endif %}">
                         {{ section.get_canvas_course_code }}
                     </a>
                 </td>
