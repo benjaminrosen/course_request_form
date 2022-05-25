@@ -2,11 +2,6 @@
 secret_key = # key
 debug = # true for development and false for production
 
-[user]
-username = # username
-password = # password
-email = # pennkey@upenn.edu
-
 [canvas]
 prod_url = # url
 prod_key = # key

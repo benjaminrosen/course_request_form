@@ -12,7 +12,6 @@ DJANGO_SECTION = "django"
 CANVAS_SECTION = "canvas"
 SECRET_KEY_VALUE = config.get(DJANGO_SECTION, "secret_key", raw=True)
 DEBUG_VALUE = config.getboolean(DJANGO_SECTION, "debug", fallback=False)
-USERNAME, PASSWORD, EMAIL = get_config_section_values("user")
 PROD_URL = config.get(CANVAS_SECTION, "prod_url")
 PROD_KEY = config.get(CANVAS_SECTION, "prod_key")
 TEST_URL = config.get(CANVAS_SECTION, "test_url")

@@ -1,5 +1,5 @@
 .python-version
-migrations/
+migrations/0*.py
 __pycache__/
 static/
 .coverage
