@@ -85,6 +85,14 @@ class RequestFormView(FormView):
     template_name = "form/section_request.html"
     succes_url = ""
 
+    def get_initial(self):
+        initial = super().get_initial()
+        section_code = self.kwargs["pk"]
+        section = Section.objects.get(section_code=section_code)
+        instructors = section.instructors.all()
+        initial.update({"instructors": instructors})
+        return initial
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         section_code = self.request.path.replace("/sections/", "").replace(

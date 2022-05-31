@@ -8,6 +8,7 @@ class RequestForm(ModelForm):
     class Meta:
         model = Request
         fields = (
+            "proxy_requester",
             "title_override",
             "copy_from_course",
             "reserves",
@@ -16,6 +17,11 @@ class RequestForm(ModelForm):
             "additional_enrollments",
             "additional_instructions",
         )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instructors = kwargs["initial"]["instructors"]
+        self.fields["proxy_requester"].queryset = instructors
 
 
 class EmailForm(Form):
