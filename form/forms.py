@@ -21,14 +21,14 @@ class RequestForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        proxy_requester = self.fields["proxy_requester"]
+        print(kwargs["initial"])
         if not "instructors" in kwargs["initial"]:
-            del proxy_requester
+            del self.fields["proxy_requester"]
             return
         instructors = kwargs["initial"]["instructors"]
-        proxy_requester.queryset = instructors
+        self.fields["proxy_requester"].queryset = instructors
         if "proxy_requester" in kwargs["initial"]:
-            proxy_requester.disabled = True
+            self.fields["proxy_requester"].disabled = True
 
 
 class EmailForm(Form):

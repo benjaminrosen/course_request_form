@@ -92,7 +92,7 @@ class RequestFormView(FormView):
         section = Section.objects.get(section_code=section_code)
         instructors = section.instructors.all()
         initial_values = {"section": section}
-        if user not in instructors:
+        if instructors and user not in instructors:
             initial_values["instructors"] = instructors
             if instructors.count() == 1:
                 initial_values["proxy_requester"] = instructors.first()
