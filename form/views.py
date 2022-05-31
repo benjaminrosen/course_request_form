@@ -1,15 +1,16 @@
 from functools import reduce
 from typing import cast
 
-from config.config import PROD_URL
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
+from django.urls.base import reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
+from config.config import PROD_URL
 from form.canvas import get_user_canvas_sites
 from form.terms import CURRENT_TERM, NEXT_TERM
 
-from .forms import RequestForm
+from .forms import EmailForm, RequestForm
 from .models import Section, User
 
 
@@ -83,3 +84,36 @@ class RequestFormView(FormView):
     form_class = RequestForm
     template_name = "form/section_request.html"
     succes_url = ""
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        section_code = self.request.path.replace("/sections/", "").replace(
+            "/request/", ""
+        )
+        section = Section.objects.get(section_code=section_code)
+        context["section"] = section
+        return context
+
+
+class EmailFormView(FormView):
+    form_class = EmailForm
+    template_name = "form/email_update.html"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({"username": self.request.user.username})
+        return kwargs
+
+    def get_success_url(self):
+        return reverse("home")
+
+    def form_valid(self, form):
+        new_email = form.cleaned_data.get("new_email")
+        username = form.cleaned_data.get("username")
+        try:
+            user = User.objects.get(username=username)
+        except Exception:
+            user = None
+        if user:
+            user.set_email(email=new_email)
+        return super().form_valid(form)

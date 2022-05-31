@@ -107,6 +107,10 @@ class User(AbstractUser):
         )
         return canvas_user.id
 
+    def set_email(self, email: str):
+        self.email = email
+        self.save()
+
 
 class ScheduleType(Model):
     QUERY = """
@@ -607,7 +611,10 @@ class Section(Model):
         instructors = self.instructors.all()
         if not instructors:
             return "STAFF"
-        return ", ".join([str(instructor) for instructor in instructors])
+        instructors_list = ", ".join([str(instructor) for instructor in instructors])
+        if len(instructors_list) >= 50:
+            instructors_list = f"{instructors_list[:47]}..."
+        return instructors_list
 
 
 class Enrollment(Model):

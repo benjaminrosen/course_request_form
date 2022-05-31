@@ -3,6 +3,12 @@
 {% block content %}
     <form method="post">
         {% csrf_token %}
+        <div class="fieldWrapper">
+            <p>The default title for this course is: {{ section.title }}. To use a different title for the Canvas site, type it below:</p>
+            {{ form.title_override.errors }}
+            {{ form.title_override.label_tag }}
+            {{ form.title_override }}
+        </div>
         {{ form.as_p }}
         <input type="submit" value="Request">
     </form>

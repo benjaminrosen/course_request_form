@@ -3,6 +3,7 @@ from typing import Optional
 
 from canvasapi.exceptions import CanvasException
 from canvasapi.user import User as CanvasUser
+
 from form.terms import CURRENT_TERM
 
 SUB_ACCOUNTS = ["SubAccount"]
