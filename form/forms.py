@@ -17,11 +17,18 @@ class RequestForm(ModelForm):
             "additional_enrollments",
             "additional_instructions",
         )
+        labels = {"proxy_requester": "Request on behalf of"}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        proxy_requester = self.fields["proxy_requester"]
+        if not "instructors" in kwargs["initial"]:
+            del proxy_requester
+            return
         instructors = kwargs["initial"]["instructors"]
-        self.fields["proxy_requester"].queryset = instructors
+        proxy_requester.queryset = instructors
+        if "proxy_requester" in kwargs["initial"]:
+            proxy_requester.disabled = True
 
 
 class EmailForm(Form):

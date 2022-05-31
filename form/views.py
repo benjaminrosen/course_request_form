@@ -83,24 +83,24 @@ class SectionDetailView(DetailView):
 class RequestFormView(FormView):
     form_class = RequestForm
     template_name = "form/section_request.html"
-    succes_url = ""
 
     def get_initial(self):
         initial = super().get_initial()
+        username = self.request.user.username
+        user = User.objects.get(username=username)
         section_code = self.kwargs["pk"]
         section = Section.objects.get(section_code=section_code)
         instructors = section.instructors.all()
-        initial.update({"instructors": instructors})
+        initial_values = {"section": section}
+        if user not in instructors:
+            initial_values["instructors"] = instructors
+            if instructors.count() == 1:
+                initial_values["proxy_requester"] = instructors.first()
+        initial.update(**initial_values)
         return initial
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        section_code = self.request.path.replace("/sections/", "").replace(
-            "/request/", ""
-        )
-        section = Section.objects.get(section_code=section_code)
-        context["section"] = section
-        return context
+    def get_success_url(self):
+        return reverse("sections")
 
 
 class EmailFormView(FormView):
@@ -112,9 +112,6 @@ class EmailFormView(FormView):
         kwargs.update({"username": self.request.user.username})
         return kwargs
 
-    def get_success_url(self):
-        return reverse("home")
-
     def form_valid(self, form):
         new_email = form.cleaned_data.get("new_email")
         username = form.cleaned_data.get("username")
@@ -125,3 +122,6 @@ class EmailFormView(FormView):
         if user:
             user.set_email(email=new_email)
         return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("home")
