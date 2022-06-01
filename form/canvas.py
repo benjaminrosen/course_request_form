@@ -36,15 +36,11 @@ def get_all_canvas_accounts() -> list[Account]:
     return list(get_canvas_main_account().get_subaccounts(recursive=True))
 
 
-def get_canvas_user_by_login_id(login_id: str) -> Optional[CanvasUser]:
+def get_canvas_user_by_pennkey(pennkey: str) -> Optional[CanvasUser]:
     try:
-        return get_canvas().get_user(login_id, "sis_login_id")
+        return get_canvas().get_user(pennkey, "sis_login_id")
     except CanvasException:
         return None
-
-
-def get_canvas_user_by_pennkey(pennkey: str) -> Optional[CanvasUser]:
-    return get_canvas_user_by_login_id(pennkey)
 
 
 def get_canvas_user_id_by_pennkey(pennkey: str) -> Optional[int]:
