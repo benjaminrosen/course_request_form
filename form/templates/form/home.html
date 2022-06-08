@@ -2,10 +2,10 @@
 
 {% block content %}
     <h2>Home</h2>
-    <div class="my-info">
+    <div class="contact-info" hx-target="this" hx-swap="outerHTML">
         <h3>Contact info</h3>
         <p>Email: {{ email }}</p>
-        <a href="{% url 'email' %}">Change email</a>
+        <button hx-get="{% url 'email' %}">Change email</button>
     </div>
     <div class="my-courses">
         <h3>My courses</h3>
