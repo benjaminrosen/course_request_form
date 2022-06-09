@@ -1,31 +1,34 @@
 {% extends "./base.html" %}
 
 {% block content %}
+    <h3>{{ section.get_canvas_course_code }}</h3>
     <form method="post">
         {% csrf_token %}
         {{ form.non_field_errors }}
-        <p>
-            {% if form.proxy_requester.value %}
-                <div class="fieldWrapper">
-                    {{ form.proxy_requester.errors }}
-                    {{ form.proxy_requester.label_tag }}
-                    {{ form.proxy_requester }}
-                </div>
-            {% else %}
-                <div class="fieldWrapper">
-                    <label>Request on behalf of:</label>
-                    <select name="proxy-requester"
-                            hx-get="{% url 'copy_from_course' %}"
-                            hx-target="#copy-from-course"
-                            hx-indicator=".htmx-indicator"
-                    >
-                        {% for value, name in form.fields.proxy_requester.choices %}
-                            <option value="{{ value }}">{{ name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            {% endif %}
-        </p>
+        {% if user_is_instructor %}
+        {% else %}
+            <p>
+                {% if form.proxy_requester.value %}
+                    <div class="fieldWrapper">
+                        {{ form.proxy_requester.errors }}
+                        {{ form.proxy_requester.label_tag }}
+                        {{ form.proxy_requester }}
+                    </div>
+                {% else %}
+                    <div class="fieldWrapper">
+                        <label>Request on behalf of:</label>
+                        <select name="proxy-requester"
+                                hx-get="{% url 'copy_from_course' %}"
+                                hx-target="#copy-from-course"
+                                hx-indicator=".htmx-indicator">
+                            {% for value, name in form.fields.proxy_requester.choices %}
+                                <option value="{{ value }}">{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
+            </p>
+        {% endif %}
         <p>
             <div class="fieldWrapper">
                 {{ form.title_override.errors }}
@@ -34,7 +37,7 @@
             </div>
         </p>
         <p>
-            {% if form.proxy_requester.value %}
+            {% if user_is_instructor or form.proxy_requester.value %}
                 <div class="fieldWrapper">
                     {{ form.copy_from_course.errors }}
                     {{ form.copy_from_course.label_tag }}

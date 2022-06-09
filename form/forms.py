@@ -36,20 +36,24 @@ class RequestForm(ModelForm):
         canvas_sites.sort(key=cls.get_canvas_site_id, reverse=True)
         return [(site.id, f"{site.name} ({site.id})") for site in canvas_sites]
 
+    def get_copy_from_course_choices(self, username: str):
+        canvas_sites = self.get_instructor_canvas_sites(username)
+        self.fields["copy_from_course"].disabled = not any(canvas_sites)
+        self.fields["copy_from_course"].widget.choices = canvas_sites
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if "instructors" not in kwargs["initial"]:
+            username = self.initial["proxy_requester"].username
+            self.get_copy_from_course_choices(username)
             del self.fields["proxy_requester"]
-            del self.fields["copy_from_course"]
             return
         instructors = kwargs["initial"]["instructors"]
         self.fields["proxy_requester"].queryset = instructors
         single_instructor = "proxy_requester" in kwargs["initial"]
         if single_instructor:
             username = instructors.first().username
-            canvas_sites = self.get_instructor_canvas_sites(username)
-            self.fields["copy_from_course"].disabled = not any(canvas_sites)
-            self.fields["copy_from_course"].widget.choices = canvas_sites
+            self.get_copy_from_course_choices(username)
             self.fields["proxy_requester"].disabled = True
 
 

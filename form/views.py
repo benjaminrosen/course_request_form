@@ -84,20 +84,33 @@ class RequestFormView(FormView):
     form_class = RequestForm
     template_name = "form/section_request.html"
 
+    def get_section(self):
+        section_code = self.kwargs["pk"]
+        return Section.objects.get(section_code=section_code)
+
     def get_initial(self):
         initial = super().get_initial()
         username = self.request.user.username
         user = User.objects.get(username=username)
-        section_code = self.kwargs["pk"]
-        section = Section.objects.get(section_code=section_code)
+        section = self.get_section()
         instructors = section.instructors.all()
-        initial_values = {"section": section}
+        initial_values = dict()
         if instructors and user not in instructors:
             initial_values["instructors"] = instructors
             if instructors.count() == 1:
                 initial_values["proxy_requester"] = instructors.first()
+        else:
+            initial_values["proxy_requester"] = user
         initial.update(**initial_values)
         return initial
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        section = self.get_section()
+        user_is_instructor = "instructors" not in self.get_initial()
+        context["section"] = section
+        context["user_is_instructor"] = user_is_instructor
+        return context
 
     def get_success_url(self):
         return reverse("sections")
