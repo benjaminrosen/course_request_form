@@ -37,9 +37,10 @@ class RequestForm(ModelForm):
         return [(site.id, f"{site.name} ({site.id})") for site in canvas_sites]
 
     def get_copy_from_course_choices(self, username: str):
+        no_selection = [("---------", "---------")]
         canvas_sites = self.get_instructor_canvas_sites(username)
         self.fields["copy_from_course"].disabled = not any(canvas_sites)
-        self.fields["copy_from_course"].widget.choices = canvas_sites
+        self.fields["copy_from_course"].widget.choices = no_selection + canvas_sites
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

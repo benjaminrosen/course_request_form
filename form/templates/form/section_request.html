@@ -8,6 +8,13 @@
         {% if user_is_instructor %}
         {% else %}
             <p>
+                You are not listed as an instructor for this course section. You
+                may make a request on behalf of one of the instructors by
+                selecting their name from the list below. That instructor's
+                existing Canvas sites will then become available to select in
+                the "Copy from course" dropdown.
+            </p>
+            <p>
                 {% if form.proxy_requester.value %}
                     <div class="fieldWrapper">
                         {{ form.proxy_requester.errors }}
@@ -29,6 +36,24 @@
                 {% endif %}
             </p>
         {% endif %}
+        {% if is_sas_section %}
+            <p>
+                By default, this course will be created in the "School of Arts
+                and Sciences" sub-account. To use the "LPS Online" sub-account
+                instead, check this box:
+            </p>
+            <p>
+                <div class="fieldWrapper">
+                    {{ form.lps_online.errors }}
+                    {{ form.lps_online.label_tag }}
+                    {{ form.lps_online }}
+                </div>
+            </p>
+        {% endif %}
+        <p>
+            The default title for this course is "{{ section.title }}." To use a
+            different title for the Canvas site, specify it below:
+        </p>
         <p>
             <div class="fieldWrapper">
                 {{ form.title_override.errors }}
@@ -36,6 +61,7 @@
                 {{ form.title_override }}
             </div>
         </p>
+        <p>To copy content from an existing Canvas site into this one, select the site below:</p>
         <p>
             {% if user_is_instructor or form.proxy_requester.value %}
                 <div class="fieldWrapper">
@@ -55,24 +81,21 @@
             {% endif %}
         </p>
         <p>
-            <div class="fieldWrapper">
-                {{ form.reserves.errors }}
-                {{ form.reserves.label_tag }}
-                {{ form.reserves }}
-            </div>
-        </p>
-        <p>
-            <div class="fieldWrapper">
-                {{ form.lps_online.errors }}
-                {{ form.lps_online.label_tag }}
-                {{ form.lps_online }}
-            </div>
+            By default, announcements will be copied over during content
+            migration. To exclude announcements, check the box below:
         </p>
         <p>
             <div class="fieldWrapper">
                 {{ form.exclude_announcements.errors }}
                 {{ form.exclude_announcements.label_tag }}
                 {{ form.exclude_announcements }}
+            </div>
+        </p>
+        <p>
+            <div class="fieldWrapper">
+                {{ form.reserves.errors }}
+                {{ form.reserves.label_tag }}
+                {{ form.reserves }}
             </div>
         </p>
         <p>

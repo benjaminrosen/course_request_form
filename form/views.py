@@ -11,7 +11,7 @@ from form.canvas import get_user_canvas_sites
 from form.terms import CURRENT_TERM, NEXT_TERM
 
 from .forms import EmailForm, RequestForm
-from .models import Section, User
+from .models import School, Section, User
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -107,9 +107,11 @@ class RequestFormView(FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         section = self.get_section()
+        is_sas_section = section.school.school_code == School.SAS_SCHOOL_CODE
         user_is_instructor = "instructors" not in self.get_initial()
         context["section"] = section
         context["user_is_instructor"] = user_is_instructor
+        context["is_sas_section"] = is_sas_section
         return context
 
     def get_success_url(self):
