@@ -2,7 +2,7 @@
 
 {% block content %}
     <h2>Home</h2>
-    <div class="contact-info" hx-target="this" hx-swap="outerHTML">
+    <div class="contact-info" hx-target="this" hx-swap="innerHTML">
         <h3>Contact info</h3>
         <p>Email: {{ email }}</p>
         <button hx-get="{% url 'email' %}">Change email</button>

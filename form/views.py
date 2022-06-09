@@ -1,12 +1,12 @@
 from functools import reduce
 from typing import cast
 
+from config.config import PROD_URL
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.urls.base import reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
-from config.config import PROD_URL
 from form.canvas import get_user_canvas_sites
 from form.terms import CURRENT_TERM, NEXT_TERM
 
@@ -125,3 +125,13 @@ class EmailFormView(FormView):
 
     def get_success_url(self):
         return reverse("home")
+
+
+class ContactInfoView(TemplateView):
+    template_name = "form/contact_info.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = cast(User, self.request.user)
+        context["email"] = user.email
+        return context
