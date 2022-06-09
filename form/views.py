@@ -11,7 +11,7 @@ from form.canvas import get_user_canvas_sites
 from form.terms import CURRENT_TERM, NEXT_TERM
 
 from .forms import EmailForm, RequestForm
-from .models import School, Section, User
+from .models import Request, School, Section, User
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -114,6 +114,17 @@ class RequestFormView(FormView):
         context["is_sas_section"] = is_sas_section
         return context
 
+    def form_valid(self, form):
+        values = cast(dict, form.cleaned_data)
+        values["requester"] = self.request.user
+        values["copy_from_course"] = values["copy_from_course"] or None
+        additional_enrollments = values.pop("additional_enrollments")
+        section_code = self.kwargs["pk"]
+        section = Section.objects.get(section_code=section_code)
+        request = Request.objects.create(section=section, **values)
+        request.additional_enrollments.set(additional_enrollments)
+        return super().form_valid(form)
+
     def get_success_url(self):
         return reverse("sections")
 
@@ -157,7 +168,7 @@ class CopyFromCourseView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user_id = self.request.GET.get("proxy-requester")
+        user_id = self.request.GET.get("proxy_requester")
         try:
             username = User.objects.get(id=user_id).username
         except Exception:

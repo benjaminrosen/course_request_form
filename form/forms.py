@@ -1,3 +1,4 @@
+from typing import Optional
 from canvasapi.course import Course
 from django.core.exceptions import ValidationError
 from django.forms import EmailField, Form, ModelForm
@@ -29,18 +30,20 @@ class RequestForm(ModelForm):
         return canvas_site.id
 
     @classmethod
-    def get_instructor_canvas_sites(cls, username: str) -> list[tuple]:
+    def get_instructor_canvas_sites(cls, username: str) -> Optional[list[tuple]]:
         canvas_sites = get_user_canvas_sites(username)
         if not canvas_sites:
-            return [()]
+            return None
         canvas_sites.sort(key=cls.get_canvas_site_id, reverse=True)
         return [(site.id, f"{site.name} ({site.id})") for site in canvas_sites]
 
     def get_copy_from_course_choices(self, username: str):
-        no_selection = [("---------", "---------")]
+        copy_from_course_choices = [("", "---------")]
         canvas_sites = self.get_instructor_canvas_sites(username)
-        self.fields["copy_from_course"].disabled = not any(canvas_sites)
-        self.fields["copy_from_course"].widget.choices = no_selection + canvas_sites
+        if canvas_sites:
+            copy_from_course_choices += canvas_sites
+        self.fields["copy_from_course"].disabled = not canvas_sites
+        self.fields["copy_from_course"].widget.choices = copy_from_course_choices
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
