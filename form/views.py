@@ -21,7 +21,7 @@ class HomePageView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         user = cast(User, self.request.user)
         context["email"] = user.email
-        context["courses"] = Section.objects.filter(instructors=user)
+        context["sections"] = Section.objects.filter(instructors=user)
         context["canvas_sites"] = get_user_canvas_sites(user.username)
         context["canvas_url"] = f"{PROD_URL}/courses"
         return context

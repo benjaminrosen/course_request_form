@@ -32,8 +32,8 @@ urlpatterns = [
     path("accounts/email-update/", EmailFormView.as_view(), name="email"),
     path("", HomePageView.as_view(), name="home"),
     path("sections/", SectionListView.as_view(), name="sections"),
-    path("sections/<pk>", SectionDetailView.as_view()),
-    path("sections/<pk>/request/", RequestFormView.as_view()),
+    path("sections/<pk>", SectionDetailView.as_view(), name="section_detail"),
+    path("sections/<pk>/request/", RequestFormView.as_view(), name="section_request"),
     path("contact-info/", ContactInfoView.as_view(), name="contact_info"),
     path("copy-from-course/", CopyFromCourseView.as_view(), name="copy_from_course"),
 ]

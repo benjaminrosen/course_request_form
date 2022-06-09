@@ -8,10 +8,17 @@
         <button hx-get="{% url 'email' %}">Change email</button>
     </div>
     <div class="my-courses">
-        <h3>My courses</h3>
-        {% if courses %}
-            {% for course in courses %}
-                <p>{{ course }}</p>
+        <h3>My courses sections</h3>
+        {% if sections %}
+            {% for section in sections %}
+                <a href="{% if section.request %}
+                         {% url "section_detail" section.section_code %}
+                         {% else %}
+                         {% url "section_request" section.section_code %}
+                         {% endif %}
+                         ">
+                    {{ section.get_canvas_course_code }}
+                </a>
             {% endfor %}
         {% else %}
             <p>You do not have any courses.</p>
