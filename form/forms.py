@@ -38,7 +38,7 @@ class RequestForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not "instructors" in kwargs["initial"]:
+        if "instructors" not in kwargs["initial"]:
             del self.fields["proxy_requester"]
             del self.fields["copy_from_course"]
             return

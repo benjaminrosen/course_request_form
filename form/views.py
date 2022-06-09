@@ -1,12 +1,12 @@
 from functools import reduce
 from typing import cast
 
-from config.config import PROD_URL
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.urls.base import reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
+from config.config import PROD_URL
 from form.canvas import get_user_canvas_sites
 from form.terms import CURRENT_TERM, NEXT_TERM
 
@@ -134,4 +134,21 @@ class ContactInfoView(TemplateView):
         context = super().get_context_data(**kwargs)
         user = cast(User, self.request.user)
         context["email"] = user.email
+        return context
+
+
+class CopyFromCourseView(TemplateView):
+    template_name = "form/copy_from_course.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_id = self.request.GET.get("proxy-requester")
+        try:
+            username = User.objects.get(id=user_id).username
+        except Exception:
+            username = None
+        canvas_sites = list()
+        if username:
+            canvas_sites = RequestForm.get_instructor_canvas_sites(username=username)
+        context["canvas_sites"] = canvas_sites
         return context

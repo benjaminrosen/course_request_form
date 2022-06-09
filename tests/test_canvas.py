@@ -10,7 +10,6 @@ from form.canvas import (
     get_canvas,
     get_canvas_enrollment_term_id,
     get_canvas_main_account,
-    get_canvas_user_by_login_id,
     get_canvas_user_id_by_pennkey,
     update_canvas_course,
 )
@@ -41,23 +40,14 @@ class CanvasApiTest(TestCase):
         sub_accounts = get_all_canvas_accounts()
         self.assertEqual(sub_accounts, SUB_ACCOUNTS)
 
-    @patch(GET_CANVAS)
-    def test_get_canvas_user_by_login_id(self, mock_get_canvas):
-        mock_get_canvas.return_value = MockCanvas()
-        user = get_canvas_user_by_login_id(LOGIN_ID)
-        self.assertIsInstance(user, CanvasUser)
-        self.assertEqual(user.login_id, LOGIN_ID)
-        user = get_canvas_user_by_login_id("")
-        self.assertIsNone(user)
-
-    @patch(f"{CANVAS_MODULE}.get_canvas_user_by_login_id")
-    def test_get_canvas_user_id_by_pennkey(self, mock_get_canvas_user_by_login_id):
-        mock_get_canvas_user_by_login_id.return_value = CanvasUser(
+    @patch(f"{CANVAS_MODULE}.get_canvas_user_id_by_pennkey")
+    def test_get_canvas_user_id_by_pennkey(self, mock_get_canvas_user_by_pennkey):
+        mock_get_canvas_user_by_pennkey.return_value = CanvasUser(
             None, {"id": self.user_id, "login_id": LOGIN_ID}
         )
         user_id = get_canvas_user_id_by_pennkey(LOGIN_ID)
         self.assertEqual(user_id, self.user_id)
-        mock_get_canvas_user_by_login_id.return_value = None
+        mock_get_canvas_user_by_pennkey.return_value = None
         user_id = get_canvas_user_id_by_pennkey(LOGIN_ID)
         self.assertIsNone(user_id)
 

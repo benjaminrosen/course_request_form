@@ -18,6 +18,7 @@ from django.urls import include, path
 
 from form.views import (
     ContactInfoView,
+    CopyFromCourseView,
     EmailFormView,
     HomePageView,
     RequestFormView,
@@ -34,4 +35,5 @@ urlpatterns = [
     path("sections/<pk>", SectionDetailView.as_view()),
     path("sections/<pk>/request/", RequestFormView.as_view()),
     path("contact-info/", ContactInfoView.as_view(), name="contact_info"),
+    path("copy-from-course/", CopyFromCourseView.as_view(), name="copy_from_course"),
 ]
