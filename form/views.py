@@ -178,3 +178,13 @@ class CopyFromCourseView(TemplateView):
             canvas_sites = RequestForm.get_instructor_canvas_sites(username=username)
         context["canvas_sites"] = canvas_sites
         return context
+
+
+class ExcludeAnnouncementsView(TemplateView):
+    template_name = "form/exclude_announcements.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        copy_from_course = self.request.GET["copy_from_course"]
+        context["copy_from_course"] = bool(copy_from_course)
+        return context

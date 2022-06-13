@@ -1,0 +1,12 @@
+{% if copy_from_course %}
+    <p>
+        By default, announcements will be copied over during content migration. To
+        exclude announcements, check the box below:
+    </p>
+    <p>
+        <div class="fieldWrapper">
+            <label for="id_exclude_announcements">Exclude announcements:</label>
+            <input type="checkbox" name="exclude_announcements" id="id_exclude_announcements">
+        </div>
+    </p>
+{% endif %}

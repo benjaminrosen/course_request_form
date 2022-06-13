@@ -20,6 +20,7 @@ from form.views import (
     ContactInfoView,
     CopyFromCourseView,
     EmailFormView,
+    ExcludeAnnouncementsView,
     HomePageView,
     RequestFormView,
     SectionDetailView,
@@ -36,4 +37,9 @@ urlpatterns = [
     path("sections/<pk>/request/", RequestFormView.as_view(), name="section_request"),
     path("contact-info/", ContactInfoView.as_view(), name="contact_info"),
     path("copy-from-course/", CopyFromCourseView.as_view(), name="copy_from_course"),
+    path(
+        "exclude-announcements/",
+        ExcludeAnnouncementsView.as_view(),
+        name="exclude_announcements",
+    ),
 ]

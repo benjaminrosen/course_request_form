@@ -44,6 +44,7 @@ class RequestForm(ModelForm):
             copy_from_course_choices += canvas_sites
         self.fields["copy_from_course"].disabled = not canvas_sites
         self.fields["copy_from_course"].widget.choices = copy_from_course_choices
+        print(self.fields["copy_from_course"].widget.choices)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

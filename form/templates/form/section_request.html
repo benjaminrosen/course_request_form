@@ -7,36 +7,63 @@
         {{ form.non_field_errors }}
         {% if user_is_instructor %}
         {% else %}
-            <p>
-                You are not listed as an instructor for this course section. You
-                may make a request on behalf of one of the instructors by
-                selecting their name from the list below. That instructor's
-                existing Canvas sites will then become available to select in
-                the "Copy from course" dropdown.
-            </p>
-            <p>
-                {% if form.proxy_requester.value %}
-                    <div class="fieldWrapper">
-                        {{ form.proxy_requester.label_tag }}
-                        {{ form.proxy_requester }}
-                        {{ form.proxy_requester.errors }}
-                    </div>
-                {% else %}
-                    <div class="fieldWrapper">
-                        <label for="id_proxy_requester">Request on behalf of:</label>
-                        <select id="id_proxy_requester"
-                                name="proxy_requester"
-                                hx-get="{% url 'copy_from_course' %}"
-                                hx-target="#id_copy_from_course"
-                                hx-indicator=".htmx-indicator">
-                            {% for value, name in form.fields.proxy_requester.choices %}
-                                <option value="{{ value }}">{{ name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                {% endif %}
-            </p>
+            {% with single_instructor=form.proxy_requester.value %}
+                <p>
+                    You are not listed as an instructor for this course section. You
+                    may make a request on behalf of {% if single_instructor %} the
+                    instructor below, selecting from that instructor's existing
+                    Canvas sites in the "Copy from course" dropdown if desired.
+                    {% else %} one of the instructors by selecting their name from the
+                    list below. That instructor's existing Canvas sites will then
+                    become available to select in the "Copy from course" dropdown.
+                    {% endif %}
+                </p>
+                <p>
+                    {% if single_instructor %}
+                        <div class="fieldWrapper">
+                            {{ form.proxy_requester.label_tag }}
+                            {{ form.proxy_requester }}
+                            {{ form.proxy_requester.errors }}
+                        </div>
+                    {% else %}
+                        <div class="fieldWrapper">
+                            {{ form.proxy_requester.label_tag }}
+                            <select id="id_proxy_requester"
+                                    name="proxy_requester"
+                                    hx-get="{% url 'copy_from_course' %}"
+                                    hx-target="#id_copy_from_course">
+                                {% for value, name in form.fields.proxy_requester.choices %}
+                                    <option value="{{ value }}">{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                            {{ form.proxy_requester.errors }}
+                        </div>
+                    {% endif %}
+                </p>
+            {% endwith %}
         {% endif %}
+        <p>To copy content from an existing Canvas site into this one, select the site below:</p>
+        <p>
+            <div class="fieldWrapper">
+                {{ form.copy_from_course.label_tag }}
+                <select id="id_copy_from_course"
+                        name="copy_from_course"
+                        hx-get="{% url 'exclude_announcements' %}"
+                        hx-target="#exclude_announcements">
+                    {% if user_is_instructor or form.proxy_requester.value %}
+                        {% for canvas_id, name in form.fields.copy_from_course.widget.choices %}
+                            <option value={{ canvas_id }}>{{ name }}</option>
+                        {% endfor %}
+                    {% else %}
+                        <option value="0">
+                            --- Please select an instructor for "Request on behalf of" ---
+                        </option>
+                    {% endif %}
+                </select>
+                {{ form.copy_from_course.errors }}
+            </div>
+        </p>
+        <div id="exclude_announcements"></div>
         {% if is_sas_section %}
             <p>
                 By default, this course will be created in the "School of Arts
@@ -60,36 +87,6 @@
                 {{ form.title_override.label_tag }}
                 {{ form.title_override }}
                 {{ form.title_override.errors }}
-            </div>
-        </p>
-        <p>To copy content from an existing Canvas site into this one, select the site below:</p>
-        <p>
-            {% if user_is_instructor or form.proxy_requester.value %}
-                <div class="fieldWrapper">
-                    {{ form.copy_from_course.label_tag }}
-                    {{ form.copy_from_course }}
-                    {{ form.copy_from_course.errors }}
-                </div>
-            {% else %}
-                <div class="fieldWrapper">
-                    <label for="id_copy_from_course">Copy from course:</label>
-                    <select id="id_copy_from_course" name="copy_from_course">
-                        <option value="0">
-                            --- Please select an instructor for "Request on behalf of" ---
-                        </option>
-                    </select>
-                </div>
-            {% endif %}
-        </p>
-        <p>
-            By default, announcements will be copied over during content
-            migration. To exclude announcements, check the box below:
-        </p>
-        <p>
-            <div class="fieldWrapper">
-                {{ form.exclude_announcements.label_tag }}
-                {{ form.exclude_announcements }}
-                {{ form.exclude_announcements.errors }}
             </div>
         </p>
         <p>
