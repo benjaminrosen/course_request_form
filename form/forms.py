@@ -25,6 +25,21 @@ class RequestForm(ModelForm):
         labels = {"proxy_requester": "Request on behalf of"}
         widgets = {"copy_from_course": Select}
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "instructors" not in kwargs["initial"]:
+            username = self.initial["proxy_requester"].username
+            self.get_copy_from_course_choices(username)
+            del self.fields["proxy_requester"]
+            return
+        instructors = kwargs["initial"]["instructors"]
+        self.fields["proxy_requester"].queryset = instructors
+        single_instructor = "proxy_requester" in kwargs["initial"]
+        if single_instructor:
+            username = instructors.first().username
+            self.get_copy_from_course_choices(username)
+            self.fields["proxy_requester"].disabled = True
+
     @staticmethod
     def get_canvas_site_id(canvas_site: Course) -> int:
         return canvas_site.id
@@ -44,7 +59,6 @@ class RequestForm(ModelForm):
             copy_from_course_choices += canvas_sites
         self.fields["copy_from_course"].disabled = not canvas_sites
         self.fields["copy_from_course"].widget.choices = copy_from_course_choices
-        print(self.fields["copy_from_course"].widget.choices)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -77,7 +91,6 @@ class EmailForm(Form):
         cleaned_data["username"] = self.username
         new_email = cleaned_data.get("new_email")
         confirm_email = cleaned_data.get("confirm_email")
-
         if confirm_email != new_email:
             raise ValidationError(
                 "Emails don't match. Please confirm your new email address."

@@ -87,3 +87,7 @@ body {
 .instructors {
   max-width: 400px;
 }
+
+.default-title {
+  text-decoration: underline;
+}
