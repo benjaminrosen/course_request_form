@@ -1,7 +1,7 @@
 from typing import Optional
 from canvasapi.course import Course
 from django.core.exceptions import ValidationError
-from django.forms import EmailField, Form, ModelForm
+from django.forms import CharField, EmailField, Form, ModelForm
 from django.forms.widgets import Select
 
 from form.canvas import get_user_canvas_sites
@@ -59,21 +59,6 @@ class RequestForm(ModelForm):
             copy_from_course_choices += canvas_sites
         self.fields["copy_from_course"].disabled = not canvas_sites
         self.fields["copy_from_course"].widget.choices = copy_from_course_choices
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if "instructors" not in kwargs["initial"]:
-            username = self.initial["proxy_requester"].username
-            self.get_copy_from_course_choices(username)
-            del self.fields["proxy_requester"]
-            return
-        instructors = kwargs["initial"]["instructors"]
-        self.fields["proxy_requester"].queryset = instructors
-        single_instructor = "proxy_requester" in kwargs["initial"]
-        if single_instructor:
-            username = instructors.first().username
-            self.get_copy_from_course_choices(username)
-            self.fields["proxy_requester"].disabled = True
 
 
 class EmailForm(Form):
