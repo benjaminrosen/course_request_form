@@ -1,7 +1,8 @@
-from typing import Optional
+from typing import Optional, cast
+
 from canvasapi.course import Course
 from django.core.exceptions import ValidationError
-from django.forms import CharField, EmailField, Form, ModelForm
+from django.forms import EmailField, Form, ModelForm
 from django.forms.widgets import Select
 
 from form.canvas import get_user_canvas_sites
@@ -70,7 +71,7 @@ class EmailForm(Form):
         super().__init__(*args, **kwargs)
 
     def clean(self):
-        cleaned_data = super().clean()
+        cleaned_data = cast(dict, super().clean())
         if not cleaned_data:
             return
         cleaned_data["username"] = self.username

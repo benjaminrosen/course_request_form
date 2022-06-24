@@ -1,4 +1,5 @@
 from functools import reduce
+from django.shortcuts import redirect
 from typing import cast
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -46,7 +47,7 @@ class SectionListView(ListView):
             search_terms = search.split()
             sections = sections.filter(
                 reduce(
-                    lambda a, b: a & b,
+                    lambda query_one, query_two: query_one & query_two,
                     [
                         Q(section_code__icontains=search_term)
                         | Q(also_offered_as__section_code__icontains=search_term)
@@ -59,7 +60,7 @@ class SectionListView(ListView):
                     ],
                 )
             )
-        return sections
+        return sections.distinct()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -33,7 +33,9 @@
                                     hx-get="{% url 'copy_from_course' %}"
                                     hx-target="#id_copy_from_course">
                                 {% for value, name in form.fields.proxy_requester.choices %}
-                                    <option value="{{ value }}">{{ name }}</option>
+                                    <option value="{{ value }}">
+                                        {{ name }}
+                                    </option>
                                 {% endfor %}
                             </select>
                             {{ form.proxy_requester.errors }}
@@ -42,14 +44,17 @@
                 </p>
             {% endwith %}
         {% endif %}
-        <p>To copy content from an existing Canvas site into this one, select the site below:</p>
+        <p>
+            To copy content from an existing Canvas site into this one, select
+            the site below:
+        </p>
         <p>
             <div class="fieldWrapper">
                 {{ form.copy_from_course.label_tag }}
                 <select id="id_copy_from_course"
                         name="copy_from_course"
                         hx-get="{% url 'exclude_announcements' %}"
-                        hx-target="#exclude_announcements">
+                        hx-target="#id_exclude_announcements">
                     {% if user_is_instructor or form.proxy_requester.value %}
                         {% for canvas_id, name in form.fields.copy_from_course.widget.choices %}
                             <option value={{ canvas_id }}>{{ name }}</option>
@@ -63,7 +68,7 @@
                 {{ form.copy_from_course.errors }}
             </div>
         </p>
-        <div id="exclude_announcements"></div>
+        <div id="id_exclude_announcements"></div>
         {% if is_sas_section %}
             <p>
                 By default, this course will be created in the "School of Arts
@@ -99,8 +104,14 @@
         <p>
             <div class="fieldWrapper">
                 {{ form.additional_enrollments.label_tag }}
-                {{ form.additional_enrollments }}
-                {{ form.additional_enrollments.errors }}
+                <label for="additional_enrollments_1">Pennkey:</label>
+                <input type="text" id="id_additional_enrollments_1" name="additional_enrollments_1" />
+                <label for="role_1">Term:</label>
+                <select id="id_role_1" name="role_1">
+                    <option>Instructor</option>
+                    <option>TA</option>
+                    <option>Designer</option>
+                </select>
             </div>
         </p>
         <p>
@@ -114,4 +125,19 @@
             <input type="submit" value="Request">
     </form>
     <a href="{% url "sections" %}">Back</a>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+     const proxyRequester = document.getElementById("id_proxy_requester");
+     const copyFromCourse = document.getElementById("id_copy_from_course");
+     proxyRequester.addEventListener('change', (event) => {
+         const excludeAnnouncements = document.getElementById("id_exclude_announcements");
+         excludeAnnouncements.style.display = "none";
+     })
+     copyFromCourse.addEventListener('change', (event) => {
+         const excludeAnnouncements = document.getElementById("id_exclude_announcements");
+         excludeAnnouncements.style.display = "block";
+     })
+    </script>
 {% endblock %}
