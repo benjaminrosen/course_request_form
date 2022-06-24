@@ -101,19 +101,21 @@
                 {{ form.reserves.errors }}
             </div>
         </p>
-        <p>
-            <div class="fieldWrapper">
-                {{ form.additional_enrollments.label_tag }}
-                <label for="additional_enrollments_1">Pennkey:</label>
-                <input type="text" id="id_additional_enrollments_1" name="additional_enrollments_1" />
-                <label for="role_1">Term:</label>
-                <select id="id_role_1" name="role_1">
-                    <option>Instructor</option>
-                    <option>TA</option>
-                    <option>Designer</option>
-                </select>
+        {{ form.additional_enrollments.label_tag }}
+        <div id="section_enrollment">
+            <div id="enrollment_user_1">
+                <p>
+                    {{ section_enrollment_form }}
+                    <button>Add</button>
+                </p>
             </div>
-        </p>
+        </div>
+        <button
+            hx-get="{% url "section_enrollment" %}"
+            hx-target="#section_enrollment"
+            hx-swap="beforeend">
+            Add another enrollment
+        </button>
         <p>
             <div class="fieldWrapper">
                 {{ form.additional_instructions.label_tag }}

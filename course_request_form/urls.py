@@ -15,7 +15,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-
 from form.views import (
     ContactInfoView,
     CopyFromCourseView,
@@ -24,6 +23,7 @@ from form.views import (
     HomePageView,
     RequestFormView,
     SectionDetailView,
+    SectionEnrollmentView,
     SectionListView,
 )
 
@@ -41,5 +41,8 @@ urlpatterns = [
         "exclude-announcements/",
         ExcludeAnnouncementsView.as_view(),
         name="exclude_announcements",
+    ),
+    path(
+        "section-enrollment", SectionEnrollmentView.as_view(), name="section_enrollment"
     ),
 ]

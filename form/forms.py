@@ -3,11 +3,11 @@ from typing import Optional, cast
 from canvasapi.course import Course
 from django.core.exceptions import ValidationError
 from django.forms import EmailField, Form, ModelForm
-from django.forms.widgets import Select
+from django.forms.widgets import Select, TextInput
 
 from form.canvas import get_user_canvas_sites
 
-from .models import Request
+from .models import Request, SectionEnrollment
 
 
 class RequestForm(ModelForm):
@@ -60,6 +60,13 @@ class RequestForm(ModelForm):
             copy_from_course_choices += canvas_sites
         self.fields["copy_from_course"].disabled = not canvas_sites
         self.fields["copy_from_course"].widget.choices = copy_from_course_choices
+
+
+class SectionEnrollmentForm(ModelForm):
+    class Meta:
+        model = SectionEnrollment
+        fields = ("user", "role")
+        widgets = {"user": TextInput}
 
 
 class EmailForm(Form):

@@ -11,7 +11,7 @@ from config.config import PROD_URL
 from form.canvas import get_user_canvas_sites
 from form.terms import CURRENT_TERM, NEXT_TERM
 
-from .forms import EmailForm, RequestForm
+from .forms import EmailForm, RequestForm, SectionEnrollmentForm
 from .models import Request, School, Section, User
 
 
@@ -113,6 +113,7 @@ class RequestFormView(FormView):
         context["section"] = section
         context["user_is_instructor"] = user_is_instructor
         context["is_sas_section"] = is_sas_section
+        context["section_enrollment_form"] = SectionEnrollmentForm()
         return context
 
     def form_valid(self, form):
@@ -188,4 +189,22 @@ class ExcludeAnnouncementsView(TemplateView):
         context = super().get_context_data(**kwargs)
         copy_from_course = self.request.GET["copy_from_course"]
         context["copy_from_course"] = bool(copy_from_course)
+        return context
+
+
+class SectionEnrollmentView(TemplateView):
+    template_name = "form/section_enrollment.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = SectionEnrollmentForm()
+        return context
+
+
+class EnrollmentUserView(TemplateView):
+    template_name = "form/enrollment_user.html"
+
+    def get_context_data(self, **kwargs):
+        print("HEEEEEEEEEEEEEEEEERE")
+        context = super().get_context_data(**kwargs)
         return context
