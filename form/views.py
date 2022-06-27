@@ -1,17 +1,16 @@
 from functools import reduce
-from django.shortcuts import redirect
 from typing import cast
 
+from config.config import PROD_URL
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.urls.base import reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
-from config.config import PROD_URL
 from form.canvas import get_user_canvas_sites
 from form.terms import CURRENT_TERM, NEXT_TERM
 
-from .forms import EmailForm, RequestForm, SectionEnrollmentForm
+from .forms import RequestForm, SectionEnrollmentForm
 from .models import Request, School, Section, User
 
 
@@ -21,10 +20,14 @@ class HomePageView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = cast(User, self.request.user)
-        context["email"] = user.email
         context["sections"] = Section.objects.filter(instructors=user)
+        context["requests"] = Request.objects.filter(
+            Q(requester=user) | Q(proxy_requester=user)
+        )
         context["canvas_sites"] = get_user_canvas_sites(user.username)
         context["canvas_url"] = f"{PROD_URL}/courses"
+        context["current_term"] = CURRENT_TERM
+        context["next_term"] = NEXT_TERM
         return context
 
 
@@ -129,30 +132,6 @@ class RequestFormView(FormView):
 
     def get_success_url(self):
         return reverse("sections")
-
-
-class EmailFormView(FormView):
-    form_class = EmailForm
-    template_name = "form/email_update.html"
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs.update({"username": self.request.user.username})
-        return kwargs
-
-    def form_valid(self, form):
-        new_email = form.cleaned_data.get("new_email")
-        username = form.cleaned_data.get("username")
-        try:
-            user = User.objects.get(username=username)
-        except Exception:
-            user = None
-        if user:
-            user.set_email(email=new_email)
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        return reverse("home")
 
 
 class ContactInfoView(TemplateView):

@@ -3,6 +3,10 @@ body {
   font-family: "Source Serif Pro", serif;
 }
 
+p {
+  max-width: 600px;
+}
+
 .main {
   display: flex;
 }

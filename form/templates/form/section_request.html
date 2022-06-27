@@ -9,9 +9,9 @@
         {% else %}
             {% with single_instructor=form.proxy_requester.value %}
                 <p>
-                    You are not listed as an instructor for this course section. You
-                    may make a request on behalf of {% if single_instructor %} the
-                    instructor below, selecting from that instructor's existing
+                    You are not listed as an instructor for this course section.
+                    You may make a request on behalf of {% if single_instructor %}
+                    the instructor below, selecting from that instructor's existing
                     Canvas sites in the "Copy from course" dropdown if desired.
                     {% else %} one of the instructors by selecting their name from the
                     list below. That instructor's existing Canvas sites will then
@@ -103,10 +103,21 @@
         </p>
         {{ form.additional_enrollments.label_tag }}
         <div id="section_enrollment">
+            <div id="enrollment_user_0">
+                <p>
+                    <input type="text" value="User Name (pennkey)" disabled>
+                    <select disabled><option>Chosen Role</option></select>
+                    <button>Remove</button>
+                </p>
+            </div>
+        </div>
+        <div id="section_enrollment">
             <div id="enrollment_user_1">
                 <p>
                     {{ section_enrollment_form }}
-                    <button>Add</button>
+                    <button>
+                        Add
+                    </button>
                 </p>
             </div>
         </div>

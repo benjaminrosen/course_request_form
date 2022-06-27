@@ -1,6 +1,0 @@
-<form action="{% url 'email' %}" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Update">
-</form>
-<a hx-get="{% url "contact_info" %}">Back</a>

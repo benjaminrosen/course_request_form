@@ -2,26 +2,37 @@
 
 {% block content %}
     <h2>Home</h2>
-    <div class="contact-info" hx-target="this" hx-swap="innerHTML">
-        <h3>Contact info</h3>
-        <p>Email: {{ email }}</p>
-        <button hx-get="{% url 'email' %}">Change email</button>
+    <div class="my-requests">
+        <h3>My requests</h3>
+        {% for request in requests %}
+            <p>
+                <a href="{% url "section_detail" request.section.section_code %}">
+                    {{ request }}
+                </a>
+            </p>
+        {% endfor %}
     </div>
     <div class="my-courses">
-        <h3>My courses sections</h3>
+        <h3>My current ({{ current_term }}) and upcoming ({{ next_term }}) courses</h3>
         {% if sections %}
             {% for section in sections %}
-                <a href="{% if section.request %}
-                         {% url "section_detail" section.section_code %}
-                         {% else %}
-                         {% url "section_request" section.section_code %}
-                         {% endif %}
-                         ">
-                    {{ section.get_canvas_course_code }}
-                </a>
+                <p>
+                    <a href="{% if section.request %}
+                             {% url "section_detail" section.section_code %}
+                    {% else %}
+                             {% url "section_request" section.section_code %}
+                    {% endif %}">
+                        {{ section.get_canvas_course_code }}
+                    </a>
+                </p>
             {% endfor %}
         {% else %}
-            <p>You do not have any courses.</p>
+            <p>
+                You are not listed as an instructor for any current or upcoming
+                courses. To request a course on behalf of someone else, please
+                check the list of <a href="{% url "sections" %}">available
+                courses</a>.
+            </p>
         {% endif %}
     </div>
     <div class="my-canvas-sites">
@@ -30,8 +41,7 @@
             <p>
                 <a href="{{ canvas_url }}/{{ site.id }}"
                    target="_blank"
-                   rel="noopener noreferrer"
-                >
+                   rel="noopener noreferrer">
                     {{ site }}
                 </a>
             </p>
