@@ -1,8 +1,10 @@
 <div class="enrollment_user">
     <p>
-    {{ form }}
-        <button>
-            Add
+        {{ form }}
+        <button type="button"
+                hx-get="{% url "enrollment_user" %}"
+                hx-target="#enrollment_user">
+            Load user
         </button>
     </p>
 </form>

@@ -18,6 +18,7 @@ from django.urls import include, path
 from form.views import (
     ContactInfoView,
     CopyFromCourseView,
+    EnrollmentUserView,
     ExcludeAnnouncementsView,
     HomePageView,
     RequestFormView,
@@ -43,4 +44,5 @@ urlpatterns = [
     path(
         "section-enrollment", SectionEnrollmentView.as_view(), name="section_enrollment"
     ),
+    path("enrollment-user", EnrollmentUserView.as_view(), name="enrollment_user"),
 ]

@@ -184,6 +184,13 @@ class EnrollmentUserView(TemplateView):
     template_name = "form/enrollment_user.html"
 
     def get_context_data(self, **kwargs):
-        print("HEEEEEEEEEEEEEEEEERE")
         context = super().get_context_data(**kwargs)
+        values = self.request.GET
+        try:
+            username = User.objects.get(username=values["pennkey"])
+        except Exception:
+            username = "NOT FOUND"
+        context["enrollment_count"] = values["enrollmentCount"]
+        context["username"] = username
+        context["role"] = values["role"]
         return context

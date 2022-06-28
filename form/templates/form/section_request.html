@@ -1,4 +1,5 @@
 {% extends "./base.html" %}
+{% load static %}
 
 {% block content %}
     <h3>{{ section.get_canvas_course_code }}</h3>
@@ -102,31 +103,24 @@
             </div>
         </p>
         {{ form.additional_enrollments.label_tag }}
-        <div id="section_enrollment">
-            <div id="enrollment_user_0">
-                <p>
-                    <input type="text" value="User Name (pennkey)" disabled>
-                    <select disabled><option>Chosen Role</option></select>
-                    <button>Remove</button>
-                </p>
-            </div>
-        </div>
-        <div id="section_enrollment">
+        <div id="id_additional_enrollments">
             <div id="enrollment_user_1">
                 <p>
                     {{ section_enrollment_form }}
-                    <button>
-                        Add
+                    <button type="button"
+                            class="load-user-button"
+                            hx-get="{% url "enrollment_user" %}"
+                            hx-target="#enrollment_user_1">
+                        Load user
                     </button>
                 </p>
             </div>
+            <button hx-get="{% url "section_enrollment" %}"
+                    hx-target="this"
+                    hx-swap="beforebegin">
+                Add another enrollment
+            </button>
         </div>
-        <button
-            hx-get="{% url "section_enrollment" %}"
-            hx-target="#section_enrollment"
-            hx-swap="beforeend">
-            Add another enrollment
-        </button>
         <p>
             <div class="fieldWrapper">
                 {{ form.additional_instructions.label_tag }}
@@ -135,22 +129,12 @@
                 </div>
                 {{ form.additional_instructions.errors }}
             </div>
-            <input type="submit" value="Request">
+        </p>
+        <input type="submit" value="Request">
     </form>
     <a href="{% url "sections" %}">Back</a>
 {% endblock %}
 
 {% block javascript %}
-    <script>
-     const proxyRequester = document.getElementById("id_proxy_requester");
-     const copyFromCourse = document.getElementById("id_copy_from_course");
-     proxyRequester.addEventListener('change', (event) => {
-         const excludeAnnouncements = document.getElementById("id_exclude_announcements");
-         excludeAnnouncements.style.display = "none";
-     })
-     copyFromCourse.addEventListener('change', (event) => {
-         const excludeAnnouncements = document.getElementById("id_exclude_announcements");
-         excludeAnnouncements.style.display = "block";
-     })
-    </script>
+    <script src="{% static "js/section_request.js" %}"></script>
 {% endblock %}
