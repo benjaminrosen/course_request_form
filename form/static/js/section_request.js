@@ -3,19 +3,17 @@ function getIntegerFromString(string) {
 }
 
 function getEnrollmentCount() {
-  let elements = [...document.querySelectorAll('[id^="enrollment_user"]')];
+  let elements = [...document.querySelectorAll('[id^="enrollment_user_"]')];
   elements = elements.map((element) => getIntegerFromString(element.id));
-  return Math.max(elements);
+  return Math.max(...elements);
 }
 
 function isInput(element) {
-  const tagName = element.tagName;
-  return tagName == "INPUT";
+  return element.tagName == "INPUT";
 }
 
 function isSelect(element) {
-  const tagName = element.tagName;
-  return tagName == "SELECT";
+  return element.tagName == "SELECT";
 }
 
 function getNext(array) {
@@ -31,19 +29,6 @@ function getPennkeyAndRole(element) {
   return { pennkey, role };
 }
 
-function loadUser() {
-  const enrollmentCount = getEnrollmentCount();
-  const { pennkey, role } = getPennkeyAndRole(this);
-  let hxVals = { enrollmentCount, pennkey, role };
-  hxVals = JSON.stringify(hxVals);
-  this.setAttribute("hx-vals", hxVals);
-}
-
-const loadUserButton = [...document.getElementsByClassName("load-user-button")];
-loadUserButton.forEach((button) => {
-  button.addEventListener("click", loadUser);
-});
-
 function setExcludeAnnouncementsDisplay(displayValue) {
   const excludeAnnouncements = document.getElementById(
     "id_exclude_announcements"
@@ -52,11 +37,22 @@ function setExcludeAnnouncementsDisplay(displayValue) {
 }
 
 const proxyRequester = document.getElementById("id_proxy_requester");
-proxyRequester.addEventListener("change", (event) =>
-  setExcludeAnnouncementsDisplay("none")
-);
+if (proxyRequester) {
+  proxyRequester.addEventListener("change", (event) =>
+    setExcludeAnnouncementsDisplay("none")
+  );
+}
 
 const copyFromCourse = document.getElementById("id_copy_from_course");
-copyFromCourse.addEventListener("change", (event) =>
-  setExcludeAnnouncementsDisplay("block")
-);
+if (copyFromCourse) {
+  copyFromCourse.addEventListener("change", (event) =>
+    setExcludeAnnouncementsDisplay("block")
+  );
+}
+
+const addAnotherEnrollment = document.getElementById("add_another_enrollment");
+addAnotherEnrollment.addEventListener("click", (event) => {
+  const enrollmentCount = getEnrollmentCount();
+  const hxVals = JSON.stringify({ enrollmentCount });
+  event.target.setAttribute("hx-vals", hxVals);
+});

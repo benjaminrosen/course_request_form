@@ -177,6 +177,7 @@ class SectionEnrollmentView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = SectionEnrollmentForm()
+        context["enrollment_count"] = self.request.GET["enrollmentCount"]
         return context
 
 
@@ -190,7 +191,6 @@ class EnrollmentUserView(TemplateView):
             username = User.objects.get(username=values["pennkey"])
         except Exception:
             username = "NOT FOUND"
-        context["enrollment_count"] = values["enrollmentCount"]
         context["username"] = username
         context["role"] = values["role"]
         return context

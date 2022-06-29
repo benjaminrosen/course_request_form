@@ -115,7 +115,8 @@
                     </button>
                 </p>
             </div>
-            <button hx-get="{% url "section_enrollment" %}"
+            <button id="add_another_enrollment"
+                    hx-get="{% url "section_enrollment" %}"
                     hx-target="this"
                     hx-swap="beforebegin">
                 Add another enrollment
