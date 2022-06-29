@@ -67,3 +67,4 @@ class SectionEnrollmentForm(ModelForm):
         model = SectionEnrollment
         fields = ("user", "role")
         widgets = {"user": TextInput}
+        labels = {"user": "Pennkey"}

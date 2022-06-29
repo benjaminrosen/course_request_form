@@ -50,13 +50,6 @@ function getPennkeyAndRole(element) {
   return { pennkey, role };
 }
 
-function loadUser(target) {
-  const enrollmentCount = getEnrollmentCount();
-  const { pennkey, role } = getPennkeyAndRole(target);
-  const hxVals = JSON.stringify({ enrollmentCount, pennkey, role });
-  target.setAttribute("hx-vals", hxVals);
-}
-
 const addAnotherEnrollment = document.getElementById("add_another_enrollment");
 addAnotherEnrollment.addEventListener("click", (event) => {
   const enrollmentCount = getEnrollmentCount();
@@ -64,9 +57,11 @@ addAnotherEnrollment.addEventListener("click", (event) => {
   event.target.setAttribute("hx-vals", hxVals);
 });
 
-function isEnrollmentUserDiv(mutation) {
-  const addedNode = getNext(mutation.addedNodes);
-  return addedNode.id;
+function loadUser(target) {
+  const enrollmentCount = getEnrollmentCount();
+  const { pennkey, role } = getPennkeyAndRole(target);
+  const hxVals = JSON.stringify({ enrollmentCount, pennkey, role });
+  target.setAttribute("hx-vals", hxVals);
 }
 
 const addLoadUserListener = function (mutationList) {

@@ -188,6 +188,7 @@ class EnrollmentUserView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         values = self.request.GET
+        context["enrollment_count"] = values["enrollmentCount"]
         pennkey = values["pennkey"]
         try:
             user = User.objects.get(username=pennkey)

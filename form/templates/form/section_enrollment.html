@@ -3,8 +3,7 @@
     <div id="enrollment_user_{{ new_enrollment_count }}">
         <p>
             {{ form }}
-            <button type="button"
-                    id="load_user_{{ new_enrollment_count}}"
+            <button id="load_user_{{ new_enrollment_count}}"
                     hx-get="{% url "enrollment_user" %}"
                     hx-target="#enrollment_user_{{ new_enrollment_count }}">
                 Load user
