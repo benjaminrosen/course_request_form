@@ -1,5 +1,4 @@
 {% load static %}
-
 {% with new_enrollment_count=enrollment_count|add:"1" %}
     <div id="enrollment_user_{{ new_enrollment_count }}">
         <p>
@@ -11,7 +10,6 @@
                 Load user
             </button>
         </p>
-</form>
-
-<script src="{% static "js/section_enrollment" %}"></script>
+    </div>
+    <script type="module" src="{% static "js/section_enrollment.js" %}"></script>
 {% endwith %}

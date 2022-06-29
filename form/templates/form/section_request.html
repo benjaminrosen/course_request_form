@@ -108,7 +108,7 @@
                 <p>
                     {{ section_enrollment_form }}
                     <button type="button"
-                            class="load-user-button"
+                            class="load_user_1"
                             hx-get="{% url "enrollment_user" %}"
                             hx-target="#enrollment_user_1">
                         Load user
@@ -137,5 +137,5 @@
 {% endblock %}
 
 {% block javascript %}
-    <script src="{% static "js/section_request.js" %}"></script>
+    <script type="module" src="{% static "js/section_request.js" %}"></script>
 {% endblock %}

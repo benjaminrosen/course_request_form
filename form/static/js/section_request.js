@@ -2,31 +2,14 @@ function getIntegerFromString(string) {
   return parseInt(string.match(/\d+/)[0]);
 }
 
-function getEnrollmentCount() {
-  let elements = [...document.querySelectorAll('[id^="enrollment_user_"]')];
+export function getEnrollmentCount() {
+  let elements = [...document.querySelectorAll("[id^='enrollment_user_']")];
   elements = elements.map((element) => getIntegerFromString(element.id));
   return Math.max(...elements);
 }
 
-function isInput(element) {
-  return element.tagName == "INPUT";
-}
-
-function isSelect(element) {
-  return element.tagName == "SELECT";
-}
-
-function getNext(array) {
+export function getNext(array) {
   return array.values().next().value;
-}
-
-function getPennkeyAndRole(element) {
-  const siblings = [...element.parentElement.children];
-  const input = siblings.filter((element) => isInput(element));
-  const select = siblings.filter((element) => isSelect(element));
-  const pennkey = getNext(input).value;
-  const role = getNext(select).value;
-  return { pennkey, role };
 }
 
 function setExcludeAnnouncementsDisplay(displayValue) {
