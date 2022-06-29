@@ -2,6 +2,7 @@ from functools import reduce
 from typing import cast
 
 from config.config import PROD_URL
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.urls.base import reverse
@@ -187,10 +188,13 @@ class EnrollmentUserView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         values = self.request.GET
+        pennkey = values["pennkey"]
         try:
-            username = User.objects.get(username=values["pennkey"])
-        except Exception:
-            username = "NOT FOUND"
-        context["username"] = username
+            user = User.objects.get(username=pennkey)
+        except ObjectDoesNotExist:
+            user = User.sync_user(pennkey)
+            if not user:
+                return context
+        context["enrollment_user"] = user
         context["role"] = values["role"]
         return context

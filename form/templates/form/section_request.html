@@ -87,8 +87,7 @@
         <p>
             The default title for this course is "{{ section.title }}." To use a
             different title for the Canvas site, specify it below:
-        </p>
-        <p>
+        </p> <p>
             <div class="fieldWrapper">
                 {{ form.title_override.label_tag }}
                 {{ form.title_override }}
@@ -104,22 +103,11 @@
         </p>
         {{ form.additional_enrollments.label_tag }}
         <div id="id_additional_enrollments">
-            <div id="enrollment_user_1">
-                <p>
-                    {{ section_enrollment_form }}
-                    <button type="button"
-                            class="load_user_1"
-                            hx-get="{% url "enrollment_user" %}"
-                            hx-target="#enrollment_user_1">
-                        Load user
-                    </button>
-                </p>
-            </div>
             <button id="add_another_enrollment"
                     hx-get="{% url "section_enrollment" %}"
                     hx-target="this"
                     hx-swap="beforebegin">
-                Add another enrollment
+                Add enrollment
             </button>
         </div>
         <p>
@@ -136,6 +124,6 @@
     <a href="{% url "sections" %}">Back</a>
 {% endblock %}
 
-{% block javascript %}
+{% block js %}
     <script type="module" src="{% static "js/section_request.js" %}"></script>
 {% endblock %}

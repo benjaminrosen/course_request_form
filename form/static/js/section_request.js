@@ -1,17 +1,3 @@
-function getIntegerFromString(string) {
-  return parseInt(string.match(/\d+/)[0]);
-}
-
-export function getEnrollmentCount() {
-  let elements = [...document.querySelectorAll("[id^='enrollment_user_']")];
-  elements = elements.map((element) => getIntegerFromString(element.id));
-  return Math.max(...elements);
-}
-
-export function getNext(array) {
-  return array.values().next().value;
-}
-
 function setExcludeAnnouncementsDisplay(displayValue) {
   const excludeAnnouncements = document.getElementById(
     "id_exclude_announcements"
@@ -33,9 +19,67 @@ if (copyFromCourse) {
   );
 }
 
+function getIntegerFromString(string) {
+  return parseInt(string.match(/\d+/)[0]);
+}
+
+function getEnrollmentCount() {
+  let elements = [...document.querySelectorAll("[id^='enrollment_user_']")];
+  elements = elements.map((element) => getIntegerFromString(element.id));
+  return elements.length ? Math.max(...elements) : 1;
+}
+
+function getNext(array) {
+  return array.values().next().value;
+}
+
+function isInput(element) {
+  return element.tagName == "INPUT";
+}
+
+function isSelect(element) {
+  return element.tagName == "SELECT";
+}
+
+function getPennkeyAndRole(element) {
+  const siblings = [...element.parentElement.children];
+  const input = siblings.filter((element) => isInput(element));
+  const select = siblings.filter((element) => isSelect(element));
+  const pennkey = getNext(input).value;
+  const role = getNext(select).value;
+  return { pennkey, role };
+}
+
+function loadUser(target) {
+  const enrollmentCount = getEnrollmentCount();
+  const { pennkey, role } = getPennkeyAndRole(target);
+  const hxVals = JSON.stringify({ enrollmentCount, pennkey, role });
+  target.setAttribute("hx-vals", hxVals);
+}
+
 const addAnotherEnrollment = document.getElementById("add_another_enrollment");
 addAnotherEnrollment.addEventListener("click", (event) => {
   const enrollmentCount = getEnrollmentCount();
   const hxVals = JSON.stringify({ enrollmentCount });
   event.target.setAttribute("hx-vals", hxVals);
 });
+
+function isEnrollmentUserDiv(mutation) {
+  const addedNode = getNext(mutation.addedNodes);
+  return addedNode.id;
+}
+
+const addLoadUserListener = function (mutationList) {
+  const enrollmentCount = getEnrollmentCount();
+  const button = document.getElementById(`load_user_${enrollmentCount}`);
+  if (!button) {
+    return;
+  }
+  button.addEventListener("click", (event) => loadUser(event.target));
+};
+const observer = new MutationObserver(addLoadUserListener);
+const additionalEnrollmentsDiv = document.getElementById(
+  "id_additional_enrollments"
+);
+const mutationConfig = { childList: true };
+observer.observe(additionalEnrollmentsDiv, mutationConfig);

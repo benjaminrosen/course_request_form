@@ -6,42 +6,37 @@
         <title>Course Request Form</title>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Serif+Pro">
         <link rel="stylesheet" href="{% static "css/style.css" %}">
-        <script type="text/javascript" src="{% static "js/htmx.min.js" %}"></script>
     </head>
     <body>
-        {% if user.is_authenticated %}
-            <div class="main">
-                <div class="sidebar">
-                    <img class="logo" src="{% static "img/UniversityofPennsylvania_FullLogo_Reverse_RGB.png" %}" alt="UPenn logo">
+        {% with logo="img/UniversityofPennsylvania_FullLogo_Reverse_RGB.png" alt="UPenn logo" %}
+            {% if user.is_authenticated %}
+                <div class="main">
+                    <div class="sidebar">
+                        <img class="logo" src="{% static logo %}" alt="{{ alt }}">
+                        <h1>Course Request Form</h1>
+                        <nav class="nav">
+                            <a href="{% url "home" %}">Home</a>
+                            <a href="{% url "sections" %}">Courses</a>
+                            <a href="{% url "logout" %}">Log Out</a>
+                            {% if user.is_staff %}
+                                <a href="/admin">Admin</a>
+                            {% endif %}
+                        </nav>
+                    </div>
+                    <div class="content">
+                        {% block content %}{% endblock %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="header">
+                    <img class="header-logo" src="{% static logo %}" alt="{{ alt }}">
                     <h1>Course Request Form</h1>
-                    <nav class="nav">
-                        <a href="{% url "home" %}">Home</a>
-                        <a href="{% url "sections" %}">Courses</a>
-                        <a href="{% url "logout" %}">Log Out</a>
-                        {% if user.is_staff %}
-                            <a href="/admin">Admin</a>
-                        {% endif %}
-                    </nav>
                 </div>
-                <div class="content">
-                    {% block content %}
-                    {% endblock %}
-                </div>
-            </div>
-        {% else %}
-            <div class="header">
-                <img class="header-logo" src="{% static "img/UniversityofPennsylvania_FullLogo_Reverse_RGB.png" %}" alt="UPenn logo">
-                <h1>Course Request Form</h1>
-            </div>
-            {% block body %}
-            {% endblock %}
-        {% endif %}
-        <script>
-         document.body.addEventListener('htmx:configRequest', (event) => {
-             event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
-         })
-        </script>
-        {% block javascript %}
-        {% endblock %}
+                {% block body %}{% endblock %}
+            {% endif %}
+        {% endwith %}
+        <script src="{% static "js/htmx_config.js" %}"></script>
+        <script src="{% static "js/htmx.min.js" %}"></script>
+        {% block js %}{% endblock %}
     </body>
 </html>

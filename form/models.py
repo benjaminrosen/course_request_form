@@ -78,7 +78,7 @@ class User(AbstractUser):
                 user_object.penn_id = penn_id
                 user_object.email = email
             else:
-                User.objects.update_or_create(
+                user, _ = User.objects.update_or_create(
                     username=pennkey,
                     defaults={
                         "first_name": first_name,
@@ -87,6 +87,7 @@ class User(AbstractUser):
                         "email": email,
                     },
                 )
+                return user
 
     def sync_dw_info(self):
         self.sync_user(self.username, self)
