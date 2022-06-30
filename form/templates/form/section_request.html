@@ -103,7 +103,7 @@
         </p>
         {{ form.additional_enrollments.label_tag }}
         <div id="id_additional_enrollments">
-            <button id="id_add_another_enrollment"
+            <button id="id_add_enrollment"
                     hx-get="{% url "section_enrollment" %}"
                     hx-target="this"
                     hx-swap="beforebegin">
@@ -125,5 +125,5 @@
 {% endblock %}
 
 {% block js %}
-    <script type="application/javascript" src="{% static "js/section_request.js" %}"></script>
+    <script type="module" src="{% static "js/section_request.js" %}"></script>
 {% endblock %}
