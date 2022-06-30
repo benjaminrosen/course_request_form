@@ -67,3 +67,6 @@ class SectionEnrollmentForm(ModelForm):
         fields = ("user", "role")
         widgets = {"user": TextInput}
         labels = {"user": "Pennkey"}
+
+    def clean(self):
+        pass

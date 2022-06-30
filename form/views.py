@@ -1,13 +1,13 @@
 from functools import reduce
 from typing import cast
 
-from config.config import PROD_URL
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import HttpResponse
 from django.urls.base import reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
+from config.config import PROD_URL
 from form.canvas import get_user_canvas_sites
 from form.terms import CURRENT_TERM, NEXT_TERM
 
@@ -95,7 +95,7 @@ class RequestFormView(FormView):
 
     def get_initial(self):
         initial = super().get_initial()
-        username = self.request.user.username
+        username = cast(User, self.request.user).username
         user = User.objects.get(username=username)
         section = self.get_section()
         instructors = section.instructors.all()
@@ -214,19 +214,29 @@ class EnrollmentUserView(TemplateView):
         values = self.request.GET
         enrollment_count = values["enrollmentCount"]
         context["enrollment_count"] = enrollment_count
+        div_id = f"id_enrollment_user_{enrollment_count}"
+        context["div_id"] = div_id
         pennkey = values["pennkey"]
         user = User.get_user(pennkey)
         if not user:
+            button_id = f"id_load_user_{enrollment_count}"
+            context["button_id"] = button_id
+            form = SectionEnrollmentForm()
+            form.cleaned_data = dict()
+            error_text = (
+                f"User with pennkey '{pennkey}' not found. Please try a different"
+                " pennkey or leave a note below if you believe this one is correct."
+            )
+            form.add_error("user", error_text)
+            context["form"] = form
             return context
         base_id = "id_additional_enrollment"
         pennkey_id = f"{base_id}_pennkey_{enrollment_count}"
         role_id = f"{base_id}_role_{enrollment_count}"
-        div_id = f"id_enrollment_user_{enrollment_count}"
         button_id = f"id_edit_{enrollment_count}"
         context["enrollment_count"] = enrollment_count
         context["pennkey_id"] = pennkey_id
         context["role_id"] = role_id
-        context["div_id"] = div_id
         context["button_id"] = button_id
         context["enrollment_user"] = user
         context["role"] = values["role"].title()
