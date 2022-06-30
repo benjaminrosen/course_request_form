@@ -1,13 +1,17 @@
 <p>
-    <label for="id_additional_enrollment_pennkey_{{ enrollment_count }}">Pennkey:</label>
-    <input id="id_additional_enrollment_pennkey_{{ enrollment_count }}"
+    <label for="{{ pennkey_id }}">Pennkey:</label>
+    <input id="{{ pennkey_id }}"
            type="text"
            value="{{ enrollment_user }}"
            disabled />
-    <label for="id_additional_enrollment_role_{{ enrollment_count }}">Role:</label>
-    <select id="id_additional_enrollment_role_{{ enrollment_count }}" disabled>
+    <label for="{{ role_id }}">Role:</label>
+    <select id="{{ role_id }}" disabled>
         <option>{{ role }}</option>
     </select>
     <button type="button">Edit</button>
-    <button type="button">Remove</button>
+    <button type="button"
+            hx-get="{% url "delete_enrollment_user" %}"
+            hx-target="#id_enrollment_user_{{ enrollment_count }}">
+        Remove
+    </button>
 </p>

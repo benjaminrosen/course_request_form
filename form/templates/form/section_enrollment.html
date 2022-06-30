@@ -1,13 +1,11 @@
 {% load static %}
-{% with new_enrollment_count=enrollment_count|add:"1" %}
-    <div id="enrollment_user_{{ new_enrollment_count }}">
-        <p>
-            {{ form }}
-            <button id="load_user_{{ new_enrollment_count}}"
-                    hx-get="{% url "enrollment_user" %}"
-                    hx-target="#enrollment_user_{{ new_enrollment_count }}">
-                Load user
-            </button>
-        </p>
-    </div>
-{% endwith %}
+<div id="{{ div_id }}">
+    <p>
+        {{ form }}
+        <button id="{{ button_id }}"
+                hx-get="{% url "enrollment_user" %}"
+                hx-target="#{{ div_id }}">
+            Load user
+        </button>
+    </p>
+</div>

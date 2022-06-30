@@ -25,6 +25,7 @@ from form.views import (
     SectionDetailView,
     SectionEnrollmentView,
     SectionListView,
+    delete_enrollment_user,
 )
 
 urlpatterns = [
@@ -45,4 +46,7 @@ urlpatterns = [
         "section-enrollment", SectionEnrollmentView.as_view(), name="section_enrollment"
     ),
     path("enrollment-user", EnrollmentUserView.as_view(), name="enrollment_user"),
+    path(
+        "enrollment-user/delete", delete_enrollment_user, name="delete_enrollment_user"
+    ),
 ]

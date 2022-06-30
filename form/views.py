@@ -1,6 +1,8 @@
 from functools import reduce
 from typing import cast
 
+from django.http import HttpResponse
+
 from config.config import PROD_URL
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -177,8 +179,13 @@ class SectionEnrollmentView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        new_enrollment_count = int(self.request.GET["enrollmentCount"])
+        new_enrollment_count = new_enrollment_count + 1
+        div_id = f"id_enrollment_user_{new_enrollment_count}"
+        button_id = f"id_load_user_{new_enrollment_count}"
+        context["div_id"] = div_id
+        context["button_id"] = button_id
         context["form"] = SectionEnrollmentForm()
-        context["enrollment_count"] = self.request.GET["enrollmentCount"]
         return context
 
 
@@ -188,7 +195,8 @@ class EnrollmentUserView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         values = self.request.GET
-        context["enrollment_count"] = values["enrollmentCount"]
+        enrollment_count = values["enrollmentCount"]
+        context["enrollment_count"] = enrollment_count
         pennkey = values["pennkey"]
         try:
             user = User.objects.get(username=pennkey)
@@ -196,6 +204,16 @@ class EnrollmentUserView(TemplateView):
             user = User.sync_user(pennkey)
             if not user:
                 return context
+        base_id = "id_additional_enrollment"
+        pennkey_id = f"{base_id}_pennkey_{enrollment_count}"
+        role_id = f"{base_id}_role_{enrollment_count}"
+        context["enrollment_count"] = enrollment_count
+        context["pennkey_id"] = pennkey_id
+        context["role_id"] = role_id
         context["enrollment_user"] = user
         context["role"] = values["role"]
         return context
+
+
+def delete_enrollment_user(request):
+    return HttpResponse()

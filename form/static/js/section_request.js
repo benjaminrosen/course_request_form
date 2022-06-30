@@ -24,9 +24,9 @@ function getIntegerFromString(string) {
 }
 
 function getEnrollmentCount() {
-  let elements = [...document.querySelectorAll("[id^='enrollment_user_']")];
+  let elements = [...document.querySelectorAll("[id^='id_enrollment_user_']")];
   elements = elements.map((element) => getIntegerFromString(element.id));
-  return elements.length ? Math.max(...elements) : 1;
+  return elements.length ? Math.max(...elements) : 0;
 }
 
 function getNext(array) {
@@ -50,7 +50,9 @@ function getPennkeyAndRole(element) {
   return { pennkey, role };
 }
 
-const addAnotherEnrollment = document.getElementById("add_another_enrollment");
+const addAnotherEnrollment = document.getElementById(
+  "id_add_another_enrollment"
+);
 addAnotherEnrollment.addEventListener("click", (event) => {
   const enrollmentCount = getEnrollmentCount();
   const hxVals = JSON.stringify({ enrollmentCount });
@@ -66,7 +68,7 @@ function loadUser(target) {
 
 const addLoadUserListener = function (mutationList) {
   const enrollmentCount = getEnrollmentCount();
-  const button = document.getElementById(`load_user_${enrollmentCount}`);
+  const button = document.getElementById(`id_load_user_${enrollmentCount}`);
   if (!button) {
     return;
   }
