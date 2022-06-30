@@ -12,14 +12,13 @@
             <select id="{{ role_id }}" disabled>
                 <option>{{ role }}</option>
             </select>
-            <button id="{{ button_id }}"
-                    type="button"
+            <button id="{{ edit_button_id }}"
                     hx-get="{% url "section_enrollment" %}"
                     hx-target="#{{ div_id }}"
                     hx-swap="outerHTML">
                 Edit
             </button>
-            <button type="button"
+            <button id="{{ edit_button_id }}"
                     hx-get="{% url "delete_enrollment_user" %}"
                     hx-target="#{{ div_id }}">
                 Remove

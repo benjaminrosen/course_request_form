@@ -3,6 +3,8 @@ from typing import cast
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
+from django.forms.forms import ValidationError
+from django.forms.utils import ErrorList
 from django.http import HttpResponse
 from django.urls.base import reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
@@ -221,23 +223,27 @@ class EnrollmentUserView(TemplateView):
         if not user:
             button_id = f"id_load_user_{enrollment_count}"
             context["button_id"] = button_id
-            form = SectionEnrollmentForm()
+            form_data = {"user": pennkey}
+            form = SectionEnrollmentForm(form_data)
             form.cleaned_data = dict()
             error_text = (
-                f"User with pennkey '{pennkey}' not found. Please try a different"
+                f'User with pennkey "{pennkey}" not found. Please try a different'
                 " pennkey or leave a note below if you believe this one is correct."
             )
-            form.add_error("user", error_text)
+            form.errors["user"] = ErrorList([error_text])
             context["form"] = form
+            context["error"] = True
             return context
         base_id = "id_additional_enrollment"
         pennkey_id = f"{base_id}_pennkey_{enrollment_count}"
         role_id = f"{base_id}_role_{enrollment_count}"
-        button_id = f"id_edit_{enrollment_count}"
+        edit_button_id = f"id_edit_{enrollment_count}"
+        remove_button_id = f"id_remove_{enrollment_count}"
         context["enrollment_count"] = enrollment_count
         context["pennkey_id"] = pennkey_id
         context["role_id"] = role_id
-        context["button_id"] = button_id
+        context["edit_button_id"] = edit_button_id
+        context["remove_button_id"] = remove_button_id
         context["enrollment_user"] = user
         context["role"] = values["role"].title()
         return context

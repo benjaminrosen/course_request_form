@@ -60,7 +60,7 @@ addAnotherEnrollment.addEventListener("click", (event) => {
 });
 
 function getEnrollmentUserValues(target) {
-  const enrollmentCount = getEnrollmentCount();
+  const enrollmentCount = getIntegerFromString(target.id);
   const { pennkey, role } = getPennkeyAndRole(target);
   const hxVals = JSON.stringify({ enrollmentCount, pennkey, role });
   target.setAttribute("hx-vals", hxVals);
