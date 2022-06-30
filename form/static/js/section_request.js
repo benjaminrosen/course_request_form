@@ -59,20 +59,26 @@ addAnotherEnrollment.addEventListener("click", (event) => {
   event.target.setAttribute("hx-vals", hxVals);
 });
 
-function loadUser(target) {
+function getEnrollmentUserValues(target) {
   const enrollmentCount = getEnrollmentCount();
   const { pennkey, role } = getPennkeyAndRole(target);
   const hxVals = JSON.stringify({ enrollmentCount, pennkey, role });
   target.setAttribute("hx-vals", hxVals);
 }
 
-const addLoadUserListener = function (mutationList) {
+const addLoadUserListener = function () {
   const enrollmentCount = getEnrollmentCount();
-  const button = document.getElementById(`id_load_user_${enrollmentCount}`);
+  const loadUserButton = document.getElementById(
+    `id_load_user_${enrollmentCount}`
+  );
+  const editUserButton = document.getElementById(`id_edit_${enrollmentCount}`);
+  const button = loadUserButton || editUserButton;
   if (!button) {
     return;
   }
-  button.addEventListener("click", (event) => loadUser(event.target));
+  button.addEventListener("click", (event) =>
+    getEnrollmentUserValues(event.target)
+  );
 };
 const observer = new MutationObserver(addLoadUserListener);
 const additionalEnrollmentsDiv = document.getElementById(

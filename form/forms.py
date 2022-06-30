@@ -1,8 +1,7 @@
-from typing import Optional, cast
+from typing import Optional
 
 from canvasapi.course import Course
-from django.core.exceptions import ValidationError
-from django.forms import EmailField, Form, ModelForm
+from django.forms import ModelForm
 from django.forms.widgets import Select, TextInput
 
 from form.canvas import get_user_canvas_sites

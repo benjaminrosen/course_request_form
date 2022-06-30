@@ -1,12 +1,10 @@
 from functools import reduce
 from typing import cast
 
-from django.http import HttpResponse
-
 from config.config import PROD_URL
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
+from django.http import HttpResponse
 from django.urls.base import reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
@@ -14,7 +12,7 @@ from form.canvas import get_user_canvas_sites
 from form.terms import CURRENT_TERM, NEXT_TERM
 
 from .forms import RequestForm, SectionEnrollmentForm
-from .models import Request, School, Section, User
+from .models import Enrollment, Request, School, Section, User
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -177,15 +175,34 @@ class ExcludeAnnouncementsView(TemplateView):
 class SectionEnrollmentView(TemplateView):
     template_name = "form/section_enrollment.html"
 
+    @staticmethod
+    def get_pennkey(user_display: str) -> str:
+        pennkey_start = user_display.find("(") + 1
+        pennkey_end = user_display.find(")")
+        return user_display[pennkey_start:pennkey_end]
+
+    @staticmethod
+    def get_role(role: str) -> str:
+        return Enrollment.CanvasRole[role.upper()].name
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        new_enrollment_count = int(self.request.GET["enrollmentCount"])
-        new_enrollment_count = new_enrollment_count + 1
+        values = self.request.GET
+        new_enrollment_count = values["enrollmentCount"]
+        editing = "pennkey" in values and "role" in values
+        if editing:
+            pennkey = self.get_pennkey(values["pennkey"])
+            role = self.get_role(values["role"])
+            form_data = {"user": pennkey, "role": role}
+            form = SectionEnrollmentForm(form_data)
+        else:
+            new_enrollment_count = int(new_enrollment_count) + 1
+            form = SectionEnrollmentForm()
         div_id = f"id_enrollment_user_{new_enrollment_count}"
         button_id = f"id_load_user_{new_enrollment_count}"
         context["div_id"] = div_id
         context["button_id"] = button_id
-        context["form"] = SectionEnrollmentForm()
+        context["form"] = form
         return context
 
 
@@ -198,20 +215,21 @@ class EnrollmentUserView(TemplateView):
         enrollment_count = values["enrollmentCount"]
         context["enrollment_count"] = enrollment_count
         pennkey = values["pennkey"]
-        try:
-            user = User.objects.get(username=pennkey)
-        except ObjectDoesNotExist:
-            user = User.sync_user(pennkey)
-            if not user:
-                return context
+        user = User.get_user(pennkey)
+        if not user:
+            return context
         base_id = "id_additional_enrollment"
         pennkey_id = f"{base_id}_pennkey_{enrollment_count}"
         role_id = f"{base_id}_role_{enrollment_count}"
+        div_id = f"id_enrollment_user_{enrollment_count}"
+        button_id = f"id_edit_{enrollment_count}"
         context["enrollment_count"] = enrollment_count
         context["pennkey_id"] = pennkey_id
         context["role_id"] = role_id
+        context["div_id"] = div_id
+        context["button_id"] = button_id
         context["enrollment_user"] = user
-        context["role"] = values["role"]
+        context["role"] = values["role"].title()
         return context
 
 

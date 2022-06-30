@@ -77,8 +77,9 @@ class User(AbstractUser):
                 user_object.last_name = last_name
                 user_object.penn_id = penn_id
                 user_object.email = email
+                logger.info(f"UPDATED {user_object}")
             else:
-                user, _ = User.objects.update_or_create(
+                user_object, _ = User.objects.update_or_create(
                     username=pennkey,
                     defaults={
                         "first_name": first_name,
@@ -87,7 +88,15 @@ class User(AbstractUser):
                         "email": email,
                     },
                 )
-                return user
+                logger.info(f"ADDED {user_object}")
+                return user_object
+
+    @classmethod
+    def get_user(cls, pennkey: str):
+        try:
+            return cls.objects.get(username=pennkey)
+        except Exception:
+            return cls.sync_user(pennkey)
 
     def sync_dw_info(self):
         self.sync_user(self.username, self)
@@ -632,7 +641,9 @@ class Enrollment(Model):
 
     LIBRARIAN_ROLE_ID = 1383
     user = ForeignKey(User, on_delete=CASCADE)
-    role = CharField(max_length=18, choices=CanvasRole.choices, default=CanvasRole.TA)
+    role = CharField(
+        max_length=18, choices=CanvasRole.choices, default=CanvasRole.INSTRUCTOR
+    )
 
     class Meta:
         managed = False

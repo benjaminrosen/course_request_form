@@ -1,10 +1,14 @@
 {% load static %}
 <div id="{{ div_id }}">
     <p>
-        {{ form }}
+        {{ form.user.label_tag }}
+        {{ form.user }}
+        {{ form.role.label_tag }}
+        {{ form.role }}
         <button id="{{ button_id }}"
                 hx-get="{% url "enrollment_user" %}"
-                hx-target="#{{ div_id }}">
+                hx-target="#{{ div_id }}"
+                hx-swap="outerHTML">
             Load user
         </button>
     </p>
