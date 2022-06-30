@@ -41,8 +41,16 @@ function isSelect(element) {
   return element.tagName == "SELECT";
 }
 
+function isButton(element) {
+  return element.tagName == "BUTTON";
+}
+
+function getSiblings(element) {
+  return [...element.parentElement.children];
+}
+
 function getPennkeyAndRole(element) {
-  const siblings = [...element.parentElement.children];
+  const siblings = getSiblings(element);
   const input = siblings.filter((element) => isInput(element));
   const select = siblings.filter((element) => isSelect(element));
   const pennkey = getNext(input).value;
@@ -66,19 +74,42 @@ function getEnrollmentUserValues(target) {
   target.setAttribute("hx-vals", hxVals);
 }
 
-const addLoadUserListener = function () {
+function getElementByEnrollmentCount(elementId) {
   const enrollmentCount = getEnrollmentCount();
-  const loadUserButton = document.getElementById(
-    `id_load_user_${enrollmentCount}`
-  );
-  const editUserButton = document.getElementById(`id_edit_${enrollmentCount}`);
-  const button = loadUserButton || editUserButton;
-  if (!button) {
-    return;
+  return document.getElementById(`${elementId}_${enrollmentCount}`);
+}
+
+function handlePennkeyEnter(event) {
+  if (event.key == "Enter") {
+    const siblings = getSiblings(event.target);
+    const button = getNext(siblings.filter((element) => isButton(element)));
+    const input = getElementByEnrollmentCount("id_user");
+    input.blur();
+    button.click();
   }
-  button.addEventListener("click", (event) =>
-    getEnrollmentUserValues(event.target)
-  );
+}
+
+const addLoadUserListener = function (mutationList) {
+  const input = getElementByEnrollmentCount("id_user");
+  const loadUserButton = getElementByEnrollmentCount("id_load_user");
+  const editUserButton = getElementByEnrollmentCount("id_edit");
+  const button = loadUserButton || editUserButton;
+  if (input) {
+    input.addEventListener("focus", (event) => {
+      document.addEventListener("keypress", handlePennkeyEnter);
+    });
+    input.addEventListener("blur", (event) => {
+      document.removeEventListener("keypress", handlePennkeyEnter);
+    });
+    if (input.value) {
+      input.focus();
+    }
+  }
+  if (button) {
+    button.addEventListener("click", (event) =>
+      getEnrollmentUserValues(event.target)
+    );
+  }
 };
 const observer = new MutationObserver(addLoadUserListener);
 const additionalEnrollmentsDiv = document.getElementById(
@@ -86,3 +117,9 @@ const additionalEnrollmentsDiv = document.getElementById(
 );
 const mutationConfig = { childList: true };
 observer.observe(additionalEnrollmentsDiv, mutationConfig);
+
+document.addEventListener("keypress", (event) => {
+  if (event.key == "Enter") {
+    event.preventDefault();
+  }
+});

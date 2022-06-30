@@ -1,15 +1,14 @@
 from functools import reduce
 from typing import cast
 
+from config.config import PROD_URL
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
-from django.forms.forms import ValidationError
 from django.forms.utils import ErrorList
 from django.http import HttpResponse
 from django.urls.base import reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
-from config.config import PROD_URL
 from form.canvas import get_user_canvas_sites
 from form.terms import CURRENT_TERM, NEXT_TERM
 
@@ -198,12 +197,12 @@ class SectionEnrollmentView(TemplateView):
             form_data = {
                 "user": pennkey,
                 "role": role,
-                "auto_id": f"%s_{new_enrollment_count}",
             }
             form = SectionEnrollmentForm(form_data)
+            form.auto_id = f"id_%s_{new_enrollment_count}"
         else:
             new_enrollment_count = int(new_enrollment_count) + 1
-            form = SectionEnrollmentForm(auto_id=f"%s_{new_enrollment_count}")
+            form = SectionEnrollmentForm(auto_id=f"id_%s_{new_enrollment_count}")
         div_id = f"id_enrollment_user_{new_enrollment_count}"
         button_id = f"id_load_user_{new_enrollment_count}"
         context["div_id"] = div_id
@@ -227,11 +226,9 @@ class EnrollmentUserView(TemplateView):
         if not user:
             button_id = f"id_load_user_{enrollment_count}"
             context["button_id"] = button_id
-            form_data = {
-                "user": pennkey,
-                "auto_id": f"%s_{enrollment_count}",
-            }
+            form_data = {"user": pennkey}
             form = SectionEnrollmentForm(form_data)
+            form.auto_id = f"id_%s_{enrollment_count}"
             form.cleaned_data = dict()
             error_text = (
                 f'User with pennkey "{pennkey}" not found. Please try a different'

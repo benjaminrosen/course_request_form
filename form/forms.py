@@ -1,12 +1,13 @@
 from typing import Optional
 
+from enum import Enum
 from canvasapi.course import Course
 from django.forms import ModelForm
 from django.forms.widgets import Select, TextInput
 
 from form.canvas import get_user_canvas_sites
 
-from .models import Request, SectionEnrollment
+from .models import Enrollment, Request, SectionEnrollment
 
 
 class RequestForm(ModelForm):
@@ -62,11 +63,23 @@ class RequestForm(ModelForm):
 
 
 class SectionEnrollmentForm(ModelForm):
+    class CanvasRoleDisplay(Enum):
+        TA = "TA"
+        INSTRUCTOR = "Instructor"
+        DESIGNER = "Designer"
+        LIBRARIAN = "Librarian"
+
+        @classmethod
+        @property
+        def choices(cls):
+            return [(member.name, member.value) for member in cls]
+
     class Meta:
         model = SectionEnrollment
         fields = ("user", "role")
         widgets = {"user": TextInput}
         labels = {"user": "Pennkey"}
 
-    def clean(self):
-        pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["role"].widget.choices = self.CanvasRoleDisplay.choices

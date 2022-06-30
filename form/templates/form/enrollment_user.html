@@ -1,5 +1,5 @@
 {% if form %}
-    {% include "form/section_enrollment.html" %}
+    {% include "form/section_enrollment.html" with form=form%}
 {% else %}
     <div id="{{ div_id }}">
         <p>
