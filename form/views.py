@@ -195,11 +195,15 @@ class SectionEnrollmentView(TemplateView):
         if editing:
             pennkey = self.get_pennkey(values["pennkey"])
             role = self.get_role(values["role"])
-            form_data = {"user": pennkey, "role": role}
+            form_data = {
+                "user": pennkey,
+                "role": role,
+                "auto_id": f"%s_{new_enrollment_count}",
+            }
             form = SectionEnrollmentForm(form_data)
         else:
             new_enrollment_count = int(new_enrollment_count) + 1
-            form = SectionEnrollmentForm()
+            form = SectionEnrollmentForm(auto_id=f"%s_{new_enrollment_count}")
         div_id = f"id_enrollment_user_{new_enrollment_count}"
         button_id = f"id_load_user_{new_enrollment_count}"
         context["div_id"] = div_id
@@ -223,7 +227,10 @@ class EnrollmentUserView(TemplateView):
         if not user:
             button_id = f"id_load_user_{enrollment_count}"
             context["button_id"] = button_id
-            form_data = {"user": pennkey}
+            form_data = {
+                "user": pennkey,
+                "auto_id": f"%s_{enrollment_count}",
+            }
             form = SectionEnrollmentForm(form_data)
             form.cleaned_data = dict()
             error_text = (
