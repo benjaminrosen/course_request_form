@@ -105,8 +105,12 @@
             </div>
         </p>
         {{ form.additional_enrollments.label_tag }}
-        <div id="id_additional_enrollments">
-            <button id="id_add__enrollment"
+        <input type="text"
+               id="id_additional_enrollments"
+               name="additional_enrollments"
+               hidden/>
+        <div id="id_additional_enrollments_form">
+            <button id="id_add_enrollment"
                     hx-get="{% url "section_enrollment" %}"
                     hx-target="this"
                     hx-swap="beforebegin">

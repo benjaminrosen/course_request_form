@@ -8,7 +8,7 @@ function isInput(element) {
   return element.tagName == "INPUT";
 }
 
-function isSelect(element) {
+export function isSelect(element) {
   return element.tagName == "SELECT";
 }
 

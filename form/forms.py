@@ -1,4 +1,5 @@
 from enum import Enum
+from json import loads
 from typing import Optional
 
 from canvasapi.course import Course
@@ -24,7 +25,7 @@ class RequestForm(ModelForm):
             "additional_instructions",
         )
         labels = {"proxy_requester": "Request on behalf of"}
-        widgets = {"copy_from_course": Select}
+        widgets = {"copy_from_course": Select, "additional_enrollments": TextInput}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -60,6 +61,12 @@ class RequestForm(ModelForm):
             copy_from_course_choices += canvas_sites
         self.fields["copy_from_course"].disabled = not canvas_sites
         self.fields["copy_from_course"].widget.choices = copy_from_course_choices
+
+    def clean(self):
+        cleaned_data = super().clean()
+        additional_enrollments = loads(self.data["additional_enrollments"])
+        SectionEnrollment(additional_enrollments["user"])
+        return cleaned_data
 
 
 class SectionEnrollmentForm(ModelForm):

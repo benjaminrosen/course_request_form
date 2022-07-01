@@ -4,12 +4,9 @@
     <div id="{{ div_id }}">
         <p>
             <label for="{{ pennkey_id }}">User:</label>
-            <input id="{{ pennkey_id }}"
-                   type="text"
-                   value="{{ enrollment_user }}"
-                   disabled/>
+            <input id="{{ pennkey_id }}" name={{ pennkey_name }} type="text" value="{{ enrollment_user }}" disabled/>
             <label for="{{ role_id }}">Role:</label>
-            <select id="{{ role_id }}" disabled>
+            <select id="{{ role_id }}" name="{{ role_name }}" disabled>
                 <option>
                     {{ role }}
                 </option>

@@ -46,8 +46,15 @@ repos:
         pass_filenames: false
   - repo: local
     hooks:
-      - id: templates
-        name: templates
+      - id: format-templates
+        name: format-templates
+        entry: make format
+        language: system
+        pass_filenames: false
+  - repo: local
+    hooks:
+      - id: lint-templates
+        name: lint-templates
         entry: make lint
         language: system
         pass_filenames: false

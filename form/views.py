@@ -125,11 +125,13 @@ class RequestFormView(FormView):
         values = cast(dict, form.cleaned_data)
         values["requester"] = self.request.user
         values["copy_from_course"] = values["copy_from_course"] or None
-        additional_enrollments = values.pop("additional_enrollments")
+        print(values)
+        print(self.request.POST)
+        return
         section_code = self.kwargs["pk"]
         section = Section.objects.get(section_code=section_code)
         request = Request.objects.create(section=section, **values)
-        request.additional_enrollments.set(additional_enrollments)
+        # request.additional_enrollments.set(additional_enrollments)
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -238,13 +240,18 @@ class EnrollmentUserView(TemplateView):
             context["form"] = form
             context["error"] = True
             return context
-        base_id = "id_additional_enrollment"
+        base = "additional_enrollment"
+        base_id = f"id_{base}"
+        pennkey_name = f"{base}_pennkey_{enrollment_count}"
         pennkey_id = f"{base_id}_pennkey_{enrollment_count}"
+        role_name = f"{base}_role_{enrollment_count}"
         role_id = f"{base_id}_role_{enrollment_count}"
         edit_button_id = f"id_edit_{enrollment_count}"
         remove_button_id = f"id_remove_{enrollment_count}"
         context["enrollment_count"] = enrollment_count
+        context["pennkey_name"] = pennkey_name
         context["pennkey_id"] = pennkey_id
+        context["role_name"] = role_name
         context["role_id"] = role_id
         context["edit_button_id"] = edit_button_id
         context["remove_button_id"] = remove_button_id
