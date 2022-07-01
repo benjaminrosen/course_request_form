@@ -40,7 +40,7 @@ class CanvasApiTest(TestCase):
         sub_accounts = get_all_canvas_accounts()
         self.assertEqual(sub_accounts, SUB_ACCOUNTS)
 
-    @patch(f"{CANVAS_MODULE}.get_canvas_user_id_by_pennkey")
+    @patch(f"{CANVAS_MODULE}.get_canvas_user_by_pennkey")
     def test_get_canvas_user_id_by_pennkey(self, mock_get_canvas_user_by_pennkey):
         mock_get_canvas_user_by_pennkey.return_value = CanvasUser(
             None, {"id": self.user_id, "login_id": LOGIN_ID}

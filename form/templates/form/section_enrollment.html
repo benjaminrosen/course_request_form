@@ -13,7 +13,5 @@
             Load user
         </button>
     </p>
-    {% if error %}
-        {{ form.user.errors }}
-    {% endif %}
+    {% if error %}{{ form.user.errors }}{% endif %}
 </div>

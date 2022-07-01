@@ -1,13 +1,13 @@
+from enum import Enum
 from typing import Optional
 
-from enum import Enum
 from canvasapi.course import Course
 from django.forms import ModelForm
 from django.forms.widgets import Select, TextInput
 
 from form.canvas import get_user_canvas_sites
 
-from .models import Enrollment, Request, SectionEnrollment
+from .models import Request, SectionEnrollment
 
 
 class RequestForm(ModelForm):
@@ -54,7 +54,7 @@ class RequestForm(ModelForm):
         return [(site.id, f"{site.name} ({site.id})") for site in canvas_sites]
 
     def get_copy_from_course_choices(self, username: str):
-        copy_from_course_choices = [("", "---------")]
+        copy_from_course_choices: list = [("", "---------")]
         canvas_sites = self.get_instructor_canvas_sites(username)
         if canvas_sites:
             copy_from_course_choices += canvas_sites

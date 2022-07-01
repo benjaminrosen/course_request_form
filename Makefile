@@ -7,9 +7,6 @@ SYNC = $(MANAGE) sync
 
 all: help
 
-package:
-	pip install $(package)
-
 add: package freeze ## pip install package and freeze it into requirements file (arg: `package`)
 
 check: ## Check for Django project problems
@@ -32,14 +29,23 @@ help: ## Display the help menu
 	sort | \
 	awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+format: ## Reformat templates
+	djlint ./form/templates --reformat --profile=django
+
 freeze: ## Freeze the dependencies to the requirements.txt file
 	pip freeze > $(REQUIREMENTS)
 
 install: ## Install the dependencies from the requirements.txt file
 	pip install -r $(REQUIREMENTS)
 
+lint: ## Lint templates
+	djlint ./form/templates --lint --profile=django
+
 migrations: ## Make migrations and migrate
 	$(MANAGE) makemigrations && $(MANAGE) migrate
+
+package:
+	pip install $(package)
 
 run: ## Run the development server
 	$(MANAGE) runserver

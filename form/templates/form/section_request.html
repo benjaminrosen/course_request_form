@@ -1,6 +1,5 @@
 {% extends "./base.html" %}
 {% load static %}
-
 {% block content %}
     <h3>{{ section.get_canvas_course_code }}</h3>
     <form method="post">
@@ -11,12 +10,14 @@
             {% with single_instructor=form.proxy_requester.value %}
                 <p>
                     You are not listed as an instructor for this course section.
-                    You may make a request on behalf of {% if single_instructor %}
-                    the instructor below, selecting from that instructor's existing
-                    Canvas sites in the "Copy from course" dropdown if desired.
-                    {% else %} one of the instructors by selecting their name from the
-                    list below. That instructor's existing Canvas sites will then
-                    become available to select in the "Copy from course" dropdown.
+                    You may make a request on behalf of
+                    {% if single_instructor %}
+                        the instructor below, selecting from that instructor's existing
+                        Canvas sites in the "Copy from course" dropdown if desired.
+                    {% else %}
+                        one of the instructors by selecting their name from the
+                        list below. That instructor's existing Canvas sites will then
+                        become available to select in the "Copy from course" dropdown.
                     {% endif %}
                 </p>
                 <p>
@@ -58,7 +59,8 @@
                         hx-target="#id_exclude_announcements">
                     {% if user_is_instructor or form.proxy_requester.value %}
                         {% for canvas_id, name in form.fields.copy_from_course.widget.choices %}
-                            <option value={{ canvas_id }}>{{ name }}</option>
+                            <option value={{ canvas_id }}>{{ name }}
+                            </option>
                         {% endfor %}
                     {% else %}
                         <option value="0">
@@ -87,7 +89,8 @@
         <p>
             The default title for this course is "{{ section.title }}." To use a
             different title for the Canvas site, specify it below:
-        </p> <p>
+        </p>
+        <p>
             <div class="fieldWrapper">
                 {{ form.title_override.label_tag }}
                 {{ form.title_override }}
@@ -103,7 +106,7 @@
         </p>
         {{ form.additional_enrollments.label_tag }}
         <div id="id_additional_enrollments">
-            <button id="id_add_enrollment"
+            <button id="id_add__enrollment"
                     hx-get="{% url "section_enrollment" %}"
                     hx-target="this"
                     hx-swap="beforebegin">
@@ -113,17 +116,14 @@
         <p>
             <div class="fieldWrapper">
                 {{ form.additional_instructions.label_tag }}
-                <div>
-                    {{ form.additional_instructions }}
-                </div>
+                <div>{{ form.additional_instructions }}</div>
                 {{ form.additional_instructions.errors }}
             </div>
         </p>
-        <input type="submit" value="Request">
+        <input type="submit" value="Request" />
     </form>
     <a href="{% url "sections" %}">Back</a>
-{% endblock %}
-
+{% endblock content %}
 {% block js %}
     <script type="module" src="{% static "js/section_request.js" %}"></script>
-{% endblock %}
+{% endblock js %}

@@ -2,40 +2,54 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <meta name="description" content="UPenn Course Request Form" />
+        <meta name="keywords" content="UPenn, Canvas" />
         <title>Course Request Form</title>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Serif+Pro">
-        <link rel="stylesheet" href="{% static "css/style.css" %}">
+        <link rel="stylesheet"
+              href="https://fonts.googleapis.com/css?family=Source+Serif+Pro"/>
+        <link rel="stylesheet" href="{% static "css/style.css" %}" />
     </head>
     <body>
         {% with logo="img/UniversityofPennsylvania_FullLogo_Reverse_RGB.png" alt="UPenn logo" %}
             {% if user.is_authenticated %}
                 <div class="main">
                     <div class="sidebar">
-                        <img class="logo" src="{% static logo %}" alt="{{ alt }}">
+                        <img class="logo"
+                             src="{% static logo %}"
+                             alt="{{ alt }}"
+                             width="320px"
+                             height="100px"/>
                         <h1>Course Request Form</h1>
                         <nav class="nav">
                             <a href="{% url "home" %}">Home</a>
                             <a href="{% url "sections" %}">Courses</a>
                             <a href="{% url "logout" %}">Log Out</a>
                             {% if user.is_staff %}
-                                <a href="/admin">Admin</a>
+                                <a href="{% url "admin:index" %}">Admin</a>
                             {% endif %}
                         </nav>
                     </div>
                     <div class="content">
-                        {% block content %}{% endblock %}
+                        {% block content %}
+                        {% endblock content %}
                     </div>
                 </div>
             {% else %}
                 <div class="header">
-                    <img class="header-logo" src="{% static logo %}" alt="{{ alt }}">
+                    <img class="header-logo"
+                         src="{% static logo %}"
+                         alt="{{ alt }}"
+                         width="320px"
+                         height="100px"/>
                     <h1>Course Request Form</h1>
                 </div>
-                {% block body %}{% endblock %}
+                {% block body %}
+                {% endblock body %}
             {% endif %}
         {% endwith %}
         <script src="{% static "js/htmx_config.js" %}"></script>
         <script src="{% static "js/htmx.min.js" %}"></script>
-        {% block js %}{% endblock %}
+        {% block js %}
+        {% endblock js %}
     </body>
 </html>

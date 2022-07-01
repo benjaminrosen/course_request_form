@@ -1,14 +1,11 @@
 {% extends "./base.html" %}
-
 {% block content %}
     <h2>Home</h2>
     <div class="my-requests">
         <h3>My requests</h3>
         {% for request in requests %}
             <p>
-                <a href="{% url "section_detail" request.section.section_code %}">
-                    {{ request }}
-                </a>
+                <a href="{% url "section_detail" request.section.section_code %}">{{ request }}</a>
             </p>
         {% endfor %}
     </div>
@@ -17,11 +14,7 @@
         {% if sections %}
             {% for section in sections %}
                 <p>
-                    <a href="{% if section.request %}
-                             {% url "section_detail" section.section_code %}
-                    {% else %}
-                             {% url "section_request" section.section_code %}
-                    {% endif %}">
+                    <a href="{% if section.request %} {% url "section_detail" section.section_code %} {% else %} {% url "section_request" section.section_code %} {% endif %}">
                         {{ section.get_canvas_course_code }}
                     </a>
                 </p>
@@ -31,20 +24,18 @@
                 You are not listed as an instructor for any current or upcoming
                 courses. To request a course on behalf of someone else, please
                 check the list of <a href="{% url "sections" %}">available
-                courses</a>.
-            </p>
-        {% endif %}
-    </div>
-    <div class="my-canvas-sites">
-        <h3>My Canvas sites</h3>
-        {% for site in canvas_sites %}
-            <p>
-                <a href="{{ canvas_url }}/{{ site.id }}"
-                   target="_blank"
-                   rel="noopener noreferrer">
-                    {{ site }}
-                </a>
-            </p>
-        {% endfor %}
-    </div>
-{% endblock %}
+            courses</a>.
+        </p>
+    {% endif %}
+</div>
+<div class="my-canvas-sites">
+    <h3>My Canvas sites</h3>
+    {% for site in canvas_sites %}
+        <p>
+            <a href="{{ canvas_url }}/{{ site.id }}"
+               target="_blank"
+               rel="noopener noreferrer">{{ site }}</a>
+        </p>
+    {% endfor %}
+</div>
+{% endblock content %}
