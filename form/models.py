@@ -77,7 +77,8 @@ class User(AbstractUser):
                 user_object.last_name = last_name
                 user_object.penn_id = penn_id
                 user_object.email = email
-                logger.info(f"UPDATED {user_object}")
+                action = "ADDED" if user_object._state.adding else "UPDATED"
+                logger.info(f"{action} {user_object}")
             else:
                 user_object, _ = User.objects.update_or_create(
                     username=pennkey,
@@ -632,12 +633,15 @@ class Enrollment(Model):
         TA = "TaEnrollment"
         INSTRUCTOR = "TeacherEnrollment"
         DESIGNER = "DesignerEnrollment"
-        LIBRARIAN = "DesignerEnrollment"
 
         @classmethod
         @property
         def choices(cls):
             return [(member.name, member.value) for member in cls]
+
+        @classmethod
+        def get_value(cls, name: str):
+            return cls.__members__.get(name.upper(), cls.INSTRUCTOR).value
 
     LIBRARIAN_ROLE_ID = 1383
     user = ForeignKey(User, on_delete=CASCADE)
@@ -659,6 +663,13 @@ class SectionEnrollment(Enrollment):
                 fields=["user", "role", "request"], name="unique_section_enrollment"
             )
         ]
+
+    @classmethod
+    def update_or_create(cls, user, role, request):
+        try:
+            return cls.objects.get(user=user, role=role, request=request)
+        except Exception:
+            return cls.objects.create(user=user, role=role, request=request)
 
 
 class AutoAdd(Enrollment):
@@ -750,8 +761,10 @@ class Request(Model):
         section = self.section
         instructors = section.instructors.all()
         instructor_enrollments = [
-            SectionEnrollment(
-                user=instructor, role=Enrollment.CanvasRole.INSTRUCTOR, request=self
+            SectionEnrollment.update_or_create(
+                user=instructor,
+                role=Enrollment.CanvasRole.INSTRUCTOR.value,
+                request=self,
             )
             for instructor in instructors
         ]
@@ -774,7 +787,7 @@ class Request(Model):
                 "enrollment_state": "active",
                 "course_section_id": course_section.id,
             }
-            if enrollment.role == Enrollment.CanvasRole.LIBRARIAN.value:
+            if enrollment.role == Enrollment.CanvasRole.DESIGNER.value:
                 enrollment_data["role_id"] = Enrollment.LIBRARIAN_ROLE_ID
             canvas_course.enroll_user(
                 canvas_id, enrollment.role, enrollment=enrollment_data

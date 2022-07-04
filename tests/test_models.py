@@ -645,7 +645,7 @@ class RequestTest(TestCase):
         cls.request = Request.objects.create(section=section, requester=user)
         librarian_enrollment = SectionEnrollment.objects.create(
             user=librarian,
-            role=Enrollment.CanvasRole.LIBRARIAN.value,
+            role=Enrollment.CanvasRole.DESIGNER.value,
             request=cls.request,
         )
         cls.request.additional_enrollments.add(librarian_enrollment)

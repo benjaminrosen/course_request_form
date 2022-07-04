@@ -13,7 +13,7 @@ from form.canvas import get_user_canvas_sites
 from form.terms import CURRENT_TERM, NEXT_TERM
 
 from .forms import RequestForm, SectionEnrollmentForm
-from .models import Enrollment, Request, School, Section, User
+from .models import Enrollment, Request, School, Section, SectionEnrollment, User
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -125,13 +125,17 @@ class RequestFormView(FormView):
         values = cast(dict, form.cleaned_data)
         values["requester"] = self.request.user
         values["copy_from_course"] = values["copy_from_course"] or None
-        print(values)
-        print(self.request.POST)
-        return
         section_code = self.kwargs["pk"]
         section = Section.objects.get(section_code=section_code)
+        additional_enrollments = values.pop("additional_enrollments")
         request = Request.objects.create(section=section, **values)
-        # request.additional_enrollments.set(additional_enrollments)
+        for index, enrollment in enumerate(additional_enrollments):
+            user = User.get_user(enrollment["user"])
+            role = SectionEnrollment.CanvasRole.get_value(enrollment["role"])
+            additional_enrollments[index] = SectionEnrollment.objects.create(
+                user=user, role=role, request=request
+            )
+        request.additional_enrollments.set(additional_enrollments)
         return super().form_valid(form)
 
     def get_success_url(self):

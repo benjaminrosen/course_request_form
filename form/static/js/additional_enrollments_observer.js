@@ -17,43 +17,78 @@ function handlePennkeyEnter(event) {
   }
 }
 
+function handleEnabledInput(input) {
+  if (!input) {
+    return;
+  }
+  input.addEventListener("focus", (event) => {
+    document.addEventListener("keypress", handlePennkeyEnter);
+  });
+  input.addEventListener("blur", (event) => {
+    document.removeEventListener("keypress", handlePennkeyEnter);
+  });
+  if (input.value) {
+    input.focus();
+  }
+}
+
+function handleButton(button) {
+  if (!button) {
+    return;
+  }
+  button.addEventListener("click", (event) =>
+    getEnrollmentUserValues(event.target)
+  );
+}
+
+function getPennkey(input) {
+  const regExp = /\(([^)]+)\)/;
+  return regExp.exec(input.value)[1];
+}
+
+function getRole(input) {
+  const siblings = getSiblings(input);
+  const selects = siblings.filter((element) => isSelect(element));
+  const select = getNext(selects);
+  return select.value;
+}
+
+function setAdditionalEnrollmentValue(enrollmentUser) {
+  const additionalEnrollments = document.getElementById(
+    "id_additional_enrollments"
+  );
+  let currentValue = additionalEnrollments.value;
+  if (currentValue) {
+    currentValue = JSON.parse(currentValue);
+    additionalEnrollments.value = JSON.stringify(
+      currentValue.concat([enrollmentUser])
+    );
+  } else {
+    additionalEnrollments.value = JSON.stringify([enrollmentUser]);
+  }
+}
+
+function handleDisabledInput(input) {
+  if (!input) {
+    return;
+  }
+  const pennkey = getPennkey(input);
+  const role = getRole(input);
+  const enrollmentUser = { user: pennkey, role: role };
+  setAdditionalEnrollmentValue(enrollmentUser);
+}
+
 function addListeners(list) {
+  const loadUserButton = getElementByEnrollmentCount("id_load_user");
+  const editUserButton = getElementByEnrollmentCount("id_edit");
+  const button = loadUserButton || editUserButton;
   const enabledInput = getElementByEnrollmentCount("id_user");
   const disabledInput = getElementByEnrollmentCount(
     "id_additional_enrollment_pennkey"
   );
-  const loadUserButton = getElementByEnrollmentCount("id_load_user");
-  const editUserButton = getElementByEnrollmentCount("id_edit");
-  const button = loadUserButton || editUserButton;
-  if (disabledInput) {
-    const regExp = /\(([^)]+)\)/;
-    const pennkey = regExp.exec(disabledInput.value)[1];
-    const siblings = getSiblings(disabledInput);
-    const selects = siblings.filter((element) => isSelect(element));
-    const select = getNext(selects);
-    const role = select.value;
-    const enrollmentUser = JSON.stringify({ user: pennkey, role: role });
-    const additionalEnrollments = document.getElementById(
-      "id_additional_enrollments"
-    );
-    additionalEnrollments.value = additionalEnrollments.value + enrollmentUser;
-  }
-  if (enabledInput) {
-    enabledInput.addEventListener("focus", (event) => {
-      document.addEventListener("keypress", handlePennkeyEnter);
-    });
-    enabledInput.addEventListener("blur", (event) => {
-      document.removeEventListener("keypress", handlePennkeyEnter);
-    });
-    if (enabledInput.value) {
-      enabledInput.focus();
-    }
-  }
-  if (button) {
-    button.addEventListener("click", (event) =>
-      getEnrollmentUserValues(event.target)
-    );
-  }
+  handleButton(button);
+  handleEnabledInput(enabledInput);
+  handleDisabledInput(disabledInput);
 }
 
 export function addAdditionalEnrollmentsObserver() {
