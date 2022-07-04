@@ -211,8 +211,10 @@ class SectionEnrollmentView(TemplateView):
             form = SectionEnrollmentForm(auto_id=f"id_%s_{new_enrollment_count}")
         div_id = f"id_enrollment_user_{new_enrollment_count}"
         button_id = f"id_load_user_{new_enrollment_count}"
+        remove_button_id = f"id_remove_{new_enrollment_count}"
         context["div_id"] = div_id
         context["button_id"] = button_id
+        context["remove_button_id"] = remove_button_id
         context["form"] = form
         return context
 

@@ -17,9 +17,7 @@
                     hx-swap="outerHTML">
                 Edit
             </button>
-            <button id="{{ edit_button_id }}"
-                    hx-get="{% url "delete_enrollment_user" %}"
-                    hx-target="#{{ div_id }}">Remove</button>
+            {% include "form/remove_button.html" %}
         </p>
     </div>
 {% endif %}

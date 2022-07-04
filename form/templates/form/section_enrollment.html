@@ -12,6 +12,7 @@
                 hx-swap="outerHTML">
             Load user
         </button>
+        {% include "form/remove_button.html" %}
     </p>
     {% if error %}{{ form.user.errors }}{% endif %}
 </div>
