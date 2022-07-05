@@ -24,8 +24,8 @@
                             <a href="{% url "home" %}">Home</a>
                             <a href="{% url "sections" %}">Courses</a>
                             <a href="{% url "logout" %}">Log Out</a>
-                            <span class="nav-label">Admin</span>
                             {% if user.is_staff %}
+                                <span class="nav-label">Admin</span>
                                 <a href="{% url "admin:index" %}">Create sites</a>
                                 <a href="{% url "admin:index" %}">User lookup</a>
                                 <a href="{% url "admin:index" %}">Course lookup</a>

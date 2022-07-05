@@ -129,6 +129,9 @@ class RequestFormView(FormView):
         section = Section.objects.get(section_code=section_code)
         additional_enrollments = values.pop("additional_enrollments")
         request = Request.objects.create(section=section, **values)
+        additional_enrollments = [
+            enrollment for enrollment in additional_enrollments if enrollment
+        ]
         for index, enrollment in enumerate(additional_enrollments):
             user = User.get_user(enrollment["user"])
             role = SectionEnrollment.CanvasRole.get_value(enrollment["role"])

@@ -1,4 +1,5 @@
 from enum import Enum
+from json import dumps
 from typing import Optional
 
 from canvasapi.course import Course

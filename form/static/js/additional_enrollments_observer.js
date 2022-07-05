@@ -53,18 +53,33 @@ function getRole(input) {
   return select.value;
 }
 
+function isBlank(value) {
+  const object = value[0];
+  return !Object.keys(object).length;
+}
+
+function getExistingEnrollments(element) {
+  let existingEnrollments = element.value;
+  return JSON.parse(existingEnrollments);
+}
+
+function addFirstEnrollment(enrollment, element) {
+  element.value = JSON.stringify([enrollment]);
+}
+
+function addAnotherEnrollment(enrollment, element) {
+  element.value = JSON.stringify(currentValue.concat([enrollment]));
+}
+
 function setAdditionalEnrollmentValue(enrollmentUser) {
   const additionalEnrollments = document.getElementById(
     "id_additional_enrollments"
   );
-  let currentValue = additionalEnrollments.value;
-  if (currentValue) {
-    currentValue = JSON.parse(currentValue);
-    additionalEnrollments.value = JSON.stringify(
-      currentValue.concat([enrollmentUser])
-    );
+  let existingEnrollments = getExistingEnrollments(additionalEnrollments);
+  if (isBlank(existingEnrollments)) {
+    addFirstEnrollment(enrollmentUser, additionalEnrollments);
   } else {
-    additionalEnrollments.value = JSON.stringify([enrollmentUser]);
+    addAnotherEnrollment(enrollmentUser, additionalEnrollments);
   }
 }
 
