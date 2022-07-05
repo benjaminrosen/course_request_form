@@ -17,5 +17,33 @@ function focusSearchBar() {
   search.focus();
 }
 
+function getPageButtons() {
+  const first = document.getElementById("id_first");
+  const previous = document.getElementById("id_previous");
+  const next = document.getElementById("id_next");
+  const last = document.getElementById("id_last");
+  const pageButtons = [first, previous, next, last];
+  return pageButtons.filter((button) => !!button);
+}
+
+function removePageFromQuery(query) {
+  let parameters = query.split("&");
+  parameters = parameters.filter((parameter) => !parameter.includes("page="));
+  return parameters.join("&");
+}
+
+function setHrefParameters(button, query) {
+  const [baseUrl, pageNumber] = button.href.split("?");
+  button.href = `${baseUrl}?${pageNumber}&${query}`;
+}
+
+function addPageButtonListeners() {
+  const pageButtons = getPageButtons();
+  let query = window.location.search.slice(1);
+  query = removePageFromQuery(query);
+  pageButtons.forEach((button) => setHrefParameters(button, query));
+}
+
 addSelectEventListeners();
 focusSearchBar();
+addPageButtonListeners();

@@ -40,54 +40,68 @@
             <input id="id_submit" type="submit" name="submit" value="Search"/>
         </p>
         <p>
-            <input type="submit" name="clear" value="Clear"/>
+            <input type="submit" name="clear" value="Reset"/>
         </p>
     </form>
     <table>
-        <colgroup span="5"></colgroup>
         <tr>
             <th>Section code</th>
             <th>Title</th>
             <th>Schedule Type</th>
             <th>Instructors</th>
-            <th>Requested</th>
+            {% if status != "unrequested" %}
+                <th>Requested by</th>
+                <th>Date requested</th>
+            {% endif %}
         </tr>
         {% for section in object_list %}
-            <tr>
-                <td>
-                    <a href="{% if section.request %}{% url "section_detail" section.section_code %}{% else %}{% url "section_request" section.section_code %}{% endif %}">
-                        {{ section.get_canvas_course_code }}
-                    </a>
-                </td>
-                <td>{{ section.title }}</td>
-                <td>{{ section.schedule_type.sched_type_code }}</td>
-                <td class="instructors">{{ section.get_instructors_list }}</td>
-                <td>
-                    {% with request=section.request %}
-                        {% if request %}
-                            {{ request.requester }}
-                            {% with proxy_requester=request.proxy_requester %}
-                                {% if proxy_requester %}on behalf of {{ proxy_requester }}{% endif %}
-                            {% endwith %}
-                            {{ request.created_at }}
-                        {% else %}
-                            Unrequested
-                        {% endif %}
-                    {% endwith %}
-                </td>
-            </tr>
+            {% with request=section.request %}
+                <tr class="{% if request and not status == "requested" %}row-disabled{% endif %}">
+                    <td>
+                        <a href="{% if section.request %}{% url "section_detail" section.section_code %}{% else %}{% url "section_request" section.section_code %}{% endif %}">
+                            {{ section.get_canvas_course_code }}
+                        </a>
+                    </td>
+                    <td>{{ section.title }}</td>
+                    <td>{{ section.schedule_type.sched_type_code }}</td>
+                    <td class="instructors">{{ section.get_instructors_list }}</td>
+                    {% if status != "unrequested" %}
+                        <td>
+                            {% if request %}
+                                {% if user == request.requester %}
+                                    You
+                                {% else %}
+                                    {{ request.requester }}
+                                {% endif %}
+                                {% with proxy_requester=request.proxy_requester %}
+                                    {% if proxy_requester %}on behalf of {{ proxy_requester }}{% endif %}
+                                {% endwith %}
+                            {% else %}
+                                ---
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if request %}
+                                {{ request.created_at }}
+                            {% else %}
+                                ---
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endwith %}
         {% endfor %}
     </table>
     <div class="pagination">
         <span class="step-links">
             {% if page_obj.has_previous %}
-                <a href="?page=1">« first</a>
-                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                <a id="id_first" href="?page=1">« first</a>
+                <a id="id_previous" href="?page={{ page_obj.previous_page_number }}">previous</a>
             {% endif %}
             <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
             {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}">next</a>
-                <a href="?page={{ page_obj.paginator.num_pages }}">last »</a>
+                <a id="id_next" href="?page={{ page_obj.next_page_number }}">next</a>
+                <a id="id_last" href="?page={{ page_obj.paginator.num_pages }}">last »</a>
             {% endif %}
         </span>
     </div>
