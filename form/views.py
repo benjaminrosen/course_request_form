@@ -37,17 +37,26 @@ class SectionListView(ListView):
     model = Section
     paginate_by = 30
 
+    @staticmethod
+    def get_request_isnull(status):
+        request_isnull_statues = {"requested": False, "unrequested": True}
+        return request_isnull_statues.get(status)
+
     def get_queryset(self):
         sections = Section.objects.filter(primary_section__isnull=True)
         clear = self.request.GET.get("clear")
         if clear:
             return sections
         term = self.request.GET.get("term")
+        status = self.request.GET.get("status")
         search = self.request.GET.get("search")
         if term == str(CURRENT_TERM):
             sections = sections.filter(term=CURRENT_TERM)
         elif term == str(NEXT_TERM):
             sections = sections.filter(term=NEXT_TERM)
+        if status:
+            request_isnull = self.get_request_isnull(status)
+            sections = sections.filter(request__isnull=request_isnull)
         if search:
             search_terms = search.split()
             sections = sections.filter(
@@ -71,14 +80,16 @@ class SectionListView(ListView):
         context = super().get_context_data(**kwargs)
         clear = self.request.GET.get("clear")
         if clear:
-            term = search = ""
+            term = status = search = ""
         else:
             term = self.request.GET.get("term")
+            status = self.request.GET.get("status")
             search = self.request.GET.get("search") or ""
         context["current_term"] = str(CURRENT_TERM)
         context["next_term"] = str(NEXT_TERM)
-        context["search"] = search
         context["term"] = term
+        context["status"] = status
+        context["search"] = search
         return context
 
 
