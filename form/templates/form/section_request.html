@@ -2,6 +2,18 @@
 {% load static %}
 {% block content %}
     <h3>{{ section.get_canvas_course_code }}</h3>
+    {% with also_offered_as=section.also_offered_as.all %}
+        {% if also_offered_as %}
+            <p>
+                Also offered as:
+                <br />
+                {% for section in also_offered_as %}
+                    {{ section.get_canvas_course_code }}
+                    <br />
+                {% endfor %}
+            </p>
+        {% endif %}
+    {% endwith %}
     <form method="post">
         {% csrf_token %}
         {{ form.non_field_errors }}
@@ -106,13 +118,26 @@
                 {{ form.reserves.errors }}
             </div>
         </p>
+        {% with course_sections=section.course_sections.all %}
+            {% if course_sections %}
+                <p>Course sections:</p>
+                {% for section in course_sections %}
+                    <p>
+                        <input id="id_course_section_{{ forloop.counter }}"
+                               type="checkbox"
+                               value="{{ section }}"/>
+                        <label for="id_course_section_{{ forloop.counter }}">{{ section }}</label>
+                    </p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         {{ form.additional_enrollments.label_tag }}
-        <input type="text"
-               id="id_additional_enrollments"
-               name="additional_enrollments"
-               value="[{}]"
-               hidden/>
         <div id="id_additional_enrollments_form">
+            <input type="text"
+                   id="id_additional_enrollments"
+                   name="additional_enrollments"
+                   value="[{}]"
+                   hidden/>
             <button id="id_add_enrollment"
                     hx-get="{% url "section_enrollment" %}"
                     hx-target="this"
