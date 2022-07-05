@@ -5,7 +5,7 @@
         <h3>My requests</h3>
         {% for request in requests %}
             <p>
-                <a href="{% url "section_detail" request.section.section_code %}">{{ request }}</a>
+                <a href="{% url "section_detail" request.section.section_code %}">{{ request.section.get_canvas_course_code }}</a>
             </p>
         {% endfor %}
     </div>

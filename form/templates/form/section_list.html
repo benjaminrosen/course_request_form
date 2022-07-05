@@ -22,6 +22,10 @@
                     </option>
                 </select>
             </div>
+            <div class="requested">
+                <label for="id_requested">Requested:</label>
+                <input type="checkbox" />
+            </div>
             <div class="filter">
                 <label for="search">Search:</label>
                 <input type="text" id="search" name="search" value="{{ search }}" />
@@ -39,7 +43,7 @@
             <th>Title</th>
             <th>Schedule Type</th>
             <th>Instructors</th>
-            <th>Request</th>
+            <th>Requested</th>
         </tr>
         {% for section in object_list %}
             <tr>
