@@ -110,8 +110,9 @@ class RequestFormView(FormView):
         username = cast(User, self.request.user).username
         user = User.objects.get(username=username)
         section = self.get_section()
+        course_sections = section.course_sections.all()
         instructors = section.instructors.all()
-        initial_values = dict()
+        initial_values = {"course_sections": course_sections}
         if instructors and user not in instructors:
             initial_values["instructors"] = instructors
             if instructors.count() == 1:
@@ -126,10 +127,12 @@ class RequestFormView(FormView):
         section = self.get_section()
         is_sas_section = section.school.school_code == School.SAS_SCHOOL_CODE
         user_is_instructor = "instructors" not in self.get_initial()
+        course_sections = section.course_sections.all()
         context["section"] = section
         context["user_is_instructor"] = user_is_instructor
         context["is_sas_section"] = is_sas_section
         context["section_enrollment_form"] = SectionEnrollmentForm()
+        context["course_sections"] = course_sections
         return context
 
     def form_valid(self, form):
@@ -139,6 +142,7 @@ class RequestFormView(FormView):
         section_code = self.kwargs["pk"]
         section = Section.objects.get(section_code=section_code)
         additional_enrollments = values.pop("additional_enrollments")
+        included_sections = values.pop("included_sections")
         request = Request.objects.create(section=section, **values)
         additional_enrollments = [
             enrollment for enrollment in additional_enrollments if enrollment
@@ -150,6 +154,7 @@ class RequestFormView(FormView):
                 user=user, role=role, request=request
             )
         request.additional_enrollments.set(additional_enrollments)
+        request.included_sections.set(included_sections)
         return super().form_valid(form)
 
     def get_success_url(self):

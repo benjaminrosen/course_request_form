@@ -104,3 +104,7 @@ p {
 .row-disabled a {
   color: white;
 }
+
+.section-requested {
+  color: gray;
+}

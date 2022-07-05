@@ -4,7 +4,7 @@ from typing import Optional
 
 from canvasapi.course import Course
 from django.forms import JSONField, ModelForm
-from django.forms.widgets import Select, TextInput
+from django.forms.widgets import CheckboxSelectMultiple, Select, TextInput
 
 from form.canvas import get_user_canvas_sites
 
@@ -25,12 +25,28 @@ class RequestForm(ModelForm):
             "exclude_announcements",
             "additional_enrollments",
             "additional_instructions",
+            "included_sections",
         )
-        labels = {"proxy_requester": "Request on behalf of"}
-        widgets = {"copy_from_course": Select, "additional_enrollments": TextInput}
+        labels = {
+            "proxy_requester": "Request on behalf of",
+            "included_sections": "Include sections",
+        }
+        widgets = {
+            "copy_from_course": Select,
+            "additional_enrollments": TextInput,
+            "included_sections": CheckboxSelectMultiple,
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        course_sections = kwargs["initial"]["course_sections"]
+        if course_sections:
+            course_sections = [
+                (section, section.get_canvas_course_code) for section in course_sections
+            ]
+            self.fields["included_sections"].choices = course_sections
+        else:
+            del self.fields["included_sections"]
         if "instructors" not in kwargs["initial"]:
             username = self.initial["proxy_requester"].username
             self.get_copy_from_course_choices(username)

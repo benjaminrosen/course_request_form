@@ -118,19 +118,26 @@
                 {{ form.reserves.errors }}
             </div>
         </p>
-        {% with course_sections=section.course_sections.all %}
-            {% if course_sections %}
-                <p>Course sections:</p>
+        <p>
+            <div class="fieldWrapper">
+                {{ form.included_sections.label_tag }}
                 {% for section in course_sections %}
-                    <p>
-                        <input id="id_course_section_{{ forloop.counter }}"
-                               type="checkbox"
-                               value="{{ section }}"/>
-                        <label for="id_course_section_{{ forloop.counter }}">{{ section }}</label>
-                    </p>
+                    {% with index=forloop.counter requested=section.request %}
+                        <div class=" {% if section.request %} section-requested{% endif %} ">
+                            <label for="id_included_sections_{{ index }}">
+                                <input type="checkbox"
+                                       name="included_sections"
+                                       value="{{ section.section_code }}"
+                                       id="id_included_sections_{{ index }}"
+                                       {% if section.request %}disabled{% endif %}/>
+                                {{ section.get_canvas_course_code }}
+                            </label>
+                        </div>
+                    {% endwith %}
                 {% endfor %}
-            {% endif %}
-        {% endwith %}
+                {{ form.included_sections.errors }}
+            </div>
+        </p>
         {{ form.additional_enrollments.label_tag }}
         <div id="id_additional_enrollments_form">
             <input type="text"
