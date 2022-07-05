@@ -27,7 +27,7 @@ export function getDisabledButton() {
 function addListeners() {
   const loadUserButton = getElementByEnrollmentCount("id_load_user");
   const editUserButton = getElementByEnrollmentCount("id_edit");
-  const loadOrEditbutton = loadUserButton || editUserButton;
+  const loadOrEditButton = loadUserButton || editUserButton;
   const enabledInput = getElementByEnrollmentCount("id_user");
   const disabledInput = getDisabledButton();
   handleLoadOrEditButton(loadOrEditButton);

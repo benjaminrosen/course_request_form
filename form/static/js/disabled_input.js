@@ -1,8 +1,11 @@
 import {
   getAdditionalEnrollments,
   getExistingEnrollments,
+  getPennkey,
 } from "./additional_enrollments_observer.js";
+import { getElementByEnrollmentCount } from "./enrollment_count.js";
 import { getSiblings, getNext, isSelect } from "./enrollment_user.js";
+import { handleRemoveEnrollment } from "./remove_button.js";
 
 function isBlank(value) {
   const object = value[0];
