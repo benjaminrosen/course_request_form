@@ -96,15 +96,8 @@ p {
   text-decoration: underline;
 }
 
-.row-disabled {
-  color: white;
-  background-color: #011f5b;
-}
-
-.row-disabled a {
-  color: white;
-}
-
+.row-disabled,
+.row-disabled a,
 .section-requested {
   color: gray;
 }
