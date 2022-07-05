@@ -1,107 +1,36 @@
 import { getElementByEnrollmentCount } from "./enrollment_count.js";
-import {
-  getSiblings,
-  getNext,
-  isButton,
-  isSelect,
-  getEnrollmentUserValues,
-} from "./enrollment_user.js";
+import { getSiblings, getNext, isButton } from "./enrollment_user.js";
+import { handleDisabledInput } from "./disabled_input.js";
+import { handleEnabledInput } from "./enabled_input.js";
+import { handleLoadOrEditButton } from "./load_or_edit_button.js";
+import { handleRemoveEnrollment } from "./remove_button.js";
 
-function handlePennkeyEnter(event) {
-  if (event.key == "Enter") {
-    const siblings = getSiblings(event.target);
-    const button = getNext(siblings.filter((element) => isButton(element)));
-    const input = getElementByEnrollmentCount("id_user");
-    input.blur();
-    button.click();
-  }
-}
-
-function handleEnabledInput(input) {
-  if (!input) {
-    return;
-  }
-  input.addEventListener("focus", (event) => {
-    document.addEventListener("keypress", handlePennkeyEnter);
-  });
-  input.addEventListener("blur", (event) => {
-    document.removeEventListener("keypress", handlePennkeyEnter);
-  });
-  if (input.value) {
-    input.focus();
-  }
-}
-
-function handleButton(button) {
-  if (!button) {
-    return;
-  }
-  button.addEventListener("click", (event) =>
-    getEnrollmentUserValues(event.target)
-  );
-}
-
-function getPennkey(input) {
+export function getPennkey(input) {
   const regExp = /\(([^)]+)\)/;
   return regExp.exec(input.value)[1];
 }
 
-function getRole(input) {
-  const siblings = getSiblings(input);
-  const selects = siblings.filter((element) => isSelect(element));
-  const select = getNext(selects);
-  return select.value;
+export function getAdditionalEnrollments() {
+  return document.getElementById("id_additional_enrollments");
 }
 
-function isBlank(value) {
-  const object = value[0];
-  return !Object.keys(object).length;
-}
-
-function getExistingEnrollments(element) {
-  let existingEnrollments = element.value;
+export function getExistingEnrollments() {
+  const additionalEnrollments = getAdditionalEnrollments();
+  let existingEnrollments = additionalEnrollments.value;
   return JSON.parse(existingEnrollments);
 }
 
-function addFirstEnrollment(enrollment, element) {
-  element.value = JSON.stringify([enrollment]);
+export function getDisabledButton() {
+  return getElementByEnrollmentCount("id_additional_enrollment_pennkey");
 }
 
-function addAnotherEnrollment(enrollment, element) {
-  element.value = JSON.stringify(currentValue.concat([enrollment]));
-}
-
-function setAdditionalEnrollmentValue(enrollmentUser) {
-  const additionalEnrollments = document.getElementById(
-    "id_additional_enrollments"
-  );
-  let existingEnrollments = getExistingEnrollments(additionalEnrollments);
-  if (isBlank(existingEnrollments)) {
-    addFirstEnrollment(enrollmentUser, additionalEnrollments);
-  } else {
-    addAnotherEnrollment(enrollmentUser, additionalEnrollments);
-  }
-}
-
-function handleDisabledInput(input) {
-  if (!input) {
-    return;
-  }
-  const pennkey = getPennkey(input);
-  const role = getRole(input);
-  const enrollmentUser = { user: pennkey, role: role };
-  setAdditionalEnrollmentValue(enrollmentUser);
-}
-
-function addListeners(list) {
+function addListeners() {
   const loadUserButton = getElementByEnrollmentCount("id_load_user");
   const editUserButton = getElementByEnrollmentCount("id_edit");
-  const button = loadUserButton || editUserButton;
+  const loadOrEditbutton = loadUserButton || editUserButton;
   const enabledInput = getElementByEnrollmentCount("id_user");
-  const disabledInput = getElementByEnrollmentCount(
-    "id_additional_enrollment_pennkey"
-  );
-  handleButton(button);
+  const disabledInput = getDisabledButton();
+  handleLoadOrEditButton(loadOrEditButton);
   handleEnabledInput(enabledInput);
   handleDisabledInput(disabledInput);
 }
