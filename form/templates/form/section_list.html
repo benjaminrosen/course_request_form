@@ -58,7 +58,7 @@
             {% with request=section.request %}
                 <tr class="{% if request and not status == "requested" %}row-disabled{% endif %}">
                     <td>
-                        <a href="{% if section.request %}{% url "section_detail" section.section_code %}{% else %}{% url "section_request" section.section_code %}{% endif %}">
+                        <a href="{% if section.request %}{% url "request_detail" section.section_code %}{% else %}{% url "section_request" section.section_code %}{% endif %}">
                             {{ section.get_canvas_course_code }}
                         </a>
                     </td>

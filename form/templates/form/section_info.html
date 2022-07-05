@@ -1,0 +1,28 @@
+<tr>
+    <th>School</th>
+    <td>{{ section.school.school_desc_long }}</td>
+</tr>
+<tr>
+    <th>Subject</th>
+    <td>{{ section.subject.subject_desc_long }}</td>
+</tr>
+<tr>
+    <th>Schedule Type</th>
+    <td>{{ section.schedule_type.sched_type_desc }}</td>
+</tr>
+<tr>
+    <th>Term</th>
+    <td>{{ section.term }}</td>
+</tr>
+<tr>
+    <th>Instructors</th>
+    <td>
+        {% for instructor in section.instructors.all %}<div>{{ instructor }}</div>{% endfor %}
+    </td>
+</tr>
+<tr>
+    <th>Also offered as</th>
+    <td>
+        {% for section in section.also_offered_as.all %}<div>{{ section }}</div>{% endfor %}
+    </td>
+</tr>

@@ -17,13 +17,12 @@ from django.contrib import admin
 from django.urls import include, path
 
 from form.views import (
-    ContactInfoView,
     CopyFromCourseView,
     EnrollmentUserView,
     ExcludeAnnouncementsView,
     HomePageView,
+    RequestDetailView,
     RequestFormView,
-    SectionDetailView,
     SectionEnrollmentView,
     SectionListView,
     delete_enrollment_user,
@@ -34,9 +33,8 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("", HomePageView.as_view(), name="home"),
     path("sections/", SectionListView.as_view(), name="sections"),
-    path("sections/<pk>", SectionDetailView.as_view(), name="section_detail"),
+    path("sections/<pk>", RequestDetailView.as_view(), name="request_detail"),
     path("sections/<pk>/request/", RequestFormView.as_view(), name="section_request"),
-    path("contact-info/", ContactInfoView.as_view(), name="contact_info"),
     path("copy-from-course/", CopyFromCourseView.as_view(), name="copy_from_course"),
     path(
         "exclude-announcements/",

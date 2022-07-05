@@ -1,0 +1,70 @@
+{% extends "./base.html" %}
+{% block content %}
+    {% with section=object.section %}
+        <h3>{{ section.get_canvas_course_code }}: {{ section.title }}</h3>
+        <table>
+            <tr>
+                <th>Requested by</th>
+                <td>
+                    {% if request %}
+                        {% if user == request.requester %}
+                            You
+                        {% else %}
+                            {{ request.requester }}
+                        {% endif %}
+                        {% with proxy_requester=request.proxy_requester %}
+                            {% if proxy_requester %}on behalf of {{ proxy_requester }}{% endif %}
+                        {% endwith %}
+                    {% else %}
+                        ---
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Date requested</th>
+                <td>{{ request.created_at }}</td>
+            </tr>
+            {% include "form/section_info.html" %}
+            <tr>
+                <th>Included sections</th>
+                <td>
+                    {% for section in request.included_sections.all %}<div>{{ section }}</div>{% endfor %}
+                </td>
+            </tr>
+            <tr>
+                <th>Title override</th>
+                <td>{{ request.title_override }}</td>
+            </tr>
+            <tr>
+                <th>Copy from course</th>
+                <td>{{ request.get_copy_from_course_display }}</td>
+            </tr>
+            <tr>
+                <th>Exclude announcements</th>
+                <td>{{ request.exclude_announcements }}</td>
+            </tr>
+            <tr>
+                <th>Reserves</th>
+                <td>{{ request.reserves }}</td>
+            </tr>
+            <tr>
+                <th>LPS Online</th>
+                <td>{{ request.lps_online }}</td>
+            </tr>
+            <tr>
+                <th>Additional enrollments</th>
+                <td>
+                    {% for enrollment in request.additional_enrollments.all %}
+                        <div>{{ enrollment.user }} -- {{ enrollment.role }}</div>
+                    {% endfor %}
+                </td>
+            </tr>
+            <tr>
+                <th>Additional instructions</th>
+                <td>{{ request.additional_instructions }}</td>
+            </tr>
+        </table>
+        <a href="{% url "sections" %}">Back</a>
+    {% endwith %}
+{% endblock content %}
+h

@@ -1,19 +1,10 @@
 {% extends "./base.html" %}
 {% load static %}
 {% block content %}
-    <h3>{{ section.get_canvas_course_code }}</h3>
-    {% with also_offered_as=section.also_offered_as.all %}
-        {% if also_offered_as %}
-            <p>
-                Also offered as:
-                <br />
-                {% for section in also_offered_as %}
-                    {{ section.get_canvas_course_code }}
-                    <br />
-                {% endfor %}
-            </p>
-        {% endif %}
-    {% endwith %}
+    <h3>{{ section.get_canvas_course_code }}: {{ section.title }}</h3>
+    <table>
+        {% include "form/section_info.html" %}
+    </table>
     <form method="post">
         {% csrf_token %}
         {{ form.non_field_errors }}

@@ -26,6 +26,7 @@ from .canvas import (
     delete_announcements,
     delete_zoom_events,
     get_all_canvas_accounts,
+    get_canvas,
     get_canvas_enrollment_term_id,
     get_canvas_main_account,
     get_canvas_user_id_by_pennkey,
@@ -727,6 +728,10 @@ class Request(Model):
     def set_status(self, status: str):
         self.status = status
         self.save()
+
+    def get_copy_from_course_display(self):
+        course = get_canvas().get_course(self.copy_from_course)
+        return f"{course.name} ({course.id})"
 
     def get_canvas_course_data(self) -> dict:
         section = self.section

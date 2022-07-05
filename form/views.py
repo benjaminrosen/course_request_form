@@ -43,13 +43,14 @@ class SectionListView(ListView):
         return request_isnull_statues.get(status)
 
     def get_queryset(self):
+        request = self.request.GET
         sections = Section.objects.filter(primary_section__isnull=True)
-        clear = self.request.GET.get("clear")
+        clear = request.get("clear")
         if clear:
             return sections
-        term = self.request.GET.get("term")
-        status = self.request.GET.get("status")
-        search = self.request.GET.get("search")
+        term = request.get("term")
+        status = request.get("status")
+        search = request.get("search")
         if term == str(CURRENT_TERM):
             sections = sections.filter(term=CURRENT_TERM)
         elif term == str(NEXT_TERM):
@@ -93,8 +94,8 @@ class SectionListView(ListView):
         return context
 
 
-class SectionDetailView(DetailView):
-    model = Section
+class RequestDetailView(DetailView):
+    model = Request
 
 
 class RequestFormView(FormView):
@@ -142,7 +143,9 @@ class RequestFormView(FormView):
         section_code = self.kwargs["pk"]
         section = Section.objects.get(section_code=section_code)
         additional_enrollments = values.pop("additional_enrollments")
-        included_sections = values.pop("included_sections")
+        included_sections = None
+        if "included_sections" in values:
+            included_sections = values.pop("included_sections")
         request = Request.objects.create(section=section, **values)
         additional_enrollments = [
             enrollment for enrollment in additional_enrollments if enrollment
@@ -154,21 +157,12 @@ class RequestFormView(FormView):
                 user=user, role=role, request=request
             )
         request.additional_enrollments.set(additional_enrollments)
-        request.included_sections.set(included_sections)
+        if included_sections:
+            request.included_sections.set(included_sections)
         return super().form_valid(form)
 
     def get_success_url(self):
         return reverse("sections")
-
-
-class ContactInfoView(TemplateView):
-    template_name = "form/contact_info.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = cast(User, self.request.user)
-        context["email"] = user.email
-        return context
 
 
 class CopyFromCourseView(TemplateView):

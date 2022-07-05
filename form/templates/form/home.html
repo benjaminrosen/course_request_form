@@ -13,7 +13,7 @@
             {% for request in requests %}
                 <tr>
                     <td>
-                        <a href="{% url "section_detail" request.section.section_code %}">{{ request.section.get_canvas_course_code }}</a>
+                        <a href="{% url "request_detail" request.section.section_code %}">{{ request.section.get_canvas_course_code }}</a>
                     </td>
                     <td>
                         {% if not request.proxy_requester %}
@@ -32,7 +32,7 @@
         {% if sections %}
             {% for section in sections %}
                 <p>
-                    <a href="{% if section.request %} {% url "section_detail" section.section_code %} {% else %} {% url "section_request" section.section_code %} {% endif %}">
+                    <a href="{% if section.request %} {% url "request_detail" section.section_code %} {% else %} {% url "section_request" section.section_code %} {% endif %}">
                         {{ section.get_canvas_course_code }}
                     </a>
                 </p>
