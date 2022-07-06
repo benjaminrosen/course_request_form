@@ -50,6 +50,7 @@ class SectionListView(ListView):
             return sections
         term = request.get("term")
         status = request.get("status")
+        sort = request.get("sort")
         search = request.get("search")
         if term == str(CURRENT_TERM):
             sections = sections.filter(term=CURRENT_TERM)
@@ -58,6 +59,8 @@ class SectionListView(ListView):
         if status:
             request_isnull = self.get_request_isnull(status)
             sections = sections.filter(request__isnull=request_isnull)
+        if sort == "date":
+            sections = sections.order_by("-created_at")
         if search:
             search_terms = search.split()
             sections = sections.filter(

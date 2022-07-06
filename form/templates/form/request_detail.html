@@ -64,7 +64,20 @@
                 <td>{{ request.additional_instructions }}</td>
             </tr>
         </table>
-        <a href="{% url "sections" %}">Back</a>
+        {% if user.is_staff %}
+            {% if request.status == "APPROVED" %}
+                <p>
+                    <button type="button">Create Canvas site</button>
+                </p>
+            {% else %}
+                <p>
+                    <button type="button">Approve site</button>
+                </p>
+            {% endif %}
+        {% endif %}
+        <p>
+            <a href="{% url "sections" %}">Back</a>
+        </p>
     {% endwith %}
 {% endblock content %}
 h

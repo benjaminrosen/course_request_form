@@ -729,7 +729,9 @@ class Request(Model):
         self.status = status
         self.save()
 
-    def get_copy_from_course_display(self):
+    def get_copy_from_course_display(self) -> Optional[str]:
+        if not self.copy_from_course:
+            return
         course = get_canvas().get_course(self.copy_from_course)
         return f"{course.name} ({course.id})"
 

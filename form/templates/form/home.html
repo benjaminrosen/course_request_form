@@ -18,8 +18,10 @@
                     <td>
                         {% if not request.proxy_requester %}
                             You
+                        {% elif user == request.requester %}
+                            You on behalf of {{ request.proxy_requester }}
                         {% else %}
-                            {{ request.proxy_requester }}
+                            {{ request.requester }} on your behalf
                         {% endif %}
                     </td>
                     <td>{{ request.created_at }}</td>
