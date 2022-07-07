@@ -50,12 +50,18 @@ def get_canvas_user_id_by_pennkey(pennkey: str) -> Optional[int]:
 
 def get_canvas_enrollment_term_id(term: int) -> Optional[int]:
     term_name = str(term)
-    account = get_canvas().get_account(MAIN_ACCOUNT_ID)
+    account = get_canvas_main_account()
     enrollment_terms = account.get_enrollment_terms()
     enrollment_term_ids = (
         term.id for term in enrollment_terms if term_name in term.name
     )
     return next(enrollment_term_ids, None)
+
+
+@lru_cache
+def get_canvas_enrollment_term_name(enrollment_term_id: int):
+    account = get_canvas_main_account()
+    return account.get_enrollment_term(enrollment_term_id).name
 
 
 def create_course_section(name: str, sis_course_id: str, canvas_course: Course):

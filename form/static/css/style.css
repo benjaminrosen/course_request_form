@@ -101,3 +101,11 @@ p {
 .section-requested {
   color: gray;
 }
+
+#id_my_requests th:hover {
+  cursor: pointer;
+}
+
+#id_my_requests th a {
+  color: unset;
+}

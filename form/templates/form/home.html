@@ -1,36 +1,59 @@
 {% extends "./base.html" %}
+{% load canvas_site_filters %}
 {% block content %}
     <div class="my-requests">
         <h2>My requests</h2>
-        {% include "form/my_requests.html" %}
+        {% if requests %}
+            {% include "form/my_requests.html" %}
+        {% else %}
+            No requests.
+        {% endif %}
     </div>
     <div class="my-courses">
         <h2>My current ({{ current_term }}) and upcoming ({{ next_term }}) courses</h2>
         {% if sections %}
-            {% for section in sections %}
-                <p>
-                    <a href="{% if section.request %} {% url "request_detail" section.section_code %} {% else %} {% url "section_request" section.section_code %} {% endif %}">
-                        {{ section.get_canvas_course_code }}
-                    </a>
-                </p>
-            {% endfor %}
+            {% include "form/section_list_table.html" with object_list=sections %}
         {% else %}
             <p>
                 You are not listed as an instructor for any current or upcoming
                 courses. To request a course on behalf of someone else, please
-                check the list of <a href="{% url "sections" %}">available
-            courses</a>.
-        </p>
-    {% endif %}
-</div>
-<div class="my-canvas-sites">
-    <h2>My Canvas sites</h2>
-    {% for site in canvas_sites %}
-        <p>
-            <a href="{{ canvas_url }}/{{ site.id }}"
-               target="_blank"
-               rel="noopener noreferrer">{{ site }}</a>
-        </p>
-    {% endfor %}
-</div>
+                check the list of <a href="{% url "sections" %}">available courses</a>.
+            </p>
+        {% endif %}
+    </div>
+    <div class="my-canvas-sites">
+        <h2>My Canvas sites</h2>
+        <table>
+            <tr>
+                <th>SIS Course ID</th>
+                <th>Name</th>
+                <th>Term</th>
+                <th>Canvas Course ID</th>
+            </tr>
+            {% for site in canvas_sites %}
+                <tr>
+                    <td>
+                        <a href="{{ canvas_url }}/{{ site.id }}"
+                           target="_blank"
+                           rel="noopener noreferrer">{{ site.sis_course_id }}</a>
+                    </td>
+                    <td>
+                        <a href="{{ canvas_url }}/{{ site.id }}"
+                           target="_blank"
+                           rel="noopener noreferrer">{{ site.name }}</a>
+                    </td>
+                    <td>
+                        <a href="{{ canvas_url }}/{{ site.id }}"
+                           target="_blank"
+                           rel="noopener noreferrer">{{ site.enrollment_term_id|get_term }}</a>
+                    </td>
+                    <td>
+                        <a href="{{ canvas_url }}/{{ site.id }}"
+                           target="_blank"
+                           rel="noopener noreferrer">{{ site.id }}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
 {% endblock content %}

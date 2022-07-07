@@ -134,8 +134,17 @@ class User(AbstractUser):
         requests = Request.objects.filter(Q(requester=self) | Q(proxy_requester=self))
         return requests.order_by("-created_at")
 
-    def get_canvas_sites(self) -> Optional[list[Course]]:
-        return get_user_canvas_sites(self.username)
+    @staticmethod
+    def get_canvas_site_id(canvas_site: Course) -> int:
+        return canvas_site.id
+
+    def get_canvas_sites(self, descending=True) -> Optional[list[Course]]:
+        canvas_sites = get_user_canvas_sites(self.username)
+        if not canvas_sites:
+            return None
+        if descending:
+            canvas_sites.sort(key=self.get_canvas_site_id, reverse=True)
+        return canvas_sites
 
 
 class ScheduleType(Model):

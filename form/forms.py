@@ -1,7 +1,6 @@
 from enum import Enum
 from typing import Optional
 
-from canvasapi.course import Course
 from django.forms import JSONField, ModelForm
 from django.forms.widgets import CheckboxSelectMultiple, Select, TextInput
 
@@ -59,16 +58,11 @@ class RequestForm(ModelForm):
             self.get_copy_from_course_choices(username)
             self.fields["proxy_requester"].disabled = True
 
-    @staticmethod
-    def get_canvas_site_id(canvas_site: Course) -> int:
-        return canvas_site.id
-
     @classmethod
     def get_instructor_canvas_sites(cls, username: str) -> Optional[list[tuple]]:
         canvas_sites = get_user_canvas_sites(username)
         if not canvas_sites:
             return None
-        canvas_sites.sort(key=cls.get_canvas_site_id, reverse=True)
         return [(site.id, f"{site.name} ({site.id})") for site in canvas_sites]
 
     def get_copy_from_course_choices(self, username: str):
