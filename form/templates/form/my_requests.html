@@ -6,21 +6,21 @@
                class="table-column"
                hx-get="{% url "my_requests" %}?sort={{ sort_section }}"
                hx-target="#id_my_requests"
-               hx-swap="outerHTML">Course section</a>
+               hx-swap="outerHTML">⇕ Course section</a>
         </th>
         <th>
             <a role="button"
                class="table-column"
                hx-get="{% url "my_requests" %}?sort={{ sort_requester }}"
                hx-target="#id_my_requests"
-               hx-swap="outerHTML">Requested by</a>
+               hx-swap="outerHTML">⇕ Requested by</a>
         </th>
         <th>
             <a role="button"
                class="table-column"
                hx-get="{% url "my_requests" %}?sort={{ sort_created_at }}"
                hx-target="#id_my_requests"
-               hx-swap="outerHTML">Date requested</a>
+               hx-swap="outerHTML">⇕ Date requested</a>
         </th>
     </tr>
     {% for request in requests %}

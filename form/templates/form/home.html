@@ -1,12 +1,11 @@
 {% extends "./base.html" %}
 {% block content %}
-    <h2>Home</h2>
     <div class="my-requests">
-        <h3>My requests</h3>
+        <h2>My requests</h2>
         {% include "form/my_requests.html" %}
     </div>
     <div class="my-courses">
-        <h3>My current ({{ current_term }}) and upcoming ({{ next_term }}) courses</h3>
+        <h2>My current ({{ current_term }}) and upcoming ({{ next_term }}) courses</h2>
         {% if sections %}
             {% for section in sections %}
                 <p>
@@ -25,7 +24,7 @@
     {% endif %}
 </div>
 <div class="my-canvas-sites">
-    <h3>My Canvas sites</h3>
+    <h2>My Canvas sites</h2>
     {% for site in canvas_sites %}
         <p>
             <a href="{{ canvas_url }}/{{ site.id }}"

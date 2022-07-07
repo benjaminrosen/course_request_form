@@ -122,6 +122,11 @@ class User(AbstractUser):
         )
         return canvas_user.id
 
+    def sync_sections(self):
+        if not self.penn_id:
+            self.sync_dw_info()
+        return Section.sync_instructor_sections(self.penn_id)
+
     def get_sections(self) -> QuerySet:
         return Section.objects.filter(instructors=self)
 
@@ -579,16 +584,31 @@ class Section(Model):
         cls.update_or_create(query, bindings)
 
     @classmethod
+    def sync_instructor_sections(cls, penn_id: str, term: Optional[int] = None):
+        term = term or CURRENT_TERM
+        kwargs = {"penn_id": penn_id, "term": term}
+        query = """
+                SELECT
+                    instructor.section_id
+                FROM dwngss_ps.crse_sect_instructor instructor
+                WHERE instructor.instructor_penn_id = :penn_id
+                AND term = :term
+                """
+        cursor = execute_query(query, kwargs)
+        sections = list()
+        for section_id in cursor:
+            section_id = next(iter(section_id))
+            sections.append(section_id)
+        for section in sections:
+            cls.sync_section(section, term=term)
+
+    @classmethod
     def sync_section(
         cls, section_id: str, term: Optional[int] = None, sync_related_data=True
     ):
         term = term or CURRENT_TERM
         kwargs = {"section_id": section_id, "term": term}
         return cls.update_or_create(cls.QUERY_SECTION_ID, kwargs, sync_related_data)
-
-    def sync(self):
-        kwargs = {"section_id": self.section_id, "term": self.term}
-        self.update_or_create(self.QUERY_SECTION_ID, kwargs)
 
     @classmethod
     def get_section(

@@ -28,7 +28,7 @@ class HomePageView(LoginRequiredMixin, TemplateView):
         context["canvas_url"] = f"{PROD_URL}/courses"
         context["current_term"] = CURRENT_TERM
         context["next_term"] = NEXT_TERM
-        context["sort_created_at"] = "-created_at"
+        context["sort_created_at"] = "created_at"
         context["sort_section"] = "section__section_code"
         context["sort_requester"] = "requester"
         return context
