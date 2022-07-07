@@ -1,5 +1,6 @@
 from enum import Enum
 from logging import getLogger
+from django.db.models import Q, QuerySet
 from time import sleep
 from typing import Optional, Union
 
@@ -29,7 +30,9 @@ from .canvas import (
     get_canvas,
     get_canvas_enrollment_term_id,
     get_canvas_main_account,
+    get_canvas_user_by_pennkey,
     get_canvas_user_id_by_pennkey,
+    get_user_canvas_sites,
     update_or_create_canvas_course,
 )
 from .data_warehouse import execute_query
@@ -119,9 +122,15 @@ class User(AbstractUser):
         )
         return canvas_user.id
 
-    def set_email(self, email: str):
-        self.email = email
-        self.save()
+    def get_sections(self) -> QuerySet:
+        return Section.objects.filter(instructors=self)
+
+    def get_requests(self) -> QuerySet:
+        requests = Request.objects.filter(Q(requester=self) | Q(proxy_requester=self))
+        return requests.order_by("-created_at")
+
+    def get_canvas_sites(self) -> Optional[list[Course]]:
+        return get_user_canvas_sites(self.username)
 
 
 class ScheduleType(Model):
@@ -728,6 +737,15 @@ class Request(Model):
     def set_status(self, status: str):
         self.status = status
         self.save()
+
+    def get_other_requester(self, user: User) -> str:
+        requesters = [self.requester, self.proxy_requester]
+        requester = next(
+            (requester for requester in requesters if requester != user), None
+        )
+        if not requester:
+            return ""
+        return requester.last_name
 
     def get_copy_from_course_display(self) -> Optional[str]:
         if not self.copy_from_course:

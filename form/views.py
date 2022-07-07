@@ -1,15 +1,15 @@
 from functools import reduce
-from typing import cast
+from types import FunctionType
+from typing import Callable, Union, cast
 
+from config.config import PROD_URL
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from django.forms.utils import ErrorList
 from django.http import HttpResponse
 from django.urls.base import reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
-from config.config import PROD_URL
-from form.canvas import get_user_canvas_sites
 from form.terms import CURRENT_TERM, NEXT_TERM
 
 from .forms import RequestForm, SectionEnrollmentForm
@@ -22,14 +22,66 @@ class HomePageView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = cast(User, self.request.user)
-        context["sections"] = Section.objects.filter(instructors=user)
-        context["requests"] = Request.objects.filter(
-            Q(requester=user) | Q(proxy_requester=user)
-        )
-        context["canvas_sites"] = get_user_canvas_sites(user.username)
+        context["sections"] = user.get_sections()
+        context["requests"] = user.get_requests()
+        context["canvas_sites"] = user.get_canvas_sites()
         context["canvas_url"] = f"{PROD_URL}/courses"
         context["current_term"] = CURRENT_TERM
         context["next_term"] = NEXT_TERM
+        context["sort_created_at"] = "-created_at"
+        context["sort_section"] = "section__section_code"
+        context["sort_requester"] = "requester"
+        return context
+
+
+class MyRequestsView(TemplateView):
+    template_name = "form/my_requests.html"
+
+    @staticmethod
+    def get_other_requester_function(user: User) -> Callable:
+        def get_other_requester(request: Request) -> str:
+            return request.get_other_requester(user)
+
+        return get_other_requester
+
+    @classmethod
+    def sort_requests_by_requester(
+        cls, user: User, requests: Union[list, QuerySet[Request]], reverse: bool
+    ) -> list[Request]:
+        get_other_requester = cls.get_other_requester_function(user)
+        requests = list(requests)
+        requests.sort(key=get_other_requester, reverse=reverse)
+        return requests
+
+    @staticmethod
+    def reverse_order(sort: str):
+        descending = "-" in sort
+        if descending:
+            return sort.replace("-", "")
+        return f"-{sort}"
+
+    @classmethod
+    def get_sort_value(cls, name: str, value: str, ascending: bool = True):
+        not_match = not value or name not in value
+        if not_match:
+            default_order = "" if ascending else "-"
+            return f"{default_order}{name}"
+        return cls.reverse_order(value)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = cast(User, self.request.user)
+        requests = Request.objects.filter(Q(requester=user) | Q(proxy_requester=user))
+        sort = self.request.GET.get("sort", "")
+        if "requester" in sort:
+            reverse = "-" in sort
+            requests = self.sort_requests_by_requester(user, requests, reverse)
+        else:
+            requests = requests.order_by(sort)
+        context["requests"] = requests
+        context["sort_created_at"] = self.get_sort_value("created_at", sort, False)
+        context["sort_section"] = self.get_sort_value("section__section_code", sort)
+        context["sort_requester"] = self.get_sort_value("requester", sort)
         return context
 
 

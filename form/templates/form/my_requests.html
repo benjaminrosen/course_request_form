@@ -1,0 +1,43 @@
+<table id="id_my_requests">
+    <colgroup span="3"></colgroup>
+    <tr>
+        <th>
+            <a role="button"
+               class="table-column"
+               hx-get="{% url "my_requests" %}?sort={{ sort_section }}"
+               hx-target="#id_my_requests"
+               hx-swap="outerHTML">Course section</a>
+        </th>
+        <th>
+            <a role="button"
+               class="table-column"
+               hx-get="{% url "my_requests" %}?sort={{ sort_requester }}"
+               hx-target="#id_my_requests"
+               hx-swap="outerHTML">Requested by</a>
+        </th>
+        <th>
+            <a role="button"
+               class="table-column"
+               hx-get="{% url "my_requests" %}?sort={{ sort_created_at }}"
+               hx-target="#id_my_requests"
+               hx-swap="outerHTML">Date requested</a>
+        </th>
+    </tr>
+    {% for request in requests %}
+        <tr>
+            <td>
+                <a href="{% url "request_detail" request.section.section_code %}">{{ request.section.get_canvas_course_code }}</a>
+            </td>
+            <td>
+                {% if not request.proxy_requester %}
+                    You
+                {% elif user == request.requester %}
+                    You on behalf of {{ request.proxy_requester }}
+                {% else %}
+                    {{ request.requester }} on your behalf
+                {% endif %}
+            </td>
+            <td>{{ request.created_at }}</td>
+        </tr>
+    {% endfor %}
+</table>

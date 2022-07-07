@@ -3,31 +3,7 @@
     <h2>Home</h2>
     <div class="my-requests">
         <h3>My requests</h3>
-        <table>
-            <colgroup span="3"></colgroup>
-            <tr>
-                <th>Course section</th>
-                <th>Requested by</th>
-                <th>Date requested</th>
-            </tr>
-            {% for request in requests %}
-                <tr>
-                    <td>
-                        <a href="{% url "request_detail" request.section.section_code %}">{{ request.section.get_canvas_course_code }}</a>
-                    </td>
-                    <td>
-                        {% if not request.proxy_requester %}
-                            You
-                        {% elif user == request.requester %}
-                            You on behalf of {{ request.proxy_requester }}
-                        {% else %}
-                            {{ request.requester }} on your behalf
-                        {% endif %}
-                    </td>
-                    <td>{{ request.created_at }}</td>
-                </tr>
-            {% endfor %}
-        </table>
+        {% include "form/my_requests.html" %}
     </div>
     <div class="my-courses">
         <h3>My current ({{ current_term }}) and upcoming ({{ next_term }}) courses</h3>
