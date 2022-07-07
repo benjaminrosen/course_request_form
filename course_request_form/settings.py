@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
-import os
+from os import getenv
 from pathlib import Path
 from platform import system
 
@@ -138,7 +138,7 @@ LOGOUT_REDIRECT_URL = "home"
 
 LOGGER = {
     "handlers": ["course_request_form", "console"],
-    "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+    "level": getenv("DJANGO_LOG_LEVEL", "INFO"),
     "propagate": False,
 }
 
