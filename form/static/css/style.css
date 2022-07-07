@@ -102,10 +102,7 @@ p {
   color: gray;
 }
 
-#id_my_requests th:hover {
+a[role="button"] {
   cursor: pointer;
-}
-
-#id_my_requests th a {
   color: unset;
 }

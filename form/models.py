@@ -1,6 +1,5 @@
 from enum import Enum
 from logging import getLogger
-from django.db.models import Q, QuerySet
 from time import sleep
 from typing import Optional, Union
 
@@ -17,6 +16,8 @@ from django.db.models import (
     ManyToManyField,
     Model,
     OneToOneField,
+    Q,
+    QuerySet,
     TextChoices,
     TextField,
     UniqueConstraint,
@@ -30,7 +31,6 @@ from .canvas import (
     get_canvas,
     get_canvas_enrollment_term_id,
     get_canvas_main_account,
-    get_canvas_user_by_pennkey,
     get_canvas_user_id_by_pennkey,
     get_user_canvas_sites,
     update_or_create_canvas_course,
@@ -778,7 +778,7 @@ class Request(Model):
 
     def get_copy_from_course_display(self) -> Optional[str]:
         if not self.copy_from_course:
-            return
+            return None
         course = get_canvas().get_course(self.copy_from_course)
         return f"{course.name} ({course.id})"
 
