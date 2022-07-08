@@ -83,7 +83,7 @@ class MyRequestsView(TemplateView):
         context["sort_requests_section"] = get_sort_value("section__section_code", sort)
         context["sort_requests_created_at"] = get_sort_value("created_at", sort, False)
         context["sort_requests_requester"] = get_sort_value("requester", sort)
-        context["sort_requests_requests_status"] = get_sort_value("status", sort)
+        context["sort_requests_status"] = get_sort_value("status", sort)
         context["limit_requests"] = limit
         context["load_more_requests"] = requests_count > limit
         return context
