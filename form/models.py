@@ -138,10 +138,10 @@ class User(AbstractUser):
     def get_canvas_site_id(canvas_site: Course) -> int:
         return canvas_site.id
 
-    def get_canvas_sites(self, descending=True) -> Optional[list[Course]]:
+    def get_canvas_sites(self, descending=True) -> list[Course]:
         canvas_sites = get_user_canvas_sites(self.username)
         if not canvas_sites:
-            return None
+            return []
         if descending:
             canvas_sites.sort(key=self.get_canvas_site_id, reverse=True)
         return canvas_sites

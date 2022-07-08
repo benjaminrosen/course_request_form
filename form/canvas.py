@@ -10,7 +10,6 @@ from canvasapi.discussion_topic import DiscussionTopic
 from canvasapi.exceptions import CanvasException
 from canvasapi.paginated_list import PaginatedList
 from canvasapi.user import User as CanvasUser
-
 from config.config import DEBUG_VALUE, PROD_KEY, PROD_URL, TEST_KEY, TEST_URL
 
 logger = getLogger(__name__)
@@ -58,10 +57,9 @@ def get_canvas_enrollment_term_id(term: int) -> Optional[int]:
     return next(enrollment_term_ids, None)
 
 
-@lru_cache
-def get_canvas_enrollment_term_name(enrollment_term_id: int):
+def get_canvas_enrollment_term_name(enrollment_term_id: int) -> str:
     account = get_canvas_main_account()
-    return account.get_enrollment_term(enrollment_term_id).name
+    return account.get_enrollment_term(enrollment_term_id).name or ""
 
 
 def create_course_section(name: str, sis_course_id: str, canvas_course: Course):

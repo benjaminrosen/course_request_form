@@ -1,5 +1,7 @@
 from functools import reduce
-from typing import cast
+from typing import Callable, cast
+
+from canvasapi.course import Course
 
 from config.config import PROD_URL
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -8,6 +10,7 @@ from django.forms.utils import ErrorList
 from django.http import HttpResponse
 from django.urls.base import reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
+from form.templatetags.canvas_site_filters import get_term
 
 from form.terms import CURRENT_TERM, NEXT_TERM
 from form.utils import (
@@ -25,7 +28,7 @@ class HomePageView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = cast(User, self.request.user)
-        limit = 5
+        limit = 10
         sections = user.get_sections()
         sections_count = sections.count()
         context["sections"] = sections[:limit]
@@ -33,6 +36,7 @@ class HomePageView(LoginRequiredMixin, TemplateView):
         requests_count = requests.count()
         context["requests"] = requests[:limit]
         canvas_sites = user.get_canvas_sites()
+        canvas_sites_count = len(canvas_sites)
         if canvas_sites:
             canvas_sites = canvas_sites[:limit]
         context["canvas_sites"] = canvas_sites
@@ -53,6 +57,12 @@ class HomePageView(LoginRequiredMixin, TemplateView):
         context["sort_sections_created_at"] = "request__created_at"
         context["limit_sections"] = limit
         context["load_more_sections"] = sections_count > limit
+        context["sort_canvas_sites_course_id"] = "course_id"
+        context["sort_canvas_sites_name"] = "name"
+        context["sort_canvas_sites_term"] = "term"
+        context["sort_canvas_sites_canvas_course_id"] = "canvas_course_id"
+        context["limit_canvas_sites"] = limit
+        context["load_more_canvas_sites"] = canvas_sites_count > limit
         return context
 
 
@@ -68,7 +78,7 @@ class MyRequestsView(TemplateView):
         user = cast(User, self.request.user)
         requests = user.get_requests()
         requests_count = requests.count()
-        limit = int(self.request.GET.get("limit", 5))
+        limit = int(self.request.GET.get("limit", 10))
         sort = self.request.GET.get("sort", "")
         if "requester" in sort:
             reverse = "-" in sort
@@ -101,7 +111,7 @@ class MyCoursesView(TemplateView):
         user = cast(User, self.request.user)
         sections = user.get_sections()
         sections_count = sections.count()
-        limit = int(self.request.GET.get("limit", 5))
+        limit = int(self.request.GET.get("limit", 10))
         sort = self.request.GET.get("sort", "")
         reverse = "-" in sort
         if "requester" in sort:
@@ -118,7 +128,7 @@ class MyCoursesView(TemplateView):
             limit = limit + 5
         context["sections"] = sections[:limit]
         context["sort_sections_section"] = get_sort_value("section_code", sort)
-        context["sort_sections_title"] = get_sort_value("title", sort, False)
+        context["sort_sections_title"] = get_sort_value("title", sort)
         context["sort_sections_schedule_type"] = get_sort_value("schedule_type", sort)
         context["sort_sections_instructors"] = get_sort_value("instructors", sort)
         context["sort_sections_requester"] = get_sort_value("request__requester", sort)
@@ -127,6 +137,68 @@ class MyCoursesView(TemplateView):
         )
         context["limit_sections"] = limit
         context["load_more_sections"] = sections_count > limit
+        return context
+
+
+class MyCanvasSitesView(TemplateView):
+    template_name = "form/my_canvas_sites.html"
+
+    @staticmethod
+    def sort_by_course_id(course: Course) -> str:
+        return course.sis_course_id or ""
+
+    @staticmethod
+    def sort_by_name(course: Course) -> str:
+        return course.name or ""
+
+    @staticmethod
+    def sort_by_term(course: Course) -> str:
+        return get_term(course.enrollment_term_id)
+
+    @staticmethod
+    def sort_by_canvas_course_id(course: Course) -> int:
+        return course.id
+
+    @staticmethod
+    def sort_canvas_sites(
+        canvas_sites: list[Course], function: Callable, reverse: bool
+    ):
+        canvas_sites.sort(key=function, reverse=reverse)
+        return canvas_sites
+
+    @classmethod
+    def get_sort_function(cls, sort) -> Callable:
+        sort = sort.replace("-", "")
+        sort_functions = {
+            "course_id": cls.sort_by_course_id,
+            "name": cls.sort_by_name,
+            "term": cls.sort_by_term,
+            "canvas_course_id": cls.sort_by_canvas_course_id,
+        }
+        return sort_functions.get(sort, cls.sort_by_course_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = cast(User, self.request.user)
+        canvas_sites = user.get_canvas_sites()
+        canvas_sites_count = len(canvas_sites)
+        limit = int(self.request.GET.get("limit", 10))
+        sort = self.request.GET.get("sort", "")
+        if sort:
+            reverse = "-" in sort
+            function = self.get_sort_function(sort)
+            canvas_sites = self.sort_canvas_sites(canvas_sites, function, reverse)
+        else:
+            limit = limit + 5
+        context["canvas_sites"] = canvas_sites[:limit] if canvas_sites else []
+        context["sort_canvas_sites_course_id"] = get_sort_value("course_id", sort)
+        context["sort_canvas_sites_name"] = get_sort_value("name", sort)
+        context["sort_canvas_sites_term"] = get_sort_value("term", sort)
+        context["sort_canvas_sites_canvas_course_id"] = get_sort_value(
+            "canvas_course_id", sort
+        )
+        context["limit_canvas_sites"] = limit
+        context["load_more_canvas_sites"] = canvas_sites_count > limit
         return context
 
 
