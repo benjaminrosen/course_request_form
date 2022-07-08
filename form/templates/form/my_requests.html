@@ -1,56 +1,66 @@
-<table id="id_my_requests">
-    <colgroup span="3"></colgroup>
-    <tr>
-        {% with course_section="Course section" requested_by="Requested by" date_requested="Date requested" status="Status" sort_icon="⇕" %}
-            {% if requests|length > 1 %}
-                <th>
-                    <a role="button"
-                       hx-get="{% url "my_requests" %}?sort={{ sort_section }}"
-                       hx-target="#id_my_requests"
-                       hx-swap="outerHTML">{{ sort_icon }} {{ course_section }}</a>
-                </th>
-                <th>
-                    <a role="button"
-                       hx-get="{% url "my_requests" %}?sort={{ sort_requester }}"
-                       hx-target="#id_my_requests"
-                       hx-swap="outerHTML">{{ sort_icon }} {{ requested_by }}</a>
-                </th>
-                <th>
-                    <a role="button"
-                       hx-get="{% url "my_requests" %}?sort={{ sort_created_at }}"
-                       hx-target="#id_my_requests"
-                       hx-swap="outerHTML">{{ sort_icon }} {{ date_requested }}</a>
-                </th>
-                <th>
-                    <a role="button"
-                       hx-get="{% url "my_requests" %}?sort={{ sort_status }}"
-                       hx-target="#id_my_requests"
-                       hx-swap="outerHTML">{{ sort_icon }} {{ status }}</a>
-                </th>
-            {% else %}
-                <th>{{ course_section }}</th>
-                <th>{{ requested_by }}</th>
-                <th>{{ date_requested }}</th>
-                <th>{{ status }}</th>
-            {% endif %}
-        {% endwith %}
-    </tr>
-    {% for request in requests %}
+<div id="id_my_requests">
+    <table>
+        <colgroup span="3"></colgroup>
         <tr>
-            <td>
-                <a href="{% url "request_detail" request.section.section_code %}">{{ request.section.get_canvas_course_code }}</a>
-            </td>
-            <td>
-                {% if not request.proxy_requester %}
-                    You
-                {% elif user == request.requester %}
-                    You on behalf of {{ request.proxy_requester }}
+            {% with course_section="Course section" requested_by="Requested by" date_requested="Date requested" status="Status" sort_icon="⇕" %}
+                {% if requests|length > 1 %}
+                    <th>
+                        <a role="button"
+                           hx-get="{% url "my_requests" %}?limit={{ limit }}&sort={{ sort_section }}"
+                           hx-target="#id_my_requests"
+                           hx-swap="outerHTML">{{ sort_icon }} {{ course_section }}</a>
+                    </th>
+                    <th>
+                        <a role="button"
+                           hx-get="{% url "my_requests" %}?limit={{ limit }}&sort={{ sort_requester }}"
+                           hx-target="#id_my_requests"
+                           hx-swap="outerHTML">{{ sort_icon }} {{ requested_by }}</a>
+                    </th>
+                    <th>
+                        <a role="button"
+                           hx-get="{% url "my_requests" %}?limit={{ limit }}&sort={{ sort_created_at }}"
+                           hx-target="#id_my_requests"
+                           hx-swap="outerHTML">{{ sort_icon }} {{ date_requested }}</a>
+                    </th>
+                    <th>
+                        <a role="button"
+                           hx-get="{% url "my_requests" %}?limit={{ limit }}&sort={{ sort_status }}"
+                           hx-target="#id_my_requests"
+                           hx-swap="outerHTML">{{ sort_icon }} {{ status }}</a>
+                    </th>
                 {% else %}
-                    {{ request.requester }} on your behalf
+                    <th>{{ course_section }}</th>
+                    <th>{{ requested_by }}</th>
+                    <th>{{ date_requested }}</th>
+                    <th>{{ status }}</th>
                 {% endif %}
-            </td>
-            <td>{{ request.created_at }}</td>
-            <td>{{ request.status }}</td>
+            {% endwith %}
         </tr>
-    {% endfor %}
-</table>
+        {% for request in requests %}
+            <tr>
+                <td>
+                    <a href="{% url "request_detail" request.section.section_code %}">{{ request.section.get_canvas_course_code }}</a>
+                </td>
+                <td>
+                    {% if not request.proxy_requester %}
+                        You
+                    {% elif user == request.requester %}
+                        You on behalf of {{ request.proxy_requester }}
+                    {% else %}
+                        {{ request.requester }} on your behalf
+                    {% endif %}
+                </td>
+                <td>{{ request.created_at }}</td>
+                <td>{{ request.status }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% if load_more %}
+        <button class="load-more"
+                hx-get="{% url "my_requests" %}?limit={{ limit }}"
+                hx-target="#id_my_requests"
+                hx-swap="outerHTML">
+            Load more...
+        </button>
+    {% endif %}
+</div>

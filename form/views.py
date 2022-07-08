@@ -1,14 +1,15 @@
 from functools import reduce
-from typing import Callable, Union, cast
+from typing import Union, cast
 
+from config.config import PROD_URL
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from django.db.models import Q, QuerySet
 from django.forms.utils import ErrorList
 from django.http import HttpResponse
 from django.urls.base import reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
-from config.config import PROD_URL
 from form.terms import CURRENT_TERM, NEXT_TERM
 
 from .forms import RequestForm, SectionEnrollmentForm
@@ -21,36 +22,39 @@ class HomePageView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = cast(User, self.request.user)
-        context["sections"] = user.get_sections()
-        context["requests"] = user.get_requests()
-        context["canvas_sites"] = user.get_canvas_sites()
+        limit = 5
+        context["sections"] = user.get_sections()[:limit]
+        requests = user.get_requests()
+        requests_count = requests.count()
+        context["requests"] = requests[:limit]
+        canvas_sites = user.get_canvas_sites()
+        if canvas_sites:
+            canvas_sites = canvas_sites[:limit]
+        context["canvas_sites"] = canvas_sites
         context["canvas_url"] = f"{PROD_URL}/courses"
         context["current_term"] = CURRENT_TERM
         context["next_term"] = NEXT_TERM
         context["sort_created_at"] = "created_at"
         context["sort_section"] = "section__section_code"
         context["sort_requester"] = "requester"
-        context["sort_status"] = "status"
+        context["sort_status"] = "-status"
+        context["limit"] = limit
+        context["load_more"] = requests_count > limit
         return context
 
 
 class MyRequestsView(TemplateView):
     template_name = "form/my_requests.html"
 
-    @staticmethod
-    def get_other_requester_function(user: User) -> Callable:
-        def get_other_requester(request: Request) -> str:
-            return request.get_other_requester(user)
+    def get_other_requester(self, request: Request) -> str:
+        user = cast(User, self.request.user)
+        return request.get_other_requester(user)
 
-        return get_other_requester
-
-    @classmethod
     def sort_requests_by_requester(
-        cls, user: User, requests: Union[list, QuerySet[Request]], reverse: bool
+        self, user: User, requests: Union[list, QuerySet[Request]], reverse: bool
     ) -> list[Request]:
-        get_other_requester = cls.get_other_requester_function(user)
         requests = list(requests)
-        requests.sort(key=get_other_requester, reverse=reverse)
+        requests.sort(key=self.get_other_requester, reverse=reverse)
         return requests
 
     @staticmethod
@@ -71,18 +75,24 @@ class MyRequestsView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = cast(User, self.request.user)
-        requests = Request.objects.filter(Q(requester=user) | Q(proxy_requester=user))
+        requests = user.get_requests()
+        requests_count = requests.count()
+        limit = int(self.request.GET.get("limit", 5))
         sort = self.request.GET.get("sort", "")
         if "requester" in sort:
             reverse = "-" in sort
             requests = self.sort_requests_by_requester(user, requests, reverse)
-        else:
+        elif sort:
             requests = requests.order_by(sort)
-        context["requests"] = requests
+        else:
+            limit = limit + 5
+        context["requests"] = requests[:limit]
         context["sort_created_at"] = self.get_sort_value("created_at", sort, False)
         context["sort_section"] = self.get_sort_value("section__section_code", sort)
         context["sort_requester"] = self.get_sort_value("requester", sort)
         context["sort_status"] = self.get_sort_value("status", sort)
+        context["limit"] = limit
+        context["load_more"] = requests_count > limit
         return context
 
 
