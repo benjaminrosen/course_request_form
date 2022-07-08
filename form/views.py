@@ -30,6 +30,7 @@ class HomePageView(LoginRequiredMixin, TemplateView):
         context["sort_created_at"] = "created_at"
         context["sort_section"] = "section__section_code"
         context["sort_requester"] = "requester"
+        context["sort_status"] = "status"
         return context
 
 
@@ -81,6 +82,7 @@ class MyRequestsView(TemplateView):
         context["sort_created_at"] = self.get_sort_value("created_at", sort, False)
         context["sort_section"] = self.get_sort_value("section__section_code", sort)
         context["sort_requester"] = self.get_sort_value("requester", sort)
+        context["sort_status"] = self.get_sort_value("status", sort)
         return context
 
 
