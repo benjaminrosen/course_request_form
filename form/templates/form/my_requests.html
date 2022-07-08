@@ -2,34 +2,34 @@
     <table>
         <colgroup span="3"></colgroup>
         <tr>
-            {% with course_section="Course section" requested_by="Requested by" date_requested="Date requested" status="Status" sort_icon="⇕" %}
+            {% with section_code="Course section" requested_by="Requested by" date_requested="Date requested" status="Status" sort_icon="⇕" hx_target="#id_my_requests" %}
                 {% if requests|length > 1 %}
                     <th>
                         <a role="button"
-                           hx-get="{% url "my_requests" %}?limit={{ limit }}&sort={{ sort_section }}"
-                           hx-target="#id_my_requests"
-                           hx-swap="outerHTML">{{ sort_icon }} {{ course_section }}</a>
+                           hx-get="{% url "my_requests" %}?limit={{ limit }}&sort={{ sort_requests_section }}"
+                           hx-target="{{ hx_target }}"
+                           hx-swap="outerHTML">{{ sort_icon }} {{ section_code }}</a>
                     </th>
                     <th>
                         <a role="button"
-                           hx-get="{% url "my_requests" %}?limit={{ limit }}&sort={{ sort_requester }}"
-                           hx-target="#id_my_requests"
+                           hx-get="{% url "my_requests" %}?limit={{ limit }}&sort={{ sort_requests_requester }}"
+                           hx-target="{{ hx_target }}"
                            hx-swap="outerHTML">{{ sort_icon }} {{ requested_by }}</a>
                     </th>
                     <th>
                         <a role="button"
-                           hx-get="{% url "my_requests" %}?limit={{ limit }}&sort={{ sort_created_at }}"
+                           hx-get="{% url "my_requests" %}?limit={{ limit }}&sort={{ sort_requests_created_at }}"
                            hx-target="#id_my_requests"
                            hx-swap="outerHTML">{{ sort_icon }} {{ date_requested }}</a>
                     </th>
                     <th>
                         <a role="button"
-                           hx-get="{% url "my_requests" %}?limit={{ limit }}&sort={{ sort_status }}"
+                           hx-get="{% url "my_requests" %}?limit={{ limit }}&sort={{ sort_requests_status }}"
                            hx-target="#id_my_requests"
                            hx-swap="outerHTML">{{ sort_icon }} {{ status }}</a>
                     </th>
                 {% else %}
-                    <th>{{ course_section }}</th>
+                    <th>{{ section_code }}</th>
                     <th>{{ requested_by }}</th>
                     <th>{{ date_requested }}</th>
                     <th>{{ status }}</th>
@@ -55,9 +55,9 @@
             </tr>
         {% endfor %}
     </table>
-    {% if load_more %}
+    {% if load_more_requests %}
         <button class="load-more"
-                hx-get="{% url "my_requests" %}?limit={{ limit }}"
+                hx-get="{% url "my_requests" %}?limit={{ limit_requests }}"
                 hx-target="#id_my_requests"
                 hx-swap="outerHTML">
             Load more...

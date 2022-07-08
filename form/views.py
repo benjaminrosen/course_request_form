@@ -1,16 +1,19 @@
 from functools import reduce
-from typing import Union, cast
+from typing import cast
 
 from config.config import PROD_URL
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.paginator import Paginator
-from django.db.models import Q, QuerySet
+from django.db.models import Q
 from django.forms.utils import ErrorList
 from django.http import HttpResponse
 from django.urls.base import reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from form.terms import CURRENT_TERM, NEXT_TERM
+from form.utils import (
+    get_sort_value,
+    sort_queryset_by_function,
+)
 
 from .forms import RequestForm, SectionEnrollmentForm
 from .models import Enrollment, Request, School, Section, SectionEnrollment, User
@@ -23,7 +26,9 @@ class HomePageView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         user = cast(User, self.request.user)
         limit = 5
-        context["sections"] = user.get_sections()[:limit]
+        sections = user.get_sections()
+        sections_count = sections.count()
+        context["sections"] = sections[:limit]
         requests = user.get_requests()
         requests_count = requests.count()
         context["requests"] = requests[:limit]
@@ -34,12 +39,20 @@ class HomePageView(LoginRequiredMixin, TemplateView):
         context["canvas_url"] = f"{PROD_URL}/courses"
         context["current_term"] = CURRENT_TERM
         context["next_term"] = NEXT_TERM
-        context["sort_created_at"] = "created_at"
-        context["sort_section"] = "section__section_code"
-        context["sort_requester"] = "requester"
-        context["sort_status"] = "-status"
-        context["limit"] = limit
-        context["load_more"] = requests_count > limit
+        context["sort_requests_created_at"] = "created_at"
+        context["sort_requests_section"] = "section__section_code"
+        context["sort_requests_requester"] = "requester"
+        context["sort_requests_status"] = "-status"
+        context["limit_requests"] = limit
+        context["load_more_requests"] = requests_count > limit
+        context["sort_sections_section"] = "-section_code"
+        context["sort_sections_title"] = "title"
+        context["sort_sections_schedule_type"] = "schedule_type"
+        context["sort_sections_instructors"] = "instructors"
+        context["sort_sections_requester"] = "request__requester"
+        context["sort_sections_created_at"] = "request__created_at"
+        context["limit_sections"] = limit
+        context["load_more_sections"] = sections_count > limit
         return context
 
 
@@ -50,28 +63,6 @@ class MyRequestsView(TemplateView):
         user = cast(User, self.request.user)
         return request.get_other_requester(user)
 
-    def sort_requests_by_requester(
-        self, user: User, requests: Union[list, QuerySet[Request]], reverse: bool
-    ) -> list[Request]:
-        requests = list(requests)
-        requests.sort(key=self.get_other_requester, reverse=reverse)
-        return requests
-
-    @staticmethod
-    def reverse_order(sort: str):
-        descending = "-" in sort
-        if descending:
-            return sort.replace("-", "")
-        return f"-{sort}"
-
-    @classmethod
-    def get_sort_value(cls, name: str, value: str, ascending: bool = True):
-        not_match = not value or name not in value
-        if not_match:
-            default_order = "" if ascending else "-"
-            return f"{default_order}{name}"
-        return cls.reverse_order(value)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = cast(User, self.request.user)
@@ -81,24 +72,68 @@ class MyRequestsView(TemplateView):
         sort = self.request.GET.get("sort", "")
         if "requester" in sort:
             reverse = "-" in sort
-            requests = self.sort_requests_by_requester(user, requests, reverse)
+            requests = sort_queryset_by_function(
+                requests, self.get_other_requester, reverse
+            )
         elif sort:
             requests = requests.order_by(sort)
         else:
             limit = limit + 5
         context["requests"] = requests[:limit]
-        context["sort_created_at"] = self.get_sort_value("created_at", sort, False)
-        context["sort_section"] = self.get_sort_value("section__section_code", sort)
-        context["sort_requester"] = self.get_sort_value("requester", sort)
-        context["sort_status"] = self.get_sort_value("status", sort)
-        context["limit"] = limit
-        context["load_more"] = requests_count > limit
+        context["sort_requests_section"] = get_sort_value("section__section_code", sort)
+        context["sort_requests_created_at"] = get_sort_value("created_at", sort, False)
+        context["sort_requests_requester"] = get_sort_value("requester", sort)
+        context["sort_requests_requests_status"] = get_sort_value("status", sort)
+        context["limit_requests"] = limit
+        context["load_more_requests"] = requests_count > limit
+        return context
+
+
+class MyCoursesView(TemplateView):
+    template_name = "form/section_list_table.html"
+
+    def get_other_requester(self, section: Section) -> str:
+        user = cast(User, self.request.user)
+        return section.get_other_requester(user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = cast(User, self.request.user)
+        sections = user.get_sections()
+        sections_count = sections.count()
+        limit = int(self.request.GET.get("limit", 5))
+        sort = self.request.GET.get("sort", "")
+        reverse = "-" in sort
+        if "requester" in sort:
+            sections = sort_queryset_by_function(
+                sections, self.get_other_requester, reverse
+            )
+        elif "instructors" in sort:
+            sections = sort_queryset_by_function(
+                sections, self.get_other_requester, reverse
+            )
+        elif sort:
+            sections = sections.order_by(sort)
+        else:
+            limit = limit + 5
+        context["sections"] = sections[:limit]
+        context["sort_sections_section"] = get_sort_value("section_code", sort)
+        context["sort_sections_title"] = get_sort_value("title", sort, False)
+        context["sort_sections_schedule_type"] = get_sort_value("schedule_type", sort)
+        context["sort_sections_instructors"] = get_sort_value("instructors", sort)
+        context["sort_sections_requester"] = get_sort_value("request__requester", sort)
+        context["sort_sections_created_at"] = get_sort_value(
+            "request__created_at", sort
+        )
+        context["limit_sections"] = limit
+        context["load_more_sections"] = sections_count > limit
         return context
 
 
 class SectionListView(ListView):
     model = Section
     paginate_by = 30
+    context_object_name = "sections"
 
     @staticmethod
     def get_request_isnull(status):

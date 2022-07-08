@@ -128,7 +128,7 @@ class User(AbstractUser):
         return Section.sync_instructor_sections(self.penn_id)
 
     def get_sections(self) -> QuerySet:
-        return Section.objects.filter(instructors=self)
+        return Section.objects.filter(instructors=self).order_by("section_code")
 
     def get_requests(self) -> QuerySet:
         requests = Request.objects.filter(Q(requester=self) | Q(proxy_requester=self))
@@ -416,6 +416,20 @@ class Section(Model):
 
     def __str__(self):
         return self.section_code
+
+    def get_other_requester(self, user: User) -> str:
+        try:
+            request = Request.objects.get(section=self)
+        except Exception:
+            return ""
+        requesters = [request.requester, request.proxy_requester]
+        requester = next(
+            (requester for requester in requesters if requester and requester != user),
+            user,
+        )
+        if not requester:
+            return ""
+        return requester.last_name
 
     def sync_instructors(self):
         query = """
