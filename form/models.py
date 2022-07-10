@@ -680,6 +680,12 @@ class Section(Model):
             instructors_list = f"{instructors_list[:47]}..."
         return instructors_list
 
+    def get_request(self):
+        try:
+            return Request.objects.get(section=self)
+        except Exception:
+            return None
+
 
 class Enrollment(Model):
     class CanvasRole(Enum):

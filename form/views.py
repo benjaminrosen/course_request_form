@@ -1,25 +1,25 @@
+from datetime import datetime
 from functools import reduce
-from typing import Callable, cast
+from typing import Callable, Optional, Union, cast
 
 from canvasapi.course import Course
-
 from config.config import PROD_URL
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from django.forms.utils import ErrorList
 from django.http import HttpResponse
 from django.urls.base import reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
-from form.templatetags.canvas_site_filters import get_term
 
+from form.templatetags.canvas_site_filters import get_term
 from form.terms import CURRENT_TERM, NEXT_TERM
-from form.utils import (
-    get_sort_value,
-    sort_queryset_by_function,
-)
+from form.utils import get_sort_value
 
 from .forms import RequestForm, SectionEnrollmentForm
 from .models import Enrollment, Request, School, Section, SectionEnrollment, User
+
+HOME_LIST_LIMIT = 5
+HOME_LIST_INCREMENT = 5
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -28,17 +28,16 @@ class HomePageView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = cast(User, self.request.user)
-        limit = 10
         sections = user.get_sections()
         sections_count = sections.count()
-        context["sections"] = sections[:limit]
+        context["sections"] = sections[:HOME_LIST_LIMIT]
         requests = user.get_requests()
         requests_count = requests.count()
-        context["requests"] = requests[:limit]
+        context["requests"] = requests[:HOME_LIST_LIMIT]
         canvas_sites = user.get_canvas_sites()
         canvas_sites_count = len(canvas_sites)
         if canvas_sites:
-            canvas_sites = canvas_sites[:limit]
+            canvas_sites = canvas_sites[:HOME_LIST_LIMIT]
         context["canvas_sites"] = canvas_sites
         context["canvas_url"] = f"{PROD_URL}/courses"
         context["current_term"] = CURRENT_TERM
@@ -47,49 +46,79 @@ class HomePageView(LoginRequiredMixin, TemplateView):
         context["sort_requests_section"] = "section__section_code"
         context["sort_requests_requester"] = "requester"
         context["sort_requests_status"] = "-status"
-        context["limit_requests"] = limit
-        context["load_more_requests"] = requests_count > limit
+        context["limit_requests"] = HOME_LIST_LIMIT
+        context["load_more_requests"] = requests_count > HOME_LIST_LIMIT
         context["sort_sections_section"] = "-section_code"
         context["sort_sections_title"] = "title"
         context["sort_sections_schedule_type"] = "schedule_type"
         context["sort_sections_instructors"] = "instructors"
         context["sort_sections_requester"] = "request__requester"
         context["sort_sections_created_at"] = "request__created_at"
-        context["limit_sections"] = limit
-        context["load_more_sections"] = sections_count > limit
+        context["limit_sections"] = HOME_LIST_LIMIT
+        context["load_more_sections"] = sections_count > HOME_LIST_LIMIT
         context["sort_canvas_sites_course_id"] = "course_id"
         context["sort_canvas_sites_name"] = "name"
         context["sort_canvas_sites_term"] = "term"
         context["sort_canvas_sites_canvas_course_id"] = "canvas_course_id"
-        context["limit_canvas_sites"] = limit
-        context["load_more_canvas_sites"] = canvas_sites_count > limit
+        context["limit_canvas_sites"] = HOME_LIST_LIMIT
+        context["load_more_canvas_sites"] = canvas_sites_count > HOME_LIST_LIMIT
         return context
 
 
 class MyRequestsView(TemplateView):
     template_name = "form/my_requests.html"
 
-    def get_other_requester(self, request: Request) -> str:
+    @staticmethod
+    def sort_by_section_code(request: Request) -> str:
+        return request.section.section_code
+
+    def sort_by_other_requester(self, request: Request) -> str:
         user = cast(User, self.request.user)
         return request.get_other_requester(user)
+
+    @staticmethod
+    def sort_by_date_requested(request: Request) -> datetime:
+        return request.created_at
+
+    @staticmethod
+    def sort_by_status(request: Request) -> str:
+        return request.status
+
+    @classmethod
+    def get_sort_function(cls, sort) -> Callable:
+        sort = sort.replace("-", "")
+        sort_functions = {
+            "section_code": cls.sort_by_section_code,
+            "requested_by": cls.sort_by_other_requester,
+            "date_requested": cls.sort_by_date_requested,
+            "status": cls.sort_by_status,
+        }
+        return sort_functions.get(sort, cls.sort_by_date_requested)
+
+    @classmethod
+    def sort_requests(
+        cls, requests: Union[QuerySet[Request], list[Request]], sort: str
+    ) -> list[Request]:
+        requests = list(requests)
+        reverse = "-" in sort
+        function = cls.get_sort_function(sort)
+        requests.sort(key=function, reverse=reverse)
+        return requests
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = cast(User, self.request.user)
         requests = user.get_requests()
         requests_count = requests.count()
-        limit = int(self.request.GET.get("limit", 10))
+        limit = int(self.request.GET.get("limit", HOME_LIST_LIMIT))
         sort = self.request.GET.get("sort", "")
-        if "requester" in sort:
-            reverse = "-" in sort
-            requests = sort_queryset_by_function(
-                requests, self.get_other_requester, reverse
-            )
-        elif sort:
-            requests = requests.order_by(sort)
+        if sort:
+            requests = requests[:limit]
+            requests = self.sort_requests(requests, sort)
         else:
-            limit = limit + 5
-        context["requests"] = requests[:limit]
+            limit = limit + HOME_LIST_INCREMENT
+            requests = requests[:limit]
+        context["requests"] = requests
         context["sort_requests_section"] = get_sort_value("section__section_code", sort)
         context["sort_requests_created_at"] = get_sort_value("created_at", sort, False)
         context["sort_requests_requester"] = get_sort_value("requester", sort)
@@ -102,30 +131,64 @@ class MyRequestsView(TemplateView):
 class MyCoursesView(TemplateView):
     template_name = "form/section_list_table.html"
 
-    def get_other_requester(self, section: Section) -> str:
+    @staticmethod
+    def sort_by_section_code(section: Section) -> str:
+        return section.section_code
+
+    @staticmethod
+    def sort_by_title(section: Section) -> str:
+        return section.title
+
+    @staticmethod
+    def sort_by_schedule_type(section: Section) -> str:
+        return section.schedule_type.sched_type_code
+
+    def sort_by_other_requester(self, section: Section) -> str:
         user = cast(User, self.request.user)
         return section.get_other_requester(user)
+
+    @staticmethod
+    def sort_by_date_requested(section: Section) -> Optional[datetime]:
+        request = section.get_request()
+        if not request:
+            return None
+        return request.created_at
+
+    @classmethod
+    def get_sort_function(cls, sort) -> Callable:
+        sort = sort.replace("-", "")
+        sort_functions = {
+            "section_code": cls.sort_by_section_code,
+            "title": cls.sort_by_title,
+            "schedule_type": cls.sort_by_schedule_type,
+            "requested_by": cls.sort_by_other_requester,
+            "date_requested": cls.sort_by_date_requested,
+        }
+        return sort_functions.get(sort, cls.sort_by_date_requested)
+
+    @classmethod
+    def sort_sections(
+        cls, sections: Union[QuerySet[Section], list[Section]], sort: str
+    ) -> list[Section]:
+        sections = list(sections)
+        reverse = "-" in sort
+        function = cls.get_sort_function(sort)
+        sections.sort(key=function, reverse=reverse)
+        return sections
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = cast(User, self.request.user)
         sections = user.get_sections()
         sections_count = sections.count()
-        limit = int(self.request.GET.get("limit", 10))
+        limit = int(self.request.GET.get("limit", HOME_LIST_LIMIT))
         sort = self.request.GET.get("sort", "")
-        reverse = "-" in sort
-        if "requester" in sort:
-            sections = sort_queryset_by_function(
-                sections, self.get_other_requester, reverse
-            )
-        elif "instructors" in sort:
-            sections = sort_queryset_by_function(
-                sections, self.get_other_requester, reverse
-            )
-        elif sort:
-            sections = sections.order_by(sort)
+        if sort:
+            sections = sections[:limit]
+            sections = self.sort_sections(sections, sort)
         else:
-            limit = limit + 5
+            limit = limit + HOME_LIST_INCREMENT
+            sections = sections[:limit]
         context["sections"] = sections[:limit]
         context["sort_sections_section"] = get_sort_value("section_code", sort)
         context["sort_sections_title"] = get_sort_value("title", sort)
@@ -159,13 +222,6 @@ class MyCanvasSitesView(TemplateView):
     def sort_by_canvas_course_id(course: Course) -> int:
         return course.id
 
-    @staticmethod
-    def sort_canvas_sites(
-        canvas_sites: list[Course], function: Callable, reverse: bool
-    ):
-        canvas_sites.sort(key=function, reverse=reverse)
-        return canvas_sites
-
     @classmethod
     def get_sort_function(cls, sort) -> Callable:
         sort = sort.replace("-", "")
@@ -177,19 +233,24 @@ class MyCanvasSitesView(TemplateView):
         }
         return sort_functions.get(sort, cls.sort_by_course_id)
 
+    @classmethod
+    def sort_canvas_sites(cls, canvas_sites: list[Course], sort: str):
+        reverse = "-" in sort
+        function = cls.get_sort_function(sort)
+        canvas_sites.sort(key=function, reverse=reverse)
+        return canvas_sites
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = cast(User, self.request.user)
         canvas_sites = user.get_canvas_sites()
         canvas_sites_count = len(canvas_sites)
-        limit = int(self.request.GET.get("limit", 10))
+        limit = int(self.request.GET.get("limit", HOME_LIST_LIMIT))
         sort = self.request.GET.get("sort", "")
         if sort:
-            reverse = "-" in sort
-            function = self.get_sort_function(sort)
-            canvas_sites = self.sort_canvas_sites(canvas_sites, function, reverse)
+            canvas_sites = self.sort_canvas_sites(canvas_sites, sort)
         else:
-            limit = limit + 5
+            limit = limit + HOME_LIST_INCREMENT
         context["canvas_sites"] = canvas_sites[:limit] if canvas_sites else []
         context["sort_canvas_sites_course_id"] = get_sort_value("course_id", sort)
         context["sort_canvas_sites_name"] = get_sort_value("name", sort)
