@@ -104,5 +104,12 @@ p {
 
 a[role="button"] {
   cursor: pointer;
-  color: unset;
+  /* color: unset; */
+}
+
+.content .sort-active {
+  background-color: #011f5b;
+  color: white;
+  padding: 4px;
+  border-radius: 6px;
 }

@@ -43,17 +43,23 @@
             <input type="submit" name="clear" value="Reset"/>
         </p>
     </form>
-    {% include "form/section_list_table.html" %}
+    <div id="id_section_list">{% include "form/section_list_table.html" %}</div>
     <div class="pagination">
         <span class="step-links">
             {% if page_obj.has_previous %}
-                <a id="id_first" href="?page=1">« first</a>
-                <a id="id_previous" href="?page={{ page_obj.previous_page_number }}">previous</a>
+                <a id="id_first" class="page_button" href="?page=1">« first</a>
+                <a id="id_previous"
+                   class="page_button"
+                   href="?page={{ page_obj.previous_page_number }}">previous</a>
             {% endif %}
-            <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            <span id="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
             {% if page_obj.has_next %}
-                <a id="id_next" href="?page={{ page_obj.next_page_number }}">next</a>
-                <a id="id_last" href="?page={{ page_obj.paginator.num_pages }}">last »</a>
+                <a id="id_next"
+                   class="page_button"
+                   href="?page={{ page_obj.next_page_number }}">next</a>
+                <a id="id_last"
+                   class="page_button"
+                   href="?page={{ page_obj.paginator.num_pages }}">last »</a>
             {% endif %}
         </span>
     </div>

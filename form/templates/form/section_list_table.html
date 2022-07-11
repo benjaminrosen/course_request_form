@@ -1,28 +1,33 @@
-<div id="id_section_list">
+{% load template_filters %}
+<div id="id_section_list_table">
     <table>
         <tr>
-            {% with section_code="Section code" title="Title" schedule_type="Schedule Type" instructors="Instructors" requested_by="Requested by" date_requested="Date requested" sort_icon="⇕" hx_target="#id_section_list" %}
+            {% with section_code="Section code" title="Title" schedule_type="Schedule Type" instructors="Instructors" requested_by="Requested by" date_requested="Date requested" sort_icon="⇕" hx_target="#id_section_list_table" %}
                 {% if sections|length > 1 %}
                     <th>
                         <a role="button"
+                           {% if sort|get_sort_by_base == sort_sections_section|get_sort_by_base %} class="sort-active"{% endif %}
                            hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_section }}"
                            hx-target="{{ hx_target }}"
                            hx-swap="outerHTML">{{ sort_icon }} {{ section_code }}</a>
                     </th>
                     <th>
                         <a role="button"
+                           {% if sort|get_sort_by_base == sort_sections_title|get_sort_by_base %} class="sort-active"{% endif %}
                            hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_title }}"
                            hx-target="{{ hx_target }}"
                            hx-swap="outerHTML">{{ sort_icon }} {{ title }}</a>
                     </th>
                     <th>
                         <a role="button"
+                           {% if sort|get_sort_by_base == sort_sections_schedule_type|get_sort_by_base %} class="sort-active"{% endif %}
                            hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_schedule_type }}"
                            hx-target="{{ hx_target }}"
                            hx-swap="outerHTML">{{ sort_icon }} {{ schedule_type }}</a>
                     </th>
                     <th>
                         <a role="button"
+                           {% if sort|get_sort_by_base == sort_sections_instructors|get_sort_by_base %} class="sort-active"{% endif %}
                            hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_instructors }}"
                            hx-target="{{ hx_target }}"
                            hx-swap="outerHTML">{{ sort_icon }} {{ instructors }}</a>
@@ -30,12 +35,14 @@
                     {% if status != "unrequested" %}
                         <th>
                             <a role="button"
+                               {% if sort|get_sort_by_base == sort_sections_requester|get_sort_by_base %} class="sort-active"{% endif %}
                                hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_requester }}"
                                hx-target="{{ hx_target }}"
                                hx-swap="outerHTML">{{ sort_icon }} {{ requested_by }}</a>
                         </th>
                         <th>
                             <a role="button"
+                               {% if sort|get_sort_by_base == sort_sections_created_at|get_sort_by_base %} class="sort-active"{% endif %}
                                hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_created_at }}"
                                hx-target="{{ hx_target }}"
                                hx-swap="outerHTML">{{ sort_icon }} {{ date_requested }}</a>
@@ -94,7 +101,7 @@
     {% if load_more_sections %}
         <button class="load-more"
                 hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}"
-                hx-target="#id_section_list"
+                hx-target="#id_section_list_table"
                 hx-swap="outerHTML">
             Load more...
         </button>

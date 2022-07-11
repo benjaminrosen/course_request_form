@@ -10,7 +10,7 @@ from django.urls.base import reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from config.config import PROD_URL
-from form.templatetags.canvas_site_filters import get_term
+from form.templatetags.template_filters import get_term
 from form.terms import CURRENT_TERM, NEXT_TERM
 from form.utils import get_sort_value
 
@@ -201,6 +201,7 @@ class MyCoursesView(TemplateView):
         )
         context["limit_sections"] = limit
         context["load_more_sections"] = sections_count > limit if limit else False
+        context["sort"] = sort
         return context
 
 
@@ -291,8 +292,8 @@ class SectionListView(ListView):
         if status:
             request_isnull = self.get_request_isnull(status)
             sections = sections.filter(request__isnull=request_isnull)
-        if sort == "date":
-            sections = sections.order_by("-created_at")
+        if sort:
+            sections = sections.order_by(sort)
         if search:
             search_terms = search.split()
             sections = sections.filter(
@@ -327,6 +328,13 @@ class SectionListView(ListView):
         context["status"] = status
         context["search"] = search
         context["source"] = "sections"
+        context["sort"] = self.request.GET.get("sort", "section_code")
+        context["sort_sections_section"] = "-section_code"
+        context["sort_sections_title"] = "title"
+        context["sort_sections_schedule_type"] = "schedule_type"
+        context["sort_sections_instructors"] = "instructors"
+        context["sort_sections_requester"] = "request__requester"
+        context["sort_sections_created_at"] = "request__created_at"
         return context
 
 
