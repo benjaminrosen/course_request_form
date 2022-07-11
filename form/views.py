@@ -1,6 +1,5 @@
-from datetime import datetime
 from functools import reduce
-from typing import Callable, Optional, Union, cast
+from typing import Callable, Union, cast
 
 from canvasapi.course import Course
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -29,7 +28,7 @@ class HomePageView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         user = cast(User, self.request.user)
         sections = user.get_sections()
-        sections_count = sections.count()
+        sections_count = len(sections)
         context["sections"] = sections[:HOME_LIST_LIMIT]
         requests = user.get_requests()
         requests_count = requests.count()
@@ -68,10 +67,6 @@ class HomePageView(LoginRequiredMixin, TemplateView):
 class MyRequestsView(TemplateView):
     template_name = "form/my_requests.html"
 
-    @staticmethod
-    def sort_by_section_code(request: Request) -> str:
-        return request.section.section_code
-
     def get_sort_by_other_requester(self) -> Callable:
         user = cast(User, self.request.user)
 
@@ -80,23 +75,15 @@ class MyRequestsView(TemplateView):
 
         return sort_by_other_requester
 
-    @staticmethod
-    def sort_by_date_requested(request: Request) -> datetime:
-        return request.created_at
-
-    @staticmethod
-    def sort_by_status(request: Request) -> str:
-        return request.status
-
     def get_sort_function(self, sort: str):
         sort = sort.replace("-", "")
         sort_functions = {
-            "section__section_code": self.sort_by_section_code,
+            "section__section_code": Request.get_request_section_code,
             "requester": self.get_sort_by_other_requester(),
-            "created_at": self.sort_by_date_requested,
-            "status": self.sort_by_status,
+            "created_at": Request.get_request_created_at,
+            "status": Request.get_request_status,
         }
-        return sort_functions.get(sort, self.sort_by_date_requested)
+        return sort_functions.get(sort, Request.get_request_created_at)
 
     def sort_requests(
         self, requests: Union[QuerySet[Request], list[Request]], sort: str
@@ -135,22 +122,6 @@ class MyRequestsView(TemplateView):
 class MyCoursesView(TemplateView):
     template_name = "form/section_list_table.html"
 
-    @staticmethod
-    def sort_by_section_code(section: Section) -> str:
-        return section.section_code
-
-    @staticmethod
-    def sort_by_title(section: Section) -> str:
-        return section.title
-
-    @staticmethod
-    def sort_by_schedule_type(section: Section) -> str:
-        return section.schedule_type.sched_type_code
-
-    @staticmethod
-    def sort_by_instructors(section: Section) -> int:
-        return 1
-
     def get_sort_by_other_requester(self) -> Callable:
         user = cast(User, self.request.user)
 
@@ -159,24 +130,17 @@ class MyCoursesView(TemplateView):
 
         return sort_by_other_requester
 
-    @staticmethod
-    def sort_by_date_requested(section: Section) -> Optional[datetime]:
-        request = section.get_request()
-        if not request:
-            return None
-        return request.created_at
-
     def get_sort_function(self, sort: str):
         sort = sort.replace("-", "")
         sort_functions = {
-            "section_code": self.sort_by_section_code,
-            "title": self.sort_by_title,
-            "schedule_type": self.sort_by_schedule_type,
-            "instructors": self.sort_by_instructors,
+            "section_code": Section.get_section_section_code,
+            "title": Section.get_section_title,
+            "schedule_type": Section.get_section_schedule_type,
+            "instructors": Section.get_section_sortable_instructor,
             "request__requester": self.get_sort_by_other_requester(),
-            "request__created_at": self.sort_by_date_requested,
+            "request__created_at": Section.get_section_request_created_at,
         }
-        return sort_functions.get(sort, self.sort_by_date_requested)
+        return sort_functions.get(sort, Section.get_section_request_created_at)
 
     def sort_sections(
         self, sections: Union[QuerySet[Section], list[Section]], sort: str
@@ -205,7 +169,7 @@ class MyCoursesView(TemplateView):
         context = super().get_context_data(**kwargs)
         user = cast(User, self.request.user)
         sections = user.get_sections()
-        sections_count = sections.count()
+        sections_count = len(sections)
         limit = int(self.request.GET.get("limit", HOME_LIST_LIMIT))
         sort = self.request.GET.get("sort", "")
         if sort:
@@ -352,6 +316,7 @@ class SectionListView(ListView):
         context["term"] = term
         context["status"] = status
         context["search"] = search
+        context["limit_sections"] = HOME_LIST_LIMIT
         return context
 
 

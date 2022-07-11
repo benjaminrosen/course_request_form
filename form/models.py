@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 from logging import getLogger
 from time import sleep
@@ -127,8 +128,11 @@ class User(AbstractUser):
             self.sync_dw_info()
         return Section.sync_instructor_sections(self.penn_id)
 
-    def get_sections(self) -> QuerySet:
-        return Section.objects.filter(instructors=self).order_by("section_code")
+    def get_sections(self) -> list:
+        primary_sections = list(Section.objects.filter(primary_instructor=self))
+        additional_sections = list(Section.objects.filter(instructors=self))
+        sections = primary_sections + additional_sections
+        return sections
 
     def get_requests(self) -> QuerySet:
         requests = Request.objects.filter(Q(requester=self) | Q(proxy_requester=self))
@@ -401,6 +405,9 @@ class Section(Model):
     schedule_type = ForeignKey(
         ScheduleType, on_delete=CASCADE, related_name=RELATED_NAME
     )
+    primary_instructor = ForeignKey(
+        User, on_delete=CASCADE, blank=True, null=True, related_name="primary_sections"
+    )
     instructors = ManyToManyField(User, blank=True, related_name=RELATED_NAME)
     primary_course_id = CharField(max_length=150)
     primary_section = ForeignKey("self", on_delete=CASCADE, blank=True, null=True)
@@ -438,7 +445,8 @@ class Section(Model):
                     instructor.instructor_first_name,
                     instructor.instructor_last_name,
                     instructor.instructor_penn_id,
-                    instructor.instructor_email
+                    instructor.instructor_email,
+                    instructor.primary_instructor
                 FROM dwngss_ps.crse_sect_instructor instructor
                 JOIN employee_general_v employee
                 ON instructor.instructor_penn_id = employee.penn_id
@@ -448,7 +456,14 @@ class Section(Model):
         kwargs = {"section_id": f"{self.section_id}", "term": self.term}
         cursor = execute_query(query, kwargs)
         instructors = list()
-        for pennkey, first_name, last_name, penn_id, email in cursor:
+        for (
+            pennkey,
+            first_name,
+            last_name,
+            penn_id,
+            email,
+            primary_instructor,
+        ) in cursor:
             try:
                 user, created = User.objects.update_or_create(
                     username=pennkey,
@@ -460,7 +475,11 @@ class Section(Model):
                     },
                 )
                 if user:
-                    instructors.append(user)
+                    if primary_instructor == "Y":
+                        self.primary_instructor = user
+                        self.save()
+                    else:
+                        instructors.append(user)
                 action = "ADDED" if created else "UPDATED"
                 logger.info(f"{action} {user}")
             except Exception as error:
@@ -468,6 +487,10 @@ class Section(Model):
                     f"FAILED to update or create instructor '{pennkey}': {error}"
                 )
         self.instructors.set(instructors)
+
+    @classmethod
+    def sync_all_section_instructors(cls):
+        pass
 
     def get_related_sections(self, cursor) -> list:
         related_sections = list()
@@ -633,6 +656,9 @@ class Section(Model):
         kwargs = {"section_id": section_id, "term": term}
         return cls.update_or_create(cls.QUERY_SECTION_ID, kwargs, sync_related_data)
 
+    def sync(self):
+        return self.sync_section(self.section_id)
+
     @classmethod
     def get_section(
         cls, section_id: str, term: Optional[int] = None, sync_related_data=True
@@ -672,7 +698,7 @@ class Section(Model):
         return f"{canvas_course_code} {title}"
 
     def get_instructors_list(self) -> str:
-        instructors = self.instructors.all()
+        instructors = self.get_all_instructors()
         if not instructors:
             return "STAFF"
         instructors_list = ", ".join([str(instructor) for instructor in instructors])
@@ -685,6 +711,42 @@ class Section(Model):
             return Request.objects.get(section=self)
         except Exception:
             return None
+
+    def get_all_instructors(self) -> list[User]:
+        additional_instructors = list(self.instructors.all())
+        if not self.primary_instructor:
+            return additional_instructors
+        return [self.primary_instructor] + additional_instructors
+
+    @staticmethod
+    def get_section_section_code(section) -> str:
+        return section.section_code
+
+    @staticmethod
+    def get_section_title(section) -> str:
+        return section.title
+
+    @staticmethod
+    def get_section_schedule_type(section) -> str:
+        return section.schedule_type.sched_type_code
+
+    @staticmethod
+    def get_section_sortable_instructor(section) -> str:
+        primary_instructor = section.primary_instructor
+        if primary_instructor:
+            return section.primary_instructor.last_name
+        else:
+            instructor = section.instructors.first()
+            if not instructor:
+                return ""
+            return instructor.last_name
+
+    @staticmethod
+    def get_section_request_created_at(section) -> datetime:
+        request = section.get_request()
+        if not request:
+            return datetime.now()
+        return request.created_at
 
 
 class Enrollment(Model):
@@ -942,3 +1004,15 @@ class Request(Model):
         approved_requests = cls.get_approved_requests()
         for request in approved_requests:
             request.create_canvas_site()
+
+    @staticmethod
+    def get_request_section_code(request) -> str:
+        return request.section.section_code
+
+    @staticmethod
+    def get_request_created_at(request) -> datetime:
+        return request.created_at
+
+    @staticmethod
+    def get_request_status(request) -> str:
+        return request.status
