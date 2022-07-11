@@ -18,7 +18,7 @@ from form.utils import get_sort_value
 from .forms import RequestForm, SectionEnrollmentForm
 from .models import Enrollment, Request, School, Section, SectionEnrollment, User
 
-HOME_LIST_LIMIT = 5
+HOME_LIST_LIMIT = 10
 HOME_LIST_INCREMENT = 5
 
 
