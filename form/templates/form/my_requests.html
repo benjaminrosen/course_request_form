@@ -1,7 +1,7 @@
 <div id="id_my_requests">
     <table>
         <tr>
-            {% with section_code="Course section" requested_by="Requested by" date_requested="Date requested" status="Status" sort_icon="⇕" hx_target="#id_my_requests" %}
+            {% with section_code="Section code" requested_by="Requested by" date_requested="Date requested" status="Status" sort_icon="⇕" hx_target="#id_my_requests" %}
                 {% if requests|length > 1 %}
                     <th>
                         <a role="button"
