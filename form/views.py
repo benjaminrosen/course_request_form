@@ -202,6 +202,7 @@ class MyCoursesView(TemplateView):
         context["limit_sections"] = limit
         context["load_more_sections"] = sections_count > limit if limit else False
         context["sort"] = sort
+        context["source"] = source
         return context
 
 

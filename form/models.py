@@ -128,15 +128,20 @@ class User(AbstractUser):
             self.sync_dw_info()
         return Section.sync_instructor_sections(self.penn_id)
 
+    @staticmethod
+    def sort_sections_by_requested(section) -> bool:
+        return bool(section.get_request())
+
     def get_sections(self) -> list:
         primary_sections = list(Section.objects.filter(primary_instructor=self))
         additional_sections = list(Section.objects.filter(instructors=self))
         sections = primary_sections + additional_sections
+        sections.sort(key=self.sort_sections_by_requested)
         return sections
 
     def get_requests(self) -> QuerySet:
         requests = Request.objects.filter(Q(requester=self) | Q(proxy_requester=self))
-        return requests.order_by("-created_at")
+        return requests.order_by("-status")
 
     @staticmethod
     def get_canvas_site_id(canvas_site: Course) -> int:
