@@ -1,6 +1,7 @@
 from functools import lru_cache
 
 from django import template
+
 from form.canvas import get_canvas_enrollment_term_name
 
 register = template.Library()
