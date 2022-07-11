@@ -19,6 +19,7 @@ from .models import Enrollment, Request, School, Section, SectionEnrollment, Use
 
 HOME_LIST_LIMIT = 10
 HOME_LIST_INCREMENT = 5
+SECTION_LIST_PAGINATE_BY = 30
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -61,6 +62,7 @@ class HomePageView(LoginRequiredMixin, TemplateView):
         context["sort_canvas_sites_canvas_course_id"] = "canvas_course_id"
         context["limit_canvas_sites"] = HOME_LIST_LIMIT
         context["load_more_canvas_sites"] = canvas_sites_count > HOME_LIST_LIMIT
+        context["source"] = "home"
         return context
 
 
@@ -167,18 +169,26 @@ class MyCoursesView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user = cast(User, self.request.user)
-        sections = user.get_sections()
+        source = self.request.GET.get("source", "sections")
+        if source == "home":
+            user = cast(User, self.request.user)
+            sections = user.get_sections()
+        else:
+            sections = list(Section.objects.filter(primary_section__isnull=True))
         sections_count = len(sections)
-        limit = int(self.request.GET.get("limit", HOME_LIST_LIMIT))
+        limit = self.request.GET.get("limit", HOME_LIST_LIMIT)
+        limit = int(limit) if limit else 0
         sort = self.request.GET.get("sort", "")
         if sort:
-            sections = sections[:limit]
+            if limit:
+                sections = sections[:limit]
             sections = self.sort_sections(sections, sort)
-        else:
+        elif limit:
             limit = limit + HOME_LIST_INCREMENT
             sections = sections[:limit]
-        context["sections"] = sections[:limit]
+        context["sections"] = (
+            sections[:limit] if limit else sections[:SECTION_LIST_PAGINATE_BY]
+        )
         context["sort_sections_section"] = get_sort_value(
             "section_code", sort, ascending=False
         )
@@ -190,7 +200,7 @@ class MyCoursesView(TemplateView):
             "request__created_at", sort
         )
         context["limit_sections"] = limit
-        context["load_more_sections"] = sections_count > limit
+        context["load_more_sections"] = sections_count > limit if limit else False
         return context
 
 
@@ -256,7 +266,7 @@ class MyCanvasSitesView(TemplateView):
 
 class SectionListView(ListView):
     model = Section
-    paginate_by = 30
+    paginate_by = SECTION_LIST_PAGINATE_BY
     context_object_name = "sections"
 
     @staticmethod
@@ -316,7 +326,7 @@ class SectionListView(ListView):
         context["term"] = term
         context["status"] = status
         context["search"] = search
-        context["limit_sections"] = HOME_LIST_LIMIT
+        context["source"] = "sections"
         return context
 
 

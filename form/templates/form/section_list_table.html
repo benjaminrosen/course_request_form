@@ -5,38 +5,38 @@
                 {% if sections|length > 1 %}
                     <th>
                         <a role="button"
-                           hx-get="{% url "my_courses" %}?limit={{ limit_sections }}&sort={{ sort_sections_section }}"
+                           hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_section }}"
                            hx-target="{{ hx_target }}"
                            hx-swap="outerHTML">{{ sort_icon }} {{ section_code }}</a>
                     </th>
                     <th>
                         <a role="button"
-                           hx-get="{% url "my_courses" %}?limit={{ limit_sections }}&sort={{ sort_sections_title }}"
+                           hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_title }}"
                            hx-target="{{ hx_target }}"
                            hx-swap="outerHTML">{{ sort_icon }} {{ title }}</a>
                     </th>
                     <th>
                         <a role="button"
-                           hx-get="{% url "my_courses" %}?limit={{ limit_sections }}&sort={{ sort_sections_schedule_type }}"
+                           hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_schedule_type }}"
                            hx-target="{{ hx_target }}"
                            hx-swap="outerHTML">{{ sort_icon }} {{ schedule_type }}</a>
                     </th>
                     <th>
                         <a role="button"
-                           hx-get="{% url "my_courses" %}?limit={{ limit_sections }}&sort={{ sort_sections_instructors }}"
+                           hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_instructors }}"
                            hx-target="{{ hx_target }}"
                            hx-swap="outerHTML">{{ sort_icon }} {{ instructors }}</a>
                     </th>
                     {% if status != "unrequested" %}
                         <th>
                             <a role="button"
-                               hx-get="{% url "my_courses" %}?limit={{ limit_sections }}&sort={{ sort_sections_requester }}"
+                               hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_requester }}"
                                hx-target="{{ hx_target }}"
                                hx-swap="outerHTML">{{ sort_icon }} {{ requested_by }}</a>
                         </th>
                         <th>
                             <a role="button"
-                               hx-get="{% url "my_courses" %}?limit={{ limit_sections }}&sort={{ sort_sections_created_at }}"
+                               hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_created_at }}"
                                hx-target="{{ hx_target }}"
                                hx-swap="outerHTML">{{ sort_icon }} {{ date_requested }}</a>
                         </th>
@@ -93,7 +93,7 @@
     </table>
     {% if load_more_sections %}
         <button class="load-more"
-                hx-get="{% url "my_courses" %}?limit={{ limit_sections }}"
+                hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}"
                 hx-target="#id_section_list"
                 hx-swap="outerHTML">
             Load more...

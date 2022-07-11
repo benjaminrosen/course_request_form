@@ -47,3 +47,15 @@ function addPageButtonListeners() {
 addSelectEventListeners();
 focusSearchBar();
 addPageButtonListeners();
+
+function addListeners() {
+  const loadUserButton = getElementByEnrollmentCount("id_load_user");
+  handleDisabledInput(disabledInput);
+}
+
+export function addSectionListbserver() {
+  const sectionListObserver = new MutationObserver(addListeners);
+  const sectionListDiv = document.getElementById("id_section_list");
+  const mutationConfig = { childList: true };
+  sectionListObserver.observe(sectionListDiv, mutationConfig);
+}
