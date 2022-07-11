@@ -34,7 +34,25 @@ function getParameterValues(parameters) {
   return parameterValues;
 }
 
+function getTerm() {
+  const select = document.getElementById("id_term");
+  return select.value;
+}
+
+function getStatus() {
+  const select = document.getElementById("id_status");
+  return select.value;
+}
+
+function getSearch() {
+  const select = document.getElementById("id_search");
+  return select.value;
+}
+
 function getParameterString(parameters) {
+  parameters.term = getTerm();
+  parameters.status = getStatus();
+  parameters.search = getSearch();
   const keyValueStrings = [];
   for (let [key, value] of Object.entries(parameters)) {
     if (key == "sort" && isActiveSort(value)) {
