@@ -10,6 +10,7 @@ from canvasapi.discussion_topic import DiscussionTopic
 from canvasapi.exceptions import CanvasException
 from canvasapi.paginated_list import PaginatedList
 from canvasapi.user import User as CanvasUser
+
 from config.config import DEBUG_VALUE, PROD_KEY, PROD_URL, TEST_KEY, TEST_URL
 
 logger = getLogger(__name__)

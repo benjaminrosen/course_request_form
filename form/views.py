@@ -3,7 +3,6 @@ from functools import reduce
 from typing import Callable, Optional, Union, cast
 
 from canvasapi.course import Course
-from config.config import PROD_URL
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q, QuerySet
 from django.forms.utils import ErrorList
@@ -11,6 +10,7 @@ from django.http import HttpResponse
 from django.urls.base import reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
+from config.config import PROD_URL
 from form.templatetags.canvas_site_filters import get_term
 from form.terms import CURRENT_TERM, NEXT_TERM
 from form.utils import get_sort_value
@@ -88,7 +88,7 @@ class MyRequestsView(TemplateView):
     def sort_by_status(request: Request) -> str:
         return request.status
 
-    def get_sort_function(self, sort: str) -> Callable:
+    def get_sort_function(self, sort: str):
         sort = sort.replace("-", "")
         sort_functions = {
             "section__section_code": self.sort_by_section_code,
@@ -166,7 +166,7 @@ class MyCoursesView(TemplateView):
             return None
         return request.created_at
 
-    def get_sort_function(self, sort: str) -> Callable:
+    def get_sort_function(self, sort: str):
         sort = sort.replace("-", "")
         sort_functions = {
             "section_code": self.sort_by_section_code,
@@ -250,7 +250,7 @@ class MyCanvasSitesView(TemplateView):
         return course.id
 
     @classmethod
-    def get_sort_function(cls, sort: str) -> Callable:
+    def get_sort_function(cls, sort: str):
         sort = sort.replace("-", "")
         sort_functions = {
             "course_id": cls.sort_by_course_id,
