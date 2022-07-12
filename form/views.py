@@ -80,6 +80,9 @@ class HomePageView(LoginRequiredMixin, TemplateView):
         context["limit_canvas_sites"] = HOME_LIST_LIMIT
         context["load_more_canvas_sites"] = canvas_sites_count > HOME_LIST_LIMIT
         context["source"] = "home"
+        context["requests_sort"] = "status"
+        context["sections_sort"] = "request__requester"
+        context["canvas_sites_sort"] = "canvas_course_id"
         return context
 
 
@@ -119,7 +122,7 @@ class MyRequestsView(TemplateView):
         requests = user.get_requests()
         requests_count = requests.count()
         limit = int(self.request.GET.get("limit", HOME_LIST_LIMIT))
-        sort = self.request.GET.get("sort", "")
+        sort = self.request.GET.get("sort", "") or "status"
         if sort:
             requests = requests[:limit]
             requests = self.sort_requests(requests, sort)
@@ -135,6 +138,7 @@ class MyRequestsView(TemplateView):
         context["sort_requests_status"] = get_sort_value("status", sort)
         context["limit_requests"] = limit
         context["load_more_requests"] = requests_count > limit
+        context["requests_sort"] = sort
         return context
 
 
@@ -195,7 +199,7 @@ class MyCoursesView(TemplateView):
         sections_count = len(sections)
         limit = self.request.GET.get("limit", HOME_LIST_LIMIT)
         limit = int(limit) if limit else 0
-        sort = self.request.GET.get("sort", "")
+        sort = self.request.GET.get("sort", "") or "-status"
         if sort:
             if limit:
                 sections = sections[:limit]
@@ -218,7 +222,7 @@ class MyCoursesView(TemplateView):
         )
         context["limit_sections"] = limit
         context["load_more_sections"] = sections_count > limit if limit else False
-        context["sort"] = sort
+        context["sections_sort"] = sort
         context["source"] = source
         return context
 
@@ -280,6 +284,7 @@ class MyCanvasSitesView(TemplateView):
         )
         context["limit_canvas_sites"] = limit
         context["load_more_canvas_sites"] = canvas_sites_count > limit
+        context["canvas_sites_sort"] = sort
         return context
 
 

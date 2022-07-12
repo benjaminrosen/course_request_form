@@ -1,3 +1,4 @@
+{% load template_filters %}
 <div id="id_my_requests">
     <table>
         <tr>
@@ -5,24 +6,28 @@
                 {% if requests|length > 1 %}
                     <th>
                         <a role="button"
+                           {% if requests_sort|get_sort_by_base == sort_requests_section|get_sort_by_base %} class="sort-active"{% endif %}
                            hx-get="{% url "my_requests" %}?limit={{ limit_requests }}&sort={{ sort_requests_section }}"
                            hx-target="{{ hx_target }}"
                            hx-swap="outerHTML">{{ sort_icon }} {{ section_code }}</a>
                     </th>
                     <th>
                         <a role="button"
+                           {% if requests_sort|get_sort_by_base == sort_requests_requester|get_sort_by_base %} class="sort-active"{% endif %}
                            hx-get="{% url "my_requests" %}?limit={{ limit_requests }}&sort={{ sort_requests_requester }}"
                            hx-target="{{ hx_target }}"
                            hx-swap="outerHTML">{{ sort_icon }} {{ requested_by }}</a>
                     </th>
                     <th>
                         <a role="button"
+                           {% if requests_sort|get_sort_by_base == sort_requests_created_at|get_sort_by_base %} class="sort-active"{% endif %}
                            hx-get="{% url "my_requests" %}?limit={{ limit_requests }}&sort={{ sort_requests_created_at }}"
                            hx-target="#id_my_requests"
                            hx-swap="outerHTML">{{ sort_icon }} {{ date_requested }}</a>
                     </th>
                     <th>
                         <a role="button"
+                           {% if requests_sort|get_sort_by_base == sort_requests_status|get_sort_by_base %} class="sort-active"{% endif %}
                            hx-get="{% url "my_requests" %}?limit={{ limit_requests }}&sort={{ sort_requests_status }}"
                            hx-target="#id_my_requests"
                            hx-swap="outerHTML">{{ sort_icon }} {{ status }}</a>

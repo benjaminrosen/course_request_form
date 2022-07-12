@@ -6,24 +6,28 @@
                 {% if canvas_sites|length > 1 %}
                     <th>
                         <a role="button"
+                           {% if canvas_sites_sort|get_sort_by_base == sort_canvas_sites_course_id|get_sort_by_base %} class="sort-active"{% endif %}
                            hx-get="{% url "my_canvas_sites" %}?limit={{ limit_canvas_sites }}&sort={{ sort_canvas_sites_course_id }}"
                            hx-target="{{ hx_target }}"
                            hx-swap="outerHTML">{{ sort_icon }} {{ course_id }}</a>
                     </th>
                     <th>
                         <a role="button"
+                           {% if canvas_sites_sort|get_sort_by_base == sort_canvas_sites_name|get_sort_by_base %} class="sort-active"{% endif %}
                            hx-get="{% url "my_canvas_sites" %}?limit={{ limit_canvas_sites }}&sort={{ sort_canvas_sites_name }}"
                            hx-target="{{ hx_target }}"
                            hx-swap="outerHTML">{{ sort_icon }} {{ name }}</a>
                     </th>
                     <th>
                         <a role="button"
+                           {% if canvas_sites_sort|get_sort_by_base == sort_canvas_sites_term|get_sort_by_base %} class="sort-active"{% endif %}
                            hx-get="{% url "my_canvas_sites" %}?limit={{ limit_canvas_sites }}&sort={{ sort_canvas_sites_term }}"
                            hx-target="{{ hx_target }}"
                            hx-swap="outerHTML">{{ sort_icon }} {{ term }}</a>
                     </th>
                     <th>
                         <a role="button"
+                           {% if canvas_sites_sort|get_sort_by_base == sort_canvas_sites_canvas_course_id|get_sort_by_base %} class="sort-active"{% endif %}
                            hx-get="{% url "my_canvas_sites" %}?limit={{ limit_canvas_sites }}&sort={{ sort_canvas_sites_canvas_course_id }}"
                            hx-target="{{ hx_target }}"
                            hx-swap="outerHTML">{{ sort_icon }} {{ canvas_course_id }}</a>
