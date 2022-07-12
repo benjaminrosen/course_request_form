@@ -1,5 +1,5 @@
 from functools import reduce
-from typing import Callable, Union, cast
+from typing import Callable, Optional, Union, cast
 
 from canvasapi.course import Course
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -173,12 +173,28 @@ class MyCoursesView(TemplateView):
             sections.sort(key=function, reverse=reverse)
         return sections
 
+    @staticmethod
+    def get_term_code(term: str) -> Optional[int]:
+        if not term:
+            return None
+        return int(term.split(" ")[0])
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         source = self.request.GET.get("source", "sections")
+        term = self.request.GET.get("term", "")
+        context["term"] = term
+        term = self.get_term_code(term)
+        status = self.request.GET.get("status", "")
         if source == "home":
             user = cast(User, self.request.user)
-            sections = user.get_sections()
+            sections = user.get_sections(term)
+            if status == "requested":
+                sections = [section for section in sections if section.get_request()]
+            elif status == "unrequested":
+                sections = [
+                    section for section in sections if not section.get_request()
+                ]
         else:
             sections = list(Section.objects.filter(primary_section__isnull=True))
         sections_count = len(sections)
@@ -210,6 +226,9 @@ class MyCoursesView(TemplateView):
         context["load_more_sections"] = sections_count > limit if limit else False
         context["sections_sort"] = sort
         context["source"] = source
+        context["status_filter"] = status
+        context["current_term"] = get_current_term()
+        context["next_term"] = get_next_term()
         return context
 
 
@@ -281,10 +300,6 @@ class SectionListView(ListView):
     context_object_name = "sections"
 
     @staticmethod
-    def get_term_code(term: str) -> str:
-        return term.split(" ")[0]
-
-    @staticmethod
     def get_request_isnull(status):
         request_isnull_statues = {"requested": False, "unrequested": True}
         return request_isnull_statues.get(status)
@@ -339,7 +354,7 @@ class SectionListView(ListView):
         context["current_term"] = get_current_term()
         context["next_term"] = get_next_term()
         context["term"] = term
-        context["status"] = status
+        context["status_filter"] = status
         context["search"] = search
         context["source"] = "sections"
         context["sections_sort"] = self.request.GET.get("sort", "") or "section_code"

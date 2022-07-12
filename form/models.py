@@ -132,9 +132,17 @@ class User(AbstractUser):
     def sort_sections_by_requested(section) -> bool:
         return bool(section.get_request())
 
-    def get_sections(self) -> list:
-        primary_sections = list(Section.objects.filter(primary_instructor=self))
-        additional_sections = list(Section.objects.filter(instructors=self))
+    def get_sections(self, term: Optional[int] = None) -> list:
+        if term:
+            primary_sections = list(
+                Section.objects.filter(primary_instructor=self, term=term)
+            )
+            additional_sections = list(
+                Section.objects.filter(instructors=self, term=term)
+            )
+        else:
+            primary_sections = list(Section.objects.filter(primary_instructor=self))
+            additional_sections = list(Section.objects.filter(instructors=self))
         sections = primary_sections + additional_sections
         sections.sort(key=self.sort_sections_by_requested)
         return sections

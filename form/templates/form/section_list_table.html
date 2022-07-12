@@ -1,109 +1,123 @@
 {% load template_filters %}
 <div id="id_section_list_table">
-    {% if source == "home" %}
-        <p>
-            <label for="id_term">Filter by term:</label>
-            <select name="term" id="id_term">
-                <option value="" {% if not term %} selected{% endif %}>
-                    All available terms
-                </option>
-                <option value="{{ current_term }}"
-                        {% if term == current_term %} selected{% endif %}>
-                    {{ current_term }}
-                </option>
-                <option value="{{ next_term }}"
-                        {% if term == next_term %} selected{% endif %}>
-                    {{ next_term }}
-                </option>
-            </select>
-        </p>
-        <p>
-            <label for="id_status">Filter by status:</label>
-            <select name="status" id="id_status">
-                <option value="" {% if not status %} selected{% endif %}>
-                    All course sections
-                </option>
-                <option value="unrequested"
-                        {% if status == "unrequested" %} selected{% endif %}>
-                    Unrequested
-                </option>
-                <option value="requested" {% if status == "requested" %} selected{% endif %}>
-                    Requested
-                </option>
-            </select>
-        </p>
-    {% endif %}
-    <table>
-        <tr>
-            {% with section_code="Section code" title="Title" schedule_type="Schedule Type" instructors="Instructors" requested_by="Requested by" date_requested="Date requested" status="Status" sort_icon="⇕" hx_target="#id_section_list_table" %}
-                {% if sections|length > 1 %}
-                    <th>
-                        <a role="button"
-                           {% if sections_sort|get_sort_by_base == sort_sections_section|get_sort_by_base %} class="sort-active"{% endif %}
-                           hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_section }}"
-                           hx-target="{{ hx_target }}"
-                           hx-swap="outerHTML">{{ sort_icon }} {{ section_code }}</a>
-                    </th>
-                    <th>
-                        <a role="button"
-                           {% if sections_sort|get_sort_by_base == sort_sections_title|get_sort_by_base %} class="sort-active"{% endif %}
-                           hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_title }}"
-                           hx-target="{{ hx_target }}"
-                           hx-swap="outerHTML">{{ sort_icon }} {{ title }}</a>
-                    </th>
-                    <th>
-                        <a role="button"
-                           {% if sections_sort|get_sort_by_base == sort_sections_schedule_type|get_sort_by_base %} class="sort-active"{% endif %}
-                           hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_schedule_type }}"
-                           hx-target="{{ hx_target }}"
-                           hx-swap="outerHTML">{{ sort_icon }} {{ schedule_type }}</a>
-                    </th>
-                    <th>
-                        <a role="button"
-                           {% if sections_sort|get_sort_by_base == sort_sections_instructors|get_sort_by_base %} class="sort-active"{% endif %}
-                           hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_instructors }}"
-                           hx-target="{{ hx_target }}"
-                           hx-swap="outerHTML">{{ sort_icon }} {{ instructors }}</a>
-                    </th>
-                    {% if status != "unrequested" %}
+    {% with hx_target="#id_section_list_table" %}
+        {% if source == "home" %}
+            <p>
+                <label for="id_term">Filter by term:</label>
+                <select name="term"
+                        id="id_term"
+                        hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sections_sort }}&status={{ status_filter }}"
+                        hx-target="{{ hx_target }}"
+                        hx-trigger="change"
+                        hx-swap="outerHTML">
+                    <option value="" {% if not term %} selected{% endif %}>
+                        All available terms
+                    </option>
+                    <option value="{{ current_term }}"
+                            {% if term == current_term %} selected{% endif %}>
+                        {{ current_term }}
+                    </option>
+                    <option value="{{ next_term }}"
+                            {% if term == next_term %} selected{% endif %}>
+                        {{ next_term }}
+                    </option>
+                </select>
+            </p>
+            <p>
+                <label for="id_status">Filter by status:</label>
+                <select name="status"
+                        id="id_status"
+                        hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sections_sort }}&term={{ term }}"
+                        hx-target="{{ hx_target }}"
+                        hx-trigger="change"
+                        hx-swap="outerHTML">
+                    >
+                    <option value="" {% if not status_filter %} selected{% endif %}>
+                        All course sections
+                    </option>
+                    <option value="unrequested"
+                            {% if status_filter == "unrequested" %} selected{% endif %}>
+                        Unrequested
+                    </option>
+                    <option value="requested"
+                            {% if status_filter == "requested" %} selected{% endif %}>
+                        Requested
+                    </option>
+                </select>
+            </p>
+        {% endif %}
+        <table>
+            <tr>
+                {% with section_code="Section code" title="Title" schedule_type="Schedule Type" instructors="Instructors" requested_by="Requested by" date_requested="Date requested" status="Status" sort_icon="⇕" %}
+                    {% if sections|length > 1 %}
                         <th>
                             <a role="button"
-                               {% if sections_sort|get_sort_by_base == sort_sections_requester|get_sort_by_base %} class="sort-active"{% endif %}
-                               hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_requester }}"
+                               {% if sections_sort|get_sort_by_base == sort_sections_section|get_sort_by_base %} class="sort-active"{% endif %}
+                               hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_section }}"
                                hx-target="{{ hx_target }}"
-                               hx-swap="outerHTML">{{ sort_icon }} {{ requested_by }}</a>
+                               hx-swap="outerHTML">{{ sort_icon }} {{ section_code }}</a>
                         </th>
                         <th>
                             <a role="button"
-                               {% if sections_sort|get_sort_by_base == sort_sections_created_at|get_sort_by_base %} class="sort-active"{% endif %}
-                               hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_created_at }}"
+                               {% if sections_sort|get_sort_by_base == sort_sections_title|get_sort_by_base %} class="sort-active"{% endif %}
+                               hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_title }}"
                                hx-target="{{ hx_target }}"
-                               hx-swap="outerHTML">{{ sort_icon }} {{ date_requested }}</a>
+                               hx-swap="outerHTML">{{ sort_icon }} {{ title }}</a>
                         </th>
                         <th>
                             <a role="button"
-                               {% if sections_sort|get_sort_by_base == sort_sections_status|get_sort_by_base %} class="sort-active"{% endif %}
-                               hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_status }}"
+                               {% if sections_sort|get_sort_by_base == sort_sections_schedule_type|get_sort_by_base %} class="sort-active"{% endif %}
+                               hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_schedule_type }}"
                                hx-target="{{ hx_target }}"
-                               hx-swap="outerHTML">{{ sort_icon }} {{ status }}</a>
+                               hx-swap="outerHTML">{{ sort_icon }} {{ schedule_type }}</a>
                         </th>
+                        <th>
+                            <a role="button"
+                               {% if sections_sort|get_sort_by_base == sort_sections_instructors|get_sort_by_base %} class="sort-active"{% endif %}
+                               hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_instructors }}"
+                               hx-target="{{ hx_target }}"
+                               hx-swap="outerHTML">{{ sort_icon }} {{ instructors }}</a>
+                        </th>
+                        {% if status_filter != "unrequested" %}
+                            <th>
+                                <a role="button"
+                                   {% if sections_sort|get_sort_by_base == sort_sections_requester|get_sort_by_base %} class="sort-active"{% endif %}
+                                   hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_requester }}"
+                                   hx-target="{{ hx_target }}"
+                                   hx-swap="outerHTML">{{ sort_icon }} {{ requested_by }}</a>
+                            </th>
+                            <th>
+                                <a role="button"
+                                   {% if sections_sort|get_sort_by_base == sort_sections_created_at|get_sort_by_base %} class="sort-active"{% endif %}
+                                   hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_created_at }}"
+                                   hx-target="{{ hx_target }}"
+                                   hx-swap="outerHTML">{{ sort_icon }} {{ date_requested }}</a>
+                            </th>
+                            <th>
+                                <a role="button"
+                                   {% if sections_sort|get_sort_by_base == sort_sections_status|get_sort_by_base %} class="sort-active"{% endif %}
+                                   hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_status }}"
+                                   hx-target="{{ hx_target }}"
+                                   hx-swap="outerHTML">{{ sort_icon }} {{ status }}</a>
+                            </th>
+                        {% endif %}
+                    {% else %}
+                        <th>{{ section_code }}</th>
+                        <th>{{ title }}</th>
+                        <th>{{ schedule_type }}</th>
+                        <th>{{ instructors }}</th>
+                        {% if status_filter != "unrequested" %}
+                            <th>{{ requested_by }}</th>
+                            <th>{{ date_requested }}</th>
+                            <th>{{ status }}</th>
+                        {% endif %}
                     {% endif %}
-                {% else %}
-                    <th>{{ section_code }}</th>
-                    <th>{{ title }}</th>
-                    <th>{{ schedule_type }}</th>
-                    <th>{{ instructors }}</th>
-                    {% if status != "unrequested" %}
-                        <th>{{ requested_by }}</th>
-                        <th>{{ date_requested }}</th>
-                        <th>{{ status }}</th>
-                    {% endif %}
-                {% endif %}
+                {% endwith %}
             {% endwith %}
         </tr>
         {% for section in sections %}
             {% with request=section.request %}
-                <tr class="{% if request and not status == "requested" %}row-disabled{% endif %}">
+                <tr class="{% if request and not status_filter == "requested" %}row-disabled{% endif %}">
                     <td>
                         <a href="{% if section.request %}{% url "request_detail" section.section_code %}{% else %}{% url "section_request" section.section_code %}{% endif %}">
                             {{ section.get_canvas_course_code }}
@@ -112,7 +126,7 @@
                     <td>{{ section.title }}</td>
                     <td>{{ section.schedule_type.sched_type_code }}</td>
                     <td class="instructors">{{ section.get_instructors_list }}</td>
-                    {% if status != "unrequested" %}
+                    {% if status_filter != "unrequested" %}
                         {% if request %}
                             <td>
                                 {% if user == request.requester %}
@@ -138,7 +152,7 @@
     </table>
     {% if load_more_sections %}
         <button class="load-more"
-                hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}"
+                hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&status={{ status_filter }}&term={{ term }}"
                 hx-target="#id_section_list_table"
                 hx-swap="outerHTML">
             Load more...

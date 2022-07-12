@@ -1,5 +1,4 @@
 from functools import lru_cache
-from form.terms import CURRENT_TERM, NEXT_TERM
 from logging import getLogger
 from typing import Optional
 
@@ -13,6 +12,7 @@ from canvasapi.paginated_list import PaginatedList
 from canvasapi.user import User as CanvasUser
 
 from config.config import DEBUG_VALUE, PROD_KEY, PROD_URL, TEST_KEY, TEST_URL
+from form.terms import CURRENT_TERM, NEXT_TERM
 
 logger = getLogger(__name__)
 MAIN_ACCOUNT_ID = 96678
