@@ -10,7 +10,7 @@ from django.urls.base import reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from config.config import PROD_URL
-from form.canvas import get_canvas_enrollment_term_id, get_canvas_enrollment_term_name
+from form.canvas import get_current_term, get_next_term
 from form.templatetags.template_filters import get_term
 from form.terms import CURRENT_TERM, NEXT_TERM
 from form.utils import get_sort_value
@@ -25,22 +25,6 @@ SECTION_LIST_PAGINATE_BY = 30
 
 class HomePageView(LoginRequiredMixin, TemplateView):
     template_name = "form/home.html"
-
-    @staticmethod
-    def get_current_term() -> str:
-        current_term_id = get_canvas_enrollment_term_id(CURRENT_TERM)
-        if current_term_id:
-            return get_canvas_enrollment_term_name(current_term_id)
-        else:
-            return str(CURRENT_TERM)
-
-    @staticmethod
-    def get_next_term() -> str:
-        next_term_id = get_canvas_enrollment_term_id(NEXT_TERM)
-        if next_term_id:
-            return get_canvas_enrollment_term_name(next_term_id)
-        else:
-            return str(NEXT_TERM)
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
@@ -57,8 +41,8 @@ class HomePageView(LoginRequiredMixin, TemplateView):
             canvas_sites = canvas_sites[:HOME_LIST_LIMIT]
         context["canvas_sites"] = canvas_sites
         context["canvas_url"] = f"{PROD_URL}/courses"
-        context["current_term"] = self.get_current_term()
-        context["next_term"] = self.get_next_term()
+        context["current_term"] = get_current_term()
+        context["next_term"] = get_next_term()
         context["sort_requests_created_at"] = "created_at"
         context["sort_requests_section"] = "section__section_code"
         context["sort_requests_requester"] = "requester"
@@ -297,6 +281,10 @@ class SectionListView(ListView):
     context_object_name = "sections"
 
     @staticmethod
+    def get_term_code(term: str) -> str:
+        return term.split(" ")[0]
+
+    @staticmethod
     def get_request_isnull(status):
         request_isnull_statues = {"requested": False, "unrequested": True}
         return request_isnull_statues.get(status)
@@ -311,9 +299,9 @@ class SectionListView(ListView):
         status = request.get("status")
         sort = request.get("sort")
         search = request.get("search")
-        if term == str(CURRENT_TERM):
+        if term == get_current_term():
             sections = sections.filter(term=CURRENT_TERM)
-        elif term == str(NEXT_TERM):
+        elif term == get_next_term():
             sections = sections.filter(term=NEXT_TERM)
         if status:
             request_isnull = self.get_request_isnull(status)
@@ -348,19 +336,20 @@ class SectionListView(ListView):
             term = self.request.GET.get("term")
             status = self.request.GET.get("status")
             search = self.request.GET.get("search") or ""
-        context["current_term"] = str(CURRENT_TERM)
-        context["next_term"] = str(NEXT_TERM)
+        context["current_term"] = get_current_term()
+        context["next_term"] = get_next_term()
         context["term"] = term
         context["status"] = status
         context["search"] = search
         context["source"] = "sections"
-        context["sections_sort"] = self.request.GET.get("sort", "section_code")
+        context["sections_sort"] = self.request.GET.get("sort", "") or "section_code"
         context["sort_sections_section"] = "-section_code"
         context["sort_sections_title"] = "title"
         context["sort_sections_schedule_type"] = "schedule_type"
         context["sort_sections_instructors"] = "instructors"
         context["sort_sections_requester"] = "request__requester"
         context["sort_sections_created_at"] = "request__created_at"
+        context["sort_sections_status"] = "request__status"
         return context
 
 

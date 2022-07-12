@@ -1,8 +1,41 @@
 {% load template_filters %}
 <div id="id_section_list_table">
+    {% if source == "home" %}
+        <p>
+            <label for="id_term">Filter by term:</label>
+            <select name="term" id="id_term">
+                <option value="" {% if not term %} selected{% endif %}>
+                    All available terms
+                </option>
+                <option value="{{ current_term }}"
+                        {% if term == current_term %} selected{% endif %}>
+                    {{ current_term }}
+                </option>
+                <option value="{{ next_term }}"
+                        {% if term == next_term %} selected{% endif %}>
+                    {{ next_term }}
+                </option>
+            </select>
+        </p>
+        <p>
+            <label for="id_status">Filter by status:</label>
+            <select name="status" id="id_status">
+                <option value="" {% if not status %} selected{% endif %}>
+                    All course sections
+                </option>
+                <option value="unrequested"
+                        {% if status == "unrequested" %} selected{% endif %}>
+                    Unrequested
+                </option>
+                <option value="requested" {% if status == "requested" %} selected{% endif %}>
+                    Requested
+                </option>
+            </select>
+        </p>
+    {% endif %}
     <table>
         <tr>
-            {% with section_code="Section code" title="Title" schedule_type="Schedule Type" instructors="Instructors" requested_by="Requested by" date_requested="Date requested" sort_icon="⇕" hx_target="#id_section_list_table" %}
+            {% with section_code="Section code" title="Title" schedule_type="Schedule Type" instructors="Instructors" requested_by="Requested by" date_requested="Date requested" status="Status" sort_icon="⇕" hx_target="#id_section_list_table" %}
                 {% if sections|length > 1 %}
                     <th>
                         <a role="button"
@@ -47,6 +80,13 @@
                                hx-target="{{ hx_target }}"
                                hx-swap="outerHTML">{{ sort_icon }} {{ date_requested }}</a>
                         </th>
+                        <th>
+                            <a role="button"
+                               {% if sections_sort|get_sort_by_base == sort_sections_status|get_sort_by_base %} class="sort-active"{% endif %}
+                               hx-get="{% url "my_courses" %}?source={{ source }}&limit={{ limit_sections }}&sort={{ sort_sections_status }}"
+                               hx-target="{{ hx_target }}"
+                               hx-swap="outerHTML">{{ sort_icon }} {{ status }}</a>
+                        </th>
                     {% endif %}
                 {% else %}
                     <th>{{ section_code }}</th>
@@ -56,6 +96,7 @@
                     {% if status != "unrequested" %}
                         <th>{{ requested_by }}</th>
                         <th>{{ date_requested }}</th>
+                        <th>{{ status }}</th>
                     {% endif %}
                 {% endif %}
             {% endwith %}
@@ -72,8 +113,8 @@
                     <td>{{ section.schedule_type.sched_type_code }}</td>
                     <td class="instructors">{{ section.get_instructors_list }}</td>
                     {% if status != "unrequested" %}
-                        <td>
-                            {% if request %}
+                        {% if request %}
+                            <td>
                                 {% if user == request.requester %}
                                     You
                                 {% else %}
@@ -82,17 +123,14 @@
                                 {% with proxy_requester=request.proxy_requester %}
                                     {% if proxy_requester %}on behalf of {{ proxy_requester }}{% endif %}
                                 {% endwith %}
-                            {% else %}
-                                ---
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if request %}
-                                {{ request.created_at }}
-                            {% else %}
-                                ---
-                            {% endif %}
-                        </td>
+                            </td>
+                            <td>{{ request.created_at }}</td>
+                            <td>{{ request.status }}</td>
+                        {% else %}
+                            <td>---</td>
+                            <td>---</td>
+                            <td>---</td>
+                        {% endif %}
                     {% endif %}
                 </tr>
             {% endwith %}

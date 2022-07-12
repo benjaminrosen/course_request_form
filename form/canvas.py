@@ -1,4 +1,5 @@
 from functools import lru_cache
+from form.terms import CURRENT_TERM, NEXT_TERM
 from logging import getLogger
 from typing import Optional
 
@@ -64,6 +65,22 @@ def get_canvas_enrollment_term_name(enrollment_term_id: int) -> str:
         return account.get_enrollment_term(enrollment_term_id).name
     except Exception:
         return ""
+
+
+def get_current_term() -> str:
+    current_term_id = get_canvas_enrollment_term_id(CURRENT_TERM)
+    if current_term_id:
+        return get_canvas_enrollment_term_name(current_term_id)
+    else:
+        return str(CURRENT_TERM)
+
+
+def get_next_term() -> str:
+    next_term_id = get_canvas_enrollment_term_id(NEXT_TERM)
+    if next_term_id:
+        return get_canvas_enrollment_term_name(next_term_id)
+    else:
+        return str(NEXT_TERM)
 
 
 def create_course_section(name: str, sis_course_id: str, canvas_course: Course):
