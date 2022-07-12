@@ -60,7 +60,10 @@ def get_canvas_enrollment_term_id(term: int) -> Optional[int]:
 
 def get_canvas_enrollment_term_name(enrollment_term_id: int) -> str:
     account = get_canvas_main_account()
-    return account.get_enrollment_term(enrollment_term_id).name or ""
+    try:
+        return account.get_enrollment_term(enrollment_term_id).name
+    except Exception:
+        return ""
 
 
 def create_course_section(name: str, sis_course_id: str, canvas_course: Course):

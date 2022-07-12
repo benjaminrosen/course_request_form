@@ -10,6 +10,7 @@ from django.urls.base import reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from config.config import PROD_URL
+from form.canvas import get_canvas_enrollment_term_id, get_canvas_enrollment_term_name
 from form.templatetags.template_filters import get_term
 from form.terms import CURRENT_TERM, NEXT_TERM
 from form.utils import get_sort_value
@@ -24,6 +25,22 @@ SECTION_LIST_PAGINATE_BY = 30
 
 class HomePageView(LoginRequiredMixin, TemplateView):
     template_name = "form/home.html"
+
+    @staticmethod
+    def get_current_term() -> str:
+        current_term_id = get_canvas_enrollment_term_id(CURRENT_TERM)
+        if current_term_id:
+            return get_canvas_enrollment_term_name(current_term_id)
+        else:
+            return str(CURRENT_TERM)
+
+    @staticmethod
+    def get_next_term() -> str:
+        next_term_id = get_canvas_enrollment_term_id(NEXT_TERM)
+        if next_term_id:
+            return get_canvas_enrollment_term_name(next_term_id)
+        else:
+            return str(NEXT_TERM)
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
@@ -40,8 +57,8 @@ class HomePageView(LoginRequiredMixin, TemplateView):
             canvas_sites = canvas_sites[:HOME_LIST_LIMIT]
         context["canvas_sites"] = canvas_sites
         context["canvas_url"] = f"{PROD_URL}/courses"
-        context["current_term"] = CURRENT_TERM
-        context["next_term"] = NEXT_TERM
+        context["current_term"] = self.get_current_term()
+        context["next_term"] = self.get_next_term()
         context["sort_requests_created_at"] = "created_at"
         context["sort_requests_section"] = "section__section_code"
         context["sort_requests_requester"] = "requester"
