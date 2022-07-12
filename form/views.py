@@ -122,13 +122,14 @@ class MyRequestsView(TemplateView):
         requests = user.get_requests()
         requests_count = requests.count()
         limit = int(self.request.GET.get("limit", HOME_LIST_LIMIT))
-        sort = self.request.GET.get("sort", "") or "status"
+        sort = self.request.GET.get("sort", "")
         if sort:
             requests = requests[:limit]
             requests = self.sort_requests(requests, sort)
         else:
             limit = limit + HOME_LIST_INCREMENT
             requests = requests[:limit]
+            sort = "status"
         context["requests"] = requests
         context["sort_requests_section"] = get_sort_value("section__section_code", sort)
         context["sort_requests_created_at"] = get_sort_value(
@@ -199,7 +200,7 @@ class MyCoursesView(TemplateView):
         sections_count = len(sections)
         limit = self.request.GET.get("limit", HOME_LIST_LIMIT)
         limit = int(limit) if limit else 0
-        sort = self.request.GET.get("sort", "") or "-status"
+        sort = self.request.GET.get("sort", "")
         if sort:
             if limit:
                 sections = sections[:limit]
@@ -207,6 +208,7 @@ class MyCoursesView(TemplateView):
         elif limit:
             limit = limit + HOME_LIST_INCREMENT
             sections = sections[:limit]
+            sort = "request__requester"
         context["sections"] = (
             sections[:limit] if limit else sections[:SECTION_LIST_PAGINATE_BY]
         )
@@ -275,6 +277,7 @@ class MyCanvasSitesView(TemplateView):
             canvas_sites = self.sort_canvas_sites(canvas_sites, sort)
         else:
             limit = limit + HOME_LIST_INCREMENT
+            sort = "canvas_course_id"
         context["canvas_sites"] = canvas_sites[:limit] if canvas_sites else []
         context["sort_canvas_sites_course_id"] = get_sort_value("course_id", sort)
         context["sort_canvas_sites_name"] = get_sort_value("name", sort)
@@ -351,7 +354,7 @@ class SectionListView(ListView):
         context["status"] = status
         context["search"] = search
         context["source"] = "sections"
-        context["sort"] = self.request.GET.get("sort", "section_code")
+        context["sections_sort"] = self.request.GET.get("sort", "section_code")
         context["sort_sections_section"] = "-section_code"
         context["sort_sections_title"] = "title"
         context["sort_sections_schedule_type"] = "schedule_type"

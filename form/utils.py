@@ -6,7 +6,8 @@ def reverse_order(sort: str):
 
 
 def get_sort_value(name: str, value: str, ascending: bool = True):
-    not_match = not value or name not in value
+    value_base = value.replace("-", "")
+    not_match = not value or name != value_base
     if not_match:
         default_order = "" if ascending else "-"
         return f"{default_order}{name}"
