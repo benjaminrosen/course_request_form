@@ -1,10 +1,11 @@
 from enum import Enum
 from typing import Optional
 
-from django.forms import ChoiceField, Form, IntegerField, JSONField, ModelForm
+from django.forms import CharField, ChoiceField, Form, JSONField, ModelForm
 from django.forms.widgets import CheckboxSelectMultiple, Select, TextInput
 
-from form.canvas import get_user_canvas_sites
+from form.canvas import get_current_term, get_next_term, get_user_canvas_sites
+from form.terms import CURRENT_TERM, NEXT_TERM
 
 from .models import Request, SectionEnrollment, Subject
 
@@ -98,12 +99,18 @@ class SectionEnrollmentForm(ModelForm):
 
 
 class SyncSectionForm(Form):
-    subject_code = ChoiceField()
-    course_num = IntegerField()
-    section_num = IntegerField()
-    term = IntegerField()
+    subject = ChoiceField()
+    course_number = CharField()
+    section_number = CharField()
+    term = ChoiceField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         subjects = Subject.get_subjects_as_choices()
-        self.fields["subject_code"].widget.choices = subjects
+        self.fields["subject"].choices = subjects
+        terms = [
+            ("", "---------"),
+            (CURRENT_TERM, get_current_term()),
+            (NEXT_TERM, get_next_term()),
+        ]
+        self.fields["term"].choices = terms

@@ -3,6 +3,7 @@ from typing import Callable, Optional, Union, cast
 
 from canvasapi.course import Course
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import NON_FIELD_ERRORS
 from django.db.models import Q, QuerySet
 from django.forms.utils import ErrorList
 from django.http import HttpResponse
@@ -560,3 +561,21 @@ def delete_enrollment_user(request):
 class SyncCourseView(FormView):
     form_class = SyncSectionForm
     template_name = "form/sync_course.html"
+
+    def form_valid(self, form):
+        values = cast(dict, form.cleaned_data)
+        subject = values["subject"]
+        course_number = values["course_number"]
+        section_number = values["section_number"]
+        term = values["term"]
+        section_id = f"{subject}{course_number}{section_number}"
+        section = Section.sync_section(section_id=section_id, term=term)
+        if not section:
+            errors = form._errors.setdefault(NON_FIELD_ERRORS, ErrorList())
+            errors.append("Course NOT FOUND. Please try again later.")
+            return super().form_invalid(form)
+        self.section_code = section.section_code
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("section_request", args=[self.section_code])

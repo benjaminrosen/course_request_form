@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 from logging import getLogger
 from time import sleep
-from typing import Optional, Union
+from typing import Optional, Union, cast
 
 from canvasapi.course import Course
 from canvasapi.tab import Tab
@@ -322,6 +322,9 @@ class Subject(Model):
         School, related_name="subjects", on_delete=CASCADE, blank=True, null=True
     )
 
+    class Meta:
+        ordering = ["subject_code"]
+
     def __str__(self):
         name = self.subject_desc_long
         if not name:
@@ -368,7 +371,8 @@ class Subject(Model):
     @classmethod
     def get_subjects_as_choices(cls) -> list[tuple[str, str]]:
         subjects = cls.objects.all()
-        return [(subject.subject_code, str(subject)) for subject in subjects]
+        subjects = [(subject.subject_code, str(subject)) for subject in subjects]
+        return cast(list, [("", "---------")]) + subjects
 
 
 class Section(Model):

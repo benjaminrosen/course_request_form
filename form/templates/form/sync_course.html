@@ -1,5 +1,9 @@
 {% extends "./base.html" %}
 {% block content %}
     <h1>Sync course section</h1>
-    {{ form }}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Sync course</button>
+    </form>
 {% endblock content %}

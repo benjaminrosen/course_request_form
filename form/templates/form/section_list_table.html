@@ -2,10 +2,10 @@
 <div id="id_section_list_table">
     {% with hx_target="#id_section_list_table" %}
         <p>
-            Don't see the course you are looking for? All available courses are
-            synced once per day. If you expect a course to be available, but
-            aren't finding it below, click <a href="{% url "sync_course" %}">here</a>
-            to try syncing it now.
+            Can't find what you're looking for? Click
+            <a href="{% url "sync_course" %}">here</a>
+            to try syncing newly added courses to the
+            Course Request Form.
         </p>
         {% if source == "home" %}
             <p>
