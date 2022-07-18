@@ -28,6 +28,7 @@ from form.views import (
     RequestFormView,
     SectionEnrollmentView,
     SectionListView,
+    SyncCourseView,
     delete_enrollment_user,
 )
 
@@ -42,6 +43,7 @@ urlpatterns = [
     path("sections/<pk>", RequestDetailView.as_view(), name="request_detail"),
     path("sections/<pk>/request/", RequestFormView.as_view(), name="section_request"),
     path("copy-from-course/", CopyFromCourseView.as_view(), name="copy_from_course"),
+    path("sync-course", SyncCourseView.as_view(), name="sync_course"),
     path(
         "exclude-announcements/",
         ExcludeAnnouncementsView.as_view(),

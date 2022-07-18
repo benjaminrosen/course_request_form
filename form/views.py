@@ -15,7 +15,7 @@ from form.templatetags.template_filters import get_term
 from form.terms import CURRENT_TERM, NEXT_TERM
 from form.utils import get_sort_value
 
-from .forms import RequestForm, SectionEnrollmentForm
+from .forms import RequestForm, SectionEnrollmentForm, SyncSectionForm
 from .models import Enrollment, Request, School, Section, SectionEnrollment, User
 
 HOME_LIST_LIMIT = 10
@@ -555,3 +555,8 @@ class EnrollmentUserView(TemplateView):
 
 def delete_enrollment_user(request):
     return HttpResponse()
+
+
+class SyncCourseView(FormView):
+    form_class = SyncSectionForm
+    template_name = "form/sync_course.html"

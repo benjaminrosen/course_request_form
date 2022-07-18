@@ -323,7 +323,10 @@ class Subject(Model):
     )
 
     def __str__(self):
-        return f"{self.subject_desc_long} ({self.subject_code})"
+        name = self.subject_desc_long
+        if not name:
+            return self.subject_code
+        return f"{self.subject_code} ({name})"
 
     @classmethod
     def update_or_create(cls, query: str, kwargs: Optional[dict] = None):
@@ -361,6 +364,11 @@ class Subject(Model):
             return cls.objects.get(subject_code=subject_code)
         except Exception:
             return cls.sync_subject(subject_code)
+
+    @classmethod
+    def get_subjects_as_choices(cls) -> list[tuple[str, str]]:
+        subjects = cls.objects.all()
+        return [(subject.subject_code, str(subject)) for subject in subjects]
 
 
 class Section(Model):

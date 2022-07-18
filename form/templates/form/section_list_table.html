@@ -1,6 +1,12 @@
 {% load template_filters %}
 <div id="id_section_list_table">
     {% with hx_target="#id_section_list_table" %}
+        <p>
+            Don't see the course you are looking for? All available courses are
+            synced once per day. If you expect a course to be available, but
+            aren't finding it below, click <a href="{% url "sync_course" %}">here</a>
+            to try syncing it now.
+        </p>
         {% if source == "home" %}
             <p>
                 <label for="id_term">Filter by term:</label>

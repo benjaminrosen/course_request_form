@@ -1,12 +1,12 @@
 from enum import Enum
 from typing import Optional
 
-from django.forms import JSONField, ModelForm
+from django.forms import ChoiceField, Form, IntegerField, JSONField, ModelForm
 from django.forms.widgets import CheckboxSelectMultiple, Select, TextInput
 
 from form.canvas import get_user_canvas_sites
 
-from .models import Request, SectionEnrollment
+from .models import Request, SectionEnrollment, Subject
 
 
 class RequestForm(ModelForm):
@@ -95,3 +95,15 @@ class SectionEnrollmentForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["role"].widget.choices = self.CanvasRoleDisplay.choices
+
+
+class SyncSectionForm(Form):
+    subject_code = ChoiceField()
+    course_num = IntegerField()
+    section_num = IntegerField()
+    term = IntegerField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        subjects = Subject.get_subjects_as_choices()
+        self.fields["subject_code"].widget.choices = subjects
