@@ -558,9 +558,9 @@ def delete_enrollment_user(request):
     return HttpResponse()
 
 
-class SyncCourseView(FormView):
+class SyncSectionView(FormView):
     form_class = SyncSectionForm
-    template_name = "form/sync_course.html"
+    template_name = "form/sync_section.html"
 
     def form_valid(self, form):
         values = cast(dict, form.cleaned_data)

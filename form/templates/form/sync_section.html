@@ -1,6 +1,11 @@
 {% extends "./base.html" %}
 {% block content %}
     <h1>Sync course section</h1>
+    <p>
+        Available course sections are synced to the Course Request Form once a
+        day.  If you can't find a course you believe should be available, try
+        syncing it here.
+    </p>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
