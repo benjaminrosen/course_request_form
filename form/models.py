@@ -1019,6 +1019,7 @@ class Request(Model):
         canvas_id = canvas_course.id
         logger.info(f"{action} Canvas course '{name} ({canvas_id})'")
         self.set_status(self.Status.COMPLETED)
+        return canvas_course
 
     @classmethod
     def get_approved_requests(cls):
@@ -1041,3 +1042,11 @@ class Request(Model):
     @staticmethod
     def get_request_status(request) -> str:
         return request.status
+
+    @classmethod
+    def get_request(cls, section_code: str):
+        try:
+            section = Section.objects.get(section_code=section_code)
+            return cls.objects.get(section=section)
+        except Exception:
+            return None

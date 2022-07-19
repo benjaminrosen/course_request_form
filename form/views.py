@@ -8,7 +8,13 @@ from django.db.models import Q, QuerySet
 from django.forms.utils import ErrorList
 from django.http import HttpResponse
 from django.urls.base import reverse
-from django.views.generic import DetailView, FormView, ListView, TemplateView
+from django.views.generic import (
+    DetailView,
+    FormView,
+    ListView,
+    TemplateView,
+    UpdateView,
+)
 
 from config.config import PROD_URL
 from form.canvas import get_current_term, get_next_term
@@ -369,8 +375,25 @@ class SectionListView(ListView):
         return context
 
 
-class RequestDetailView(DetailView):
+class RequestDetailView(UpdateView):
     model = Request
+    fields = "__all__"
+    template_name = "form/request_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        request = self.request.POST
+        if "change_status" in request:
+            new_status = request["change_status"]
+            request_object = context["request"]
+            request_object.set_status(new_status)
+        status_choices = Request.Status.choices
+        editable_choices = {"Submitted", "Approved", "Locked", "Canceled", "Completed"}
+        status_choices = [
+            choice[0] for choice in status_choices if choice[0] in editable_choices
+        ]
+        context["status_choices"] = status_choices
+        return context
 
 
 class RequestFormView(FormView):
@@ -579,3 +602,17 @@ class SyncSectionView(FormView):
 
     def get_success_url(self):
         return reverse("section_request", args=[self.section_code])
+
+
+class CreateCanvasSiteView(TemplateView):
+    template_name = "form/create_canvas_site.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        section_code = self.request.GET["section_code"]
+        request = Request.get_request(section_code)
+        if not request:
+            return context
+        canvas_site = request.create_canvas_site()
+        context["canvas_site"] = canvas_site
+        return context

@@ -1,7 +1,8 @@
 {% extends "./base.html" %}
+{% load static %}
 {% block content %}
     {% with section=object.section %}
-        <h3>{{ section.get_canvas_course_code }}: {{ section.title }}</h3>
+        <h1>{{ section.get_canvas_course_code }}: {{ section.title }}</h1>
         <table>
             <tr>
                 <th>Requested by</th>
@@ -63,15 +64,36 @@
                 <th>Additional instructions</th>
                 <td>{{ request.additional_instructions }}</td>
             </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ request.status }}</td>
+            </tr>
         </table>
         {% if user.is_staff %}
-            {% if request.status == "APPROVED" %}
-                <p>
-                    <button type="button">Create Canvas site</button>
-                </p>
-            {% else %}
-                <p>
-                    <button type="button">Approve site</button>
+            <p>
+                <form method="post">
+                    {% csrf_token %}
+                    <label for="change_status">Change status:</label>
+                    <select id="change_status" name="change_status">
+                        {% for choice in status_choices %}
+                            <option value="{{ choice }}"
+                                    {% if choice == request.status %}selected{% endif %}>
+                                {{ choice }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Change</button>
+                </form>
+            </p>
+            {% if request.status == "Approved" %}
+                <p id="id_create_canvas_site">
+                    <button id="create_canvas_site_button" type="submit"
+                            hx-get="{% url "create_canvas_site" %}?section_code={{ request.section.section_code }}"
+                            hx-target="#id_create_canvas_site"
+                            >
+                        Create Canvas site
+                    </button>
+                    <span id="id_creating_canvas_site">Creating Canvas site...</span>
                 </p>
             {% endif %}
         {% endif %}
@@ -80,4 +102,6 @@
         </p>
     {% endwith %}
 {% endblock content %}
-h
+{% block js %}
+    <script type="module" src="{% static "js/create_canvas_site.js" %}"></script>
+{% endblock js %}

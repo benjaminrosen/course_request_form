@@ -123,3 +123,7 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+#id_creating_canvas_site {
+  display: none;
+}
