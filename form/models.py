@@ -737,11 +737,12 @@ class Section(Model):
         except Exception:
             return None
 
-    def get_all_instructors(self) -> list[User]:
-        additional_instructors = list(self.instructors.all())
+    def get_all_instructors(self) -> QuerySet[User]:
+        additional_instructors = self.instructors.all()
         if not self.primary_instructor:
             return additional_instructors
-        return [self.primary_instructor] + additional_instructors
+        username = self.primary_instructor.username
+        return additional_instructors | User.objects.filter(username=username)
 
     @staticmethod
     def get_section_section_code(section) -> str:
@@ -913,10 +914,12 @@ class Request(Model):
 
     def create_related_sections(self, canvas_course: Course):
         related_sections = self.section.course_sections.all()
+        section_names = [section.name for section in canvas_course.get_sections()]
         for section in related_sections:
             name = section.get_canvas_name(self.title_override, related_section=True)
-            sis_course_id = section.get_canvas_sis_id()
-            create_course_section(name, sis_course_id, canvas_course)
+            if name not in section_names:
+                sis_course_id = section.get_canvas_sis_id()
+                create_course_section(name, sis_course_id, canvas_course)
 
     def get_enrollments(self) -> list[SectionEnrollment]:
         section = self.section
@@ -1020,6 +1023,15 @@ class Request(Model):
         logger.info(f"{action} Canvas course '{name} ({canvas_id})'")
         self.set_status(self.Status.COMPLETED)
         return canvas_course
+
+    def get_canvas_site(self) -> tuple[Optional[int], Optional[str]]:
+        try:
+            canvas_site = get_canvas().get_course(
+                self.section.get_canvas_sis_id(), use_sis_id=True
+            )
+            return canvas_site.id, canvas_site.name
+        except Exception:
+            return None, None
 
     @classmethod
     def get_approved_requests(cls):

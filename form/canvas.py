@@ -24,6 +24,10 @@ def get_canvas() -> Canvas:
     return Canvas(url, key)
 
 
+def get_base_url() -> str:
+    return TEST_URL if DEBUG_VALUE else PROD_URL
+
+
 def get_canvas_account(account_id: int) -> Account:
     return get_canvas().get_account(account_id)
 

@@ -68,6 +68,18 @@
                 <th>Status</th>
                 <td>{{ request.status }}</td>
             </tr>
+            <tr>
+                <th>Canvas site</th>
+                <td>
+                    {% if canvas_site_id %}
+                        <a href="{{ canvas_site_url }}"
+                           target="_blank"
+                           rel="noopener noreferrer">{{ canvas_site_name }}</a>
+                    {% else %}
+                        {{ canvas_site_name }}
+                    {% endif %}
+                </td>
+            </tr>
         </table>
         {% if user.is_staff %}
             <p>
@@ -87,10 +99,10 @@
             </p>
             {% if request.status == "Approved" %}
                 <p id="id_create_canvas_site">
-                    <button id="create_canvas_site_button" type="submit"
+                    <button id="create_canvas_site_button"
+                            type="submit"
                             hx-get="{% url "create_canvas_site" %}?section_code={{ request.section.section_code }}"
-                            hx-target="#id_create_canvas_site"
-                            >
+                            hx-target="body">
                         Create Canvas site
                     </button>
                     <span id="id_creating_canvas_site">Creating Canvas site...</span>

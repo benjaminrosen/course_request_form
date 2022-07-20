@@ -18,7 +18,6 @@ from django.urls import include, path
 
 from form.views import (
     CopyFromCourseView,
-    CreateCanvasSiteView,
     EnrollmentUserView,
     ExcludeAnnouncementsView,
     HomePageView,
@@ -30,6 +29,7 @@ from form.views import (
     SectionEnrollmentView,
     SectionListView,
     SyncSectionView,
+    create_canvas_site_view,
     delete_enrollment_user,
 )
 
@@ -57,7 +57,5 @@ urlpatterns = [
     path(
         "enrollment-user/delete", delete_enrollment_user, name="delete_enrollment_user"
     ),
-    path(
-        "create-canvas-site", CreateCanvasSiteView.as_view(), name="create_canvas_site"
-    ),
+    path("create-canvas-site", create_canvas_site_view, name="create_canvas_site"),
 ]

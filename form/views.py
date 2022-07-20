@@ -7,17 +7,12 @@ from django.core.exceptions import NON_FIELD_ERRORS
 from django.db.models import Q, QuerySet
 from django.forms.utils import ErrorList
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.urls.base import reverse
-from django.views.generic import (
-    DetailView,
-    FormView,
-    ListView,
-    TemplateView,
-    UpdateView,
-)
+from django.views.generic import FormView, ListView, TemplateView, UpdateView
 
 from config.config import PROD_URL
-from form.canvas import get_current_term, get_next_term
+from form.canvas import get_base_url, get_current_term, get_next_term
 from form.templatetags.template_filters import get_term
 from form.terms import CURRENT_TERM, NEXT_TERM
 from form.utils import get_sort_value
@@ -362,6 +357,7 @@ class SectionListView(ListView):
         context["next_term"] = get_next_term()
         context["term"] = term
         context["status_filter"] = status
+        context["status"] = status
         context["search"] = search
         context["source"] = "sections"
         context["sections_sort"] = self.request.GET.get("sort", "") or "section_code"
@@ -392,6 +388,10 @@ class RequestDetailView(UpdateView):
         status_choices = [
             choice[0] for choice in status_choices if choice[0] in editable_choices
         ]
+        canvas_site_id, canvas_site_name = context["request"].get_canvas_site()
+        context["canvas_site_id"] = canvas_site_id
+        context["canvas_site_name"] = canvas_site_name
+        context["canvas_site_url"] = f"{get_base_url()}/courses/{canvas_site_id}"
         context["status_choices"] = status_choices
         return context
 
@@ -410,7 +410,7 @@ class RequestFormView(FormView):
         user = User.objects.get(username=username)
         section = self.get_section()
         course_sections = section.course_sections.all()
-        instructors = section.instructors.all()
+        instructors = section.get_all_instructors()
         initial_values = {"course_sections": course_sections}
         if instructors and user not in instructors:
             initial_values["instructors"] = instructors
@@ -604,15 +604,10 @@ class SyncSectionView(FormView):
         return reverse("section_request", args=[self.section_code])
 
 
-class CreateCanvasSiteView(TemplateView):
-    template_name = "form/create_canvas_site.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        section_code = self.request.GET["section_code"]
-        request = Request.get_request(section_code)
-        if not request:
-            return context
-        canvas_site = request.create_canvas_site()
-        context["canvas_site"] = canvas_site
-        return context
+def create_canvas_site_view(request):
+    section_code = request.GET["section_code"]
+    request = Request.get_request(section_code)
+    if not request:
+        return redirect("request_detail", pk=section_code)
+    request.create_canvas_site()
+    return redirect("request_detail", pk=section_code)

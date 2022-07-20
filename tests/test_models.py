@@ -44,8 +44,8 @@ SECTION_NUM = 200
 TERM = CURRENT_TERM
 TITLE = "Course Title"
 INSTRUCTORS = (
-    (PENNKEY, FIRST_NAME, LAST_NAME, PENN_ID, EMAIL),
-    (None, None, None, None, None),
+    (PENNKEY, FIRST_NAME, LAST_NAME, PENN_ID, EMAIL, "N"),
+    (None, None, None, None, None, None),
 )
 PRIMARY_SUBJECT_CODE = "PRIM"
 PRIMARY_SUBJECT_DESC_LONG = f"Primary {SUBJECT_DESC_LONG}"
@@ -332,7 +332,7 @@ class SubjectTest(TestCase):
 
     def test_str(self):
         subject_string = str(self.subject)
-        subject_desc_and_code = "Subject Description (SUBJ)"
+        subject_desc_and_code = "SUBJ (Subject Description)"
         self.assertEqual(subject_string, subject_desc_and_code)
 
     @patch(EXECUTE_QUERY)

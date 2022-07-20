@@ -17,7 +17,7 @@
 <tr>
     <th>Instructors</th>
     <td>
-        {% with instructors=section.instructors.all %}
+        {% with instructors=section.get_all_instructors %}
             {% if instructors %}
                 {% for instructor in instructors %}<div>{{ instructor }}</div>{% endfor %}
             {% else %}
