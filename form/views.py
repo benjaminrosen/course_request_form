@@ -12,7 +12,12 @@ from django.urls.base import reverse
 from django.views.generic import FormView, ListView, TemplateView, UpdateView
 
 from config.config import PROD_URL
-from form.canvas import get_base_url, get_current_term, get_next_term
+from form.canvas import (
+    get_base_url,
+    get_canvas_user_by_pennkey,
+    get_current_term,
+    get_next_term,
+)
 from form.templatetags.template_filters import get_term
 from form.terms import CURRENT_TERM, NEXT_TERM
 from form.utils import get_sort_value
@@ -615,3 +620,28 @@ def create_canvas_site_view(request):
         return redirect("request_detail", pk=section_code)
     request.create_canvas_site()
     return redirect("request_detail", pk=section_code)
+
+
+class LookUpUserView(TemplateView):
+    template_name = "form/look_up_user.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        request = self.request.GET
+        if "pennkey" not in request:
+            return context
+        pennkey = self.request.GET["pennkey"]
+        context["pennkey"] = pennkey
+        user = User.get_user(pennkey)
+        if user:
+            context["penn_id"] = user.penn_id
+            context["email"] = user.email
+            context["sections"] = user.get_sections()
+            context["requests"] = user.get_requests()
+            context["canvas_sites"] = user.get_canvas_sites()
+        canvas_user = get_canvas_user_by_pennkey(pennkey)
+        context["canvas_base_url"] = f"{get_base_url()}/courses/"
+        if canvas_user:
+            context["canvas_user_id"] = canvas_user.id
+            context["canvas_user_name"] = canvas_user.name
+        return context

@@ -1,0 +1,81 @@
+{% extends "form/base.html" %}
+{% load static %}
+{% block content %}
+    <h2>Look up user</h2>
+    <form id="id_form" method="get" action="{% url "look_up_user" %}">
+        <label for="id_pennkey">Pennkey:</label>
+        <input id="id_pennkey" type="text" name="pennkey" />
+        <button type="submit">Look up user</button>
+    </form>
+    <h3>CRF</h3>
+    <table>
+        <tr>
+            <th>
+                Pennkey
+                <td>{{ pennkey }}</td>
+            </th>
+        </tr>
+        <tr>
+            <th>
+                Penn ID
+                <td>{{ penn_id }}</td>
+            </th>
+        </tr>
+        <tr>
+            <th>
+                Sections
+                <td>
+                    {% for section in sections %}
+                        <p>
+                            <a href="{% url "section_request" section.section_code %}">{{ section }}</a>
+                        </p>
+                    {% endfor %}
+                </td>
+            </th>
+        </tr>
+        <tr>
+            <th>
+                Requests
+                <td>
+                    {% for request in requests %}
+                        <p>
+                            <a href="{% url "request_detail" request.section.section_code %}">{{ request }}</a>
+                        </p>
+                    {% endfor %}
+                </td>
+            </th>
+        </tr>
+    </table>
+    <h3>Canvas</h3>
+    <table>
+        <tr>
+            <th>
+                User ID
+                <td>{{ canvas_user_id }}</td>
+            </th>
+        </tr>
+        <tr>
+            <th>
+                Name
+                <td>{{ canvas_user_name }}</td>
+            </th>
+        </tr>
+        <tr>
+            <th>
+                Canvas sites
+                <td>
+                    {% for site in canvas_sites %}
+                        <p>
+                            <a href="{{ canvas_base_url }}/{{ site.id }}"
+                               target="_blank"
+                               rel="noopener noreferrer">{{ site }}</a>
+                        </p>
+                    {% endfor %}
+                </td>
+            </th>
+        </tr>
+    </table>
+{% endblock content %}
+{% block js %}
+    <script type="module" src="{% static "js/look_up_user.js" %}"></script>
+{% endblock js %}

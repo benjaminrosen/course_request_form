@@ -21,6 +21,7 @@ from form.views import (
     EnrollmentUserView,
     ExcludeAnnouncementsView,
     HomePageView,
+    LookUpUserView,
     MyCanvasSitesView,
     MyCoursesView,
     MyRequestsView,
@@ -58,4 +59,5 @@ urlpatterns = [
         "enrollment-user/delete", delete_enrollment_user, name="delete_enrollment_user"
     ),
     path("create-canvas-site", create_canvas_site_view, name="create_canvas_site"),
+    path("look-up-user", LookUpUserView.as_view(), name="look_up_user"),
 ]

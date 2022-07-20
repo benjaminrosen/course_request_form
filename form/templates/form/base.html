@@ -27,7 +27,7 @@
                             {% if user.is_staff %}
                                 <span class="nav-label">Admin</span>
                                 <a href="{% url "sections" %}?status=requested&sort=-request__status">Requests</a>
-                                <a href="{% url "admin:index" %}">User lookup</a>
+                                <a href="{% url "look_up_user" %}">User lookup</a>
                                 <a href="{% url "admin:index" %}">Course lookup</a>
                                 <a href="{% url "admin:index" %}">Schools</a>
                                 <a href="{% url "admin:index" %}">Auto-adds</a>
