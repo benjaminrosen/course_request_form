@@ -440,6 +440,7 @@ class Section(Model):
     xlist_family = CharField(max_length=255, blank=True, null=True, editable=False)
     also_offered_as = ManyToManyField("self", blank=True)
     course_sections = ManyToManyField("self", blank=True)
+    requested = BooleanField(default=False)
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
@@ -735,7 +736,10 @@ class Section(Model):
         try:
             return Request.objects.get(section=self)
         except Exception:
-            return None
+            if self.requested:
+                return Request.objects.filter(section__course_sections=self).first()
+            else:
+                return None
 
     def get_all_instructors(self) -> QuerySet[User]:
         additional_instructors = self.instructors.all()
@@ -773,6 +777,10 @@ class Section(Model):
         if not request:
             return datetime.now()
         return request.created_at
+
+    def set_requested(self, requested: bool):
+        self.requested = requested
+        self.save()
 
 
 class Enrollment(Model):
@@ -913,7 +921,7 @@ class Request(Model):
             return self.section.school.canvas_sub_account_id
 
     def create_related_sections(self, canvas_course: Course):
-        related_sections = self.section.course_sections.all()
+        related_sections = self.included_sections.all()
         section_names = [section.name for section in canvas_course.get_sections()]
         for section in related_sections:
             name = section.get_canvas_name(self.title_override, related_section=True)

@@ -114,13 +114,13 @@
                 {{ form.included_sections.label_tag }}
                 {% for section in course_sections %}
                     {% with index=forloop.counter requested=section.request %}
-                        <div class=" {% if section.request %} section-requested{% endif %} ">
+                        <div class=" {% if section.get_request %} section-requested{% endif %} ">
                             <label for="id_included_sections_{{ index }}">
                                 <input type="checkbox"
                                        name="included_sections"
                                        value="{{ section.section_code }}"
                                        id="id_included_sections_{{ index }}"
-                                       {% if section.request %}disabled{% endif %}/>
+                                       {% if section.get_request %}disabled{% endif %}/>
                                 {{ section.get_canvas_course_code }}
                             </label>
                         </div>

@@ -122,10 +122,10 @@
             {% endwith %}
         </tr>
         {% for section in sections %}
-            {% with request=section.request %}
-                <tr class="{% if request and not status_filter == "requested" %}row-disabled{% endif %}">
+            {% with request=section.get_request %}
+                <tr class="{% if request or section.requested and not status_filter == "requested" %}row-disabled{% endif %}">
                     <td>
-                        <a href="{% if section.request %}{% url "request_detail" section.section_code %}{% else %}{% url "section_request" section.section_code %}{% endif %}">
+                        <a href="{% if request or section.requested %}{% url "request_detail" request.section.section_code %}{% else %}{% url "section_request" section.section_code %}{% endif %}">
                             {{ section.get_canvas_course_code }}
                         </a>
                     </td>
@@ -133,7 +133,7 @@
                     <td>{{ section.schedule_type.sched_type_code }}</td>
                     <td class="instructors">{{ section.get_instructors_list }}</td>
                     {% if status_filter != "unrequested" %}
-                        {% if request %}
+                        {% if request or section.requested %}
                             <td>
                                 {% if user == request.requester %}
                                     You

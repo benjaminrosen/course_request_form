@@ -455,8 +455,12 @@ class RequestFormView(FormView):
                 user=user, role=role, request=request
             )
         request.additional_enrollments.set(additional_enrollments)
+        all_sections = [section]
         if included_sections:
             request.included_sections.set(included_sections)
+            all_sections = all_sections + list(included_sections)
+        for section in all_sections:
+            section.set_requested(True)
         return super().form_valid(form)
 
     def get_success_url(self):
