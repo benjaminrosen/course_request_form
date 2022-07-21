@@ -133,17 +133,20 @@ class User(AbstractUser):
         return bool(section.get_request())
 
     def get_sections(self, term: Optional[int] = None) -> list:
+        self.sync_sections()
         if term:
-            primary_sections = list(
-                Section.objects.filter(primary_instructor=self, term=term)
-            )
-            additional_sections = list(
-                Section.objects.filter(instructors=self, term=term)
-            )
+            sections = Section.objects.filter(primary_instructor=self, term=term)
+            additional_sections = Section.objects.filter(instructors=self, term=term)
         else:
-            primary_sections = list(Section.objects.filter(primary_instructor=self))
-            additional_sections = list(Section.objects.filter(instructors=self))
-        sections = primary_sections + additional_sections
+            default_terms = [CURRENT_TERM, NEXT_TERM]
+            sections = Section.objects.filter(
+                primary_instructor=self, term__in=default_terms
+            )
+            additional_sections = Section.objects.filter(
+                instructors=self, term__in=default_terms
+            )
+        sections |= additional_sections
+        sections = list(sections)
         sections.sort(key=self.sort_sections_by_requested)
         return sections
 
@@ -633,7 +636,9 @@ class Section(Model):
 
     @classmethod
     def get_terms_query_and_bindings(
-        cls, terms: Optional[Union[int, list[int]]]
+        cls,
+        terms: Optional[Union[int, list[int]]],
+        query=None,
     ) -> tuple[str, dict]:
         if terms:
             terms = terms if isinstance(terms, list) else [terms]
@@ -641,37 +646,39 @@ class Section(Model):
             terms = cls.DEFAULT_TERMS
         placeholders = [f":{index + 1}" for index in range(len(terms))]
         placeholders_and_values = zip(placeholders, terms)
-        bindings = {placeholder: term for placeholder, term in placeholders_and_values}
+        kwargs = {placeholder: term for placeholder, term in placeholders_and_values}
         placeholders_string = ",".join(f":{index + 1}" for index in range(len(terms)))
         placeholders_string = f"({placeholders_string})"
-        query = f"{cls.QUERY} AND term IN {placeholders_string}"
-        return query, bindings
+        query = query or cls.QUERY
+        query = f"{query} AND term IN {placeholders_string}"
+        return query, kwargs
 
     @classmethod
     def sync_all(cls, terms: Optional[Union[int, list[int]]] = None):
         logger.info(
             f"Syncing sections for terms {terms if terms else cls.DEFAULT_TERMS}..."
         )
-        query, bindings = cls.get_terms_query_and_bindings(terms)
-        cls.update_or_create(query, bindings)
+        query, kwargs = cls.get_terms_query_and_bindings(terms)
+        cls.update_or_create(query, kwargs)
 
     @classmethod
-    def sync_instructor_sections(cls, penn_id: str, term: Optional[int] = None):
-        term = term or CURRENT_TERM
-        kwargs = {"penn_id": penn_id, "term": term}
+    def sync_instructor_sections(
+        cls, penn_id: str, terms: Optional[Union[int, list[int]]] = None
+    ):
         query = """
                 SELECT
-                    instructor.section_id
+                    instructor.section_id,
+                    instructor.term
                 FROM dwngss_ps.crse_sect_instructor instructor
                 WHERE instructor.instructor_penn_id = :penn_id
-                AND term = :term
                 """
+        query, kwargs = cls.get_terms_query_and_bindings(terms, query=query)
+        kwargs = kwargs | {"penn_id": penn_id}
         cursor = execute_query(query, kwargs)
         sections = list()
-        for section_id in cursor:
-            section_id = next(iter(section_id))
-            sections.append(section_id)
-        for section in sections:
+        for section_id, term in cursor:
+            sections.append((section_id, term))
+        for section, term in sections:
             cls.sync_section(section, term=term)
 
     @classmethod
