@@ -87,6 +87,9 @@
                     {% csrf_token %}
                     <label for="change_status">Change status:</label>
                     <select id="change_status" name="change_status">
+                            {% if request.status == "Error" %}
+                                <option value="Error" selected disabled>Error</option>
+                                {% endif %}
                         {% for choice in status_choices %}
                             <option value="{{ choice }}"
                                     {% if choice == request.status %}selected{% endif %}>
@@ -113,6 +116,14 @@
             <a href="{% url "sections" %}">Back</a>
         </p>
     {% endwith %}
+    {% if request.status == "Error" %}
+        <div id="process_notes">
+            <h4>
+                Process notes:
+            </h4>
+            {{ request.process_notes }}
+        </div>
+    {% endif %}
 {% endblock content %}
 {% block js %}
     <script type="module" src="{% static "js/create_canvas_site.js" %}"></script>

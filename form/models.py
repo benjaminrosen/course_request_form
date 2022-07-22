@@ -14,6 +14,7 @@ from django.db.models import (
     DateTimeField,
     ForeignKey,
     IntegerField,
+    JSONField,
     ManyToManyField,
     Model,
     OneToOneField,
@@ -1019,25 +1020,37 @@ class Request(Model):
         except Exception as error:
             logger.error(f"{error_message}: {error}")
 
-    def create_canvas_site(self):
+    def set_error_status(self, error_message):
+        error_message = f"{datetime.now()}: {error_message}"
+        self.process_notes = error_message
+        self.status = self.Status.ERROR
+        self.save()
+
+    def create_canvas_site(self) -> Optional[Course]:
         self.set_status(self.Status.IN_PROCESS)
-        course = self.get_canvas_course_data()
-        sub_account_id = self.get_canvas_sub_account_id()
-        created, canvas_course = update_or_create_canvas_course(course, sub_account_id)
-        if not canvas_course:
-            self.set_status(self.Status.ERROR)
-            return
-        self.create_related_sections(canvas_course)
-        enrollments = self.get_enrollments()
-        self.enroll_users(enrollments, canvas_course)
-        self.set_canvas_course_reserves(canvas_course)
-        self.migrate_course(canvas_course)
-        action = "CREATED" if created else "UPDATED"
-        name = canvas_course.name
-        canvas_id = canvas_course.id
-        logger.info(f"{action} Canvas course '{name} ({canvas_id})'")
-        self.set_status(self.Status.COMPLETED)
-        return canvas_course
+        try:
+            course = self.get_canvas_course_data()
+            sub_account_id = self.get_canvas_sub_account_id()
+            created, canvas_course, error_message = update_or_create_canvas_course(
+                course, sub_account_id
+            )
+            if not canvas_course:
+                self.set_error_status(error_message)
+                return
+            self.create_related_sections(canvas_course)
+            enrollments = self.get_enrollments()
+            self.enroll_users(enrollments, canvas_course)
+            self.set_canvas_course_reserves(canvas_course)
+            self.migrate_course(canvas_course)
+            action = "CREATED" if created else "UPDATED"
+            name = canvas_course.name
+            canvas_id = canvas_course.id
+            logger.info(f"{action} Canvas course '{name} ({canvas_id})'")
+            self.set_status(self.Status.COMPLETED)
+            return canvas_course
+        except Exception as error:
+            self.set_error_status(error)
+            return None
 
     def get_canvas_site(self) -> tuple[Optional[int], Optional[str]]:
         try:

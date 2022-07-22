@@ -94,31 +94,37 @@ def create_course_section(name: str, sis_course_id: str, canvas_course: Course):
     )
 
 
-def update_canvas_course(course: dict) -> Optional[Course]:
+def update_canvas_course(course: dict) -> tuple[Optional[Course], Optional[Exception]]:
     sis_course_id = course["sis_course_id"]
+    error_message = None
     try:
         canvas_course = get_canvas().get_course(sis_course_id, use_sis_id=True)
         canvas_course.update(course=course)
-        return canvas_course
+        return canvas_course, error_message
     except Exception as error:
-        logger.error(f"FAILED to update Canvas course '{sis_course_id}': {error}")
-        return None
+        error_message = error
+        logger.error(
+            f"FAILED to update Canvas course '{sis_course_id}': {error_message}"
+        )
+        return None, error_message
 
 
 def update_or_create_canvas_course(
     course: dict, account_id: int
-) -> tuple[bool, Optional[Course]]:
+) -> tuple[bool, Optional[Course], Optional[Exception]]:
     created = True
+    error_message = None
     try:
         account = get_canvas_account(account_id)
         canvas_course = account.create_course(course=course)
         name = canvas_course.name
         sis_course_id = canvas_course.sis_course_id
         create_course_section(name, sis_course_id, canvas_course)
-        return created, canvas_course
+        return created, canvas_course, error_message
     except Exception:
         created = False
-        return created, update_canvas_course(course)
+        canvas_course, error_message = update_canvas_course(course)
+        return created, canvas_course, error_message
 
 
 def get_calendar_events(course_id: int) -> PaginatedList:

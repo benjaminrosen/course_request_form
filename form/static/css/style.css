@@ -131,3 +131,9 @@ input[type="number"] {
 #id_creating_canvas_site {
   display: none;
 }
+
+#process_notes {
+  border: 2px solid red;
+  border-radius: 6px;
+  padding: 6px;
+}
