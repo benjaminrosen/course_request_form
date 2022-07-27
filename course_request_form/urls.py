@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from form.views import (
+    AutoAddListView,
     CopyFromCourseView,
     EnrollmentUserView,
     ExcludeAnnouncementsView,
@@ -64,4 +65,5 @@ urlpatterns = [
     path("look-up-user", LookUpUserView.as_view(), name="look_up_user"),
     path("schools", SchoolListView.as_view(), name="schools"),
     path("toggle-school", ToggleSchoolView.as_view(), name="toggle_school"),
+    path("auto-adds", AutoAddListView.as_view(), name="auto_adds"),
 ]

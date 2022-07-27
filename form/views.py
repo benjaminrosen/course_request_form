@@ -23,7 +23,15 @@ from form.terms import CURRENT_TERM, NEXT_TERM
 from form.utils import get_sort_value
 
 from .forms import RequestForm, SectionEnrollmentForm, SyncSectionForm
-from .models import Enrollment, Request, School, Section, SectionEnrollment, User
+from .models import (
+    AutoAdd,
+    Enrollment,
+    Request,
+    School,
+    Section,
+    SectionEnrollment,
+    User,
+)
 
 HOME_LIST_LIMIT = 10
 HOME_LIST_INCREMENT = 5
@@ -665,3 +673,10 @@ class ToggleSchoolView(TemplateView):
             school.toggle_visible()
             context["school"] = school
         return context
+
+
+class AutoAddListView(ListView):
+    model = AutoAdd
+    fields = "__all__"
+    template_name = "form/auto_add.html"
+    context_object_name = "auto_adds"

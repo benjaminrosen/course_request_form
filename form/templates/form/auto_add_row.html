@@ -1,0 +1,13 @@
+<tr id="id_{{ auto_add.id }}">
+    <td>{{ auto_add.user }}</td>
+    <td>{{ auto_add.school.school_desc_long }}</td>
+    <td>{{ auto_add.subject }}</td>
+    <td>{{ auto_add.role }}</td>
+    <td>
+        <button hx-get=""
+                hx-target="#id_{{ auto_add.id }}"
+                hx-swap="outerHTML">
+            Edit
+        </button>
+    </td>
+</tr>

@@ -1,0 +1,19 @@
+{% extends "form/base.html" %}
+{% block content %}
+    <h2>Auto-adds</h2>
+    <p>
+        <button>+ Create auto-add</button>
+    </p>
+    <table>
+        <tr>
+            <th>User</th>
+            <th>School</th>
+            <th>Subject</th>
+            <th>Role</th>
+            <th>Edit/Remove</th>
+        </tr>
+        {% for auto_add in auto_adds %}
+            {% include "form/auto_add_row.html" %}
+        {% endfor %}
+    </table>
+{% endblock content %}
