@@ -234,6 +234,9 @@ class School(Model):
     visible = BooleanField(default=True)
     canvas_sub_account_id = IntegerField(null=True)
 
+    class Meta:
+        ordering = ["school_code"]
+
     def __str__(self):
         return f"{self.school_desc_long} ({self.school_code})"
 
@@ -245,6 +248,10 @@ class School(Model):
 
     def get_subjects(self):
         return Subject.objects.filter(school=self)
+
+    def toggle_visible(self):
+        self.visible = not self.visible
+        self.save()
 
     def get_canvas_school_name(self) -> str:
         if self.school_code == self.VETERINARY_MEDICINE_CODE:

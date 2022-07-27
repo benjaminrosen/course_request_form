@@ -27,9 +27,11 @@ from form.views import (
     MyRequestsView,
     RequestDetailView,
     RequestFormView,
+    SchoolListView,
     SectionEnrollmentView,
     SectionListView,
     SyncSectionView,
+    ToggleSchoolView,
     create_canvas_site_view,
     delete_enrollment_user,
 )
@@ -60,4 +62,6 @@ urlpatterns = [
     ),
     path("create-canvas-site", create_canvas_site_view, name="create_canvas_site"),
     path("look-up-user", LookUpUserView.as_view(), name="look_up_user"),
+    path("schools", SchoolListView.as_view(), name="schools"),
+    path("toggle-school", ToggleSchoolView.as_view(), name="toggle_school"),
 ]

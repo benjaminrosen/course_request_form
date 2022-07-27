@@ -1,0 +1,17 @@
+<tr id="id_{{ school.school_code }}"
+    class="{% if not school.visible %}row-disabled{% endif %}">
+    <td>{{ school.school_desc_long }}</td>
+    <td>{{ school.school_code }}</td>
+    <td>{{ school.canvas_sub_account_id }}</td>
+    <td>
+        <button hx-get="{% url "toggle_school" %}?school_code={{ school.school_code }}"
+                hx-target="#id_{{ school.school_code }}"
+                hx-swap="outerHTML">
+            {% if school.visible %}
+                Disable
+            {% else %}
+                Enable
+            {% endif %}
+        </button>
+    </td>
+</tr>

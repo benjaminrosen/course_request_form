@@ -36,7 +36,7 @@ freeze: ## Freeze the dependencies to the requirements.txt file
 	pip freeze > $(REQUIREMENTS)
 
 install: ## Install the dependencies from the requirements.txt file
-	pip install -r $(REQUIREMENTS)
+	pip install -U pip && pip install -r $(REQUIREMENTS)
 
 lint: ## Lint templates
 	djlint ./form/templates --lint --profile=django

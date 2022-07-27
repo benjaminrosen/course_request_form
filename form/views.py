@@ -645,3 +645,23 @@ class LookUpUserView(TemplateView):
             context["canvas_user_id"] = canvas_user.id
             context["canvas_user_name"] = canvas_user.name
         return context
+
+
+class SchoolListView(ListView):
+    model = School
+    fields = "__all__"
+    template_name = "form/schools.html"
+    context_object_name = "schools"
+
+
+class ToggleSchoolView(TemplateView):
+    template_name = "form/school_row.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        school_code = self.request.GET["school_code"]
+        school = School.get_school(school_code)
+        if school:
+            school.toggle_visible()
+            context["school"] = school
+        return context

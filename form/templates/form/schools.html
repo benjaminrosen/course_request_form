@@ -1,0 +1,15 @@
+{% extends "form/base.html" %}
+{% block content %}
+    <h2>Schools</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>School code</th>
+            <th>Canvas sub-account ID</th>
+            <th>Visible</th>
+        </tr>
+        {% for school in schools %}
+            {% include "form/school_row.html" %}
+        {% endfor %}
+    </table>
+{% endblock content %}
