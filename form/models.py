@@ -292,6 +292,8 @@ class School(Model):
                     defaults={"school_desc_long": school_desc_long},
                 )
                 school.get_canvas_sub_account()
+                if "wharton" in school_desc_long.lower():
+                    school.toggle_visible()
                 action = "ADDED" if created else "UPDATED"
                 logger.info(f"{action} {school}")
             except Exception as error:
