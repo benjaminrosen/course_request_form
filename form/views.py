@@ -321,7 +321,9 @@ class SectionListView(ListView):
 
     def get_queryset(self):
         request = self.request.GET
-        sections = Section.objects.filter(primary_section__isnull=True)
+        sections = Section.objects.filter(
+            primary_section__isnull=True, school__visible=True
+        )
         clear = request.get("clear")
         if clear:
             return sections
