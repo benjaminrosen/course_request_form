@@ -14,7 +14,6 @@ from django.db.models import (
     DateTimeField,
     ForeignKey,
     IntegerField,
-    JSONField,
     ManyToManyField,
     Model,
     OneToOneField,
@@ -1036,7 +1035,7 @@ class Request(Model):
             )
             if not canvas_course:
                 self.set_error_status(error_message)
-                return
+                return None
             self.create_related_sections(canvas_course)
             enrollments = self.get_enrollments()
             self.enroll_users(enrollments, canvas_course)
