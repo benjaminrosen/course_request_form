@@ -3,8 +3,8 @@ import {
   getExistingEnrollments,
   getPennkey,
 } from "./additional_enrollments_observer.js";
-import { getElementByEnrollmentCount } from "./enrollment_count.js";
-import { getSiblings, getNext, isSelect } from "./enrollment_user.js";
+import { getElementByRowCount } from "./row_count.js";
+import { getSiblings, getNext, isSelect } from "./user_row.js";
 import { handleRemoveEnrollment } from "./remove_button.js";
 
 function isBlank(value) {
@@ -47,7 +47,7 @@ export function handleDisabledInput(input) {
   const pennkey = getPennkey(input);
   const role = getRole(input);
   const enrollmentUser = { user: pennkey, role: role };
-  const removeButton = getElementByEnrollmentCount("id_remove");
+  const removeButton = getElementByRowCount("id_remove");
   removeButton.addEventListener("click", handleRemoveEnrollment);
   setAdditionalEnrollmentValue(enrollmentUser);
 }

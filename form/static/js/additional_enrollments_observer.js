@@ -1,5 +1,5 @@
-import { getElementByEnrollmentCount } from "./enrollment_count.js";
-import { getSiblings, getNext, isButton } from "./enrollment_user.js";
+import { getElementByRowCount } from "./row_count.js";
+import { getSiblings, getNext, isButton } from "./user_row.js";
 import { handleDisabledInput } from "./disabled_input.js";
 import { handleEnabledInput } from "./enabled_input.js";
 import { handleLoadOrEditButton } from "./load_or_edit_button.js";
@@ -21,14 +21,14 @@ export function getExistingEnrollments() {
 }
 
 export function getDisabledButton() {
-  return getElementByEnrollmentCount("id_additional_enrollment_pennkey");
+  return getElementByRowCount("id_additional_enrollment_pennkey");
 }
 
 function addListeners() {
-  const loadUserButton = getElementByEnrollmentCount("id_load_user");
-  const editUserButton = getElementByEnrollmentCount("id_edit");
+  const loadUserButton = getElementByRowCount("id_load_user");
+  const editUserButton = getElementByRowCount("id_edit");
   const loadOrEditButton = loadUserButton || editUserButton;
-  const enabledInput = getElementByEnrollmentCount("id_user");
+  const enabledInput = getElementByRowCount("id_user");
   const disabledInput = getDisabledButton();
   handleLoadOrEditButton(loadOrEditButton);
   handleEnabledInput(enabledInput);

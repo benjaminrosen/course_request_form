@@ -1,4 +1,4 @@
-import { getNext } from "./enrollment_user.js";
+import { getNext } from "./user_row.js";
 
 function getActiveSortValue(parameters) {
   const parameterValues = getParameterValues(parameters);

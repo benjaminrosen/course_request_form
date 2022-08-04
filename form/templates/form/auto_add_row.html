@@ -4,10 +4,6 @@
     <td>{{ auto_add.subject }}</td>
     <td>{{ auto_add.role }}</td>
     <td>
-        <button hx-get=""
-                hx-target="#id_{{ auto_add.id }}"
-                hx-swap="outerHTML">
-            Remove
-        </button>
+        <button hx-get="" hx-target="#id_{{ auto_add.id }}" hx-swap="outerHTML">Remove</button>
     </td>
 </tr>

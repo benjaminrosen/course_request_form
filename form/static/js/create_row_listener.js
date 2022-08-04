@@ -1,10 +1,11 @@
-import { getEnrollmentCount } from "./enrollment_count.js";
+import { getRowCount } from "./row_count.js";
 
-export function addAddEnrollmentListener() {
-  const addEnrollment = document.getElementById("id_add_enrollment");
-  addEnrollment.addEventListener("click", (event) => {
-    const enrollmentCount = getEnrollmentCount();
-    const hxVals = JSON.stringify({ enrollmentCount });
+export function addCreateRowListener(buttonId) {
+  const createButton = document.getElementById(buttonId);
+  createButton.addEventListener("click", (event) => {
+    const idPrefix = `${buttonId}_`;
+    const rowCount = getRowCount(idPrefix);
+    const hxVals = JSON.stringify({ rowCount });
     event.target.setAttribute("hx-vals", hxVals);
   });
 }

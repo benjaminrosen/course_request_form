@@ -66,9 +66,9 @@ class User(AbstractUser):
         query = """
                 SELECT first_name, last_name, penn_id, email_address
                 FROM employee_general
-                WHERE pennkey = :username
+                WHERE pennkey = :pennkey
                 """
-        cursor = execute_query(query, {"username": pennkey})
+        cursor = execute_query(query, {"pennkey": pennkey})
         for first_name, last_name, penn_id, email in cursor:
             first_name = first_name.title() if first_name else ""
             cls.log_field(pennkey, "first name", first_name)
@@ -844,6 +844,7 @@ class SectionEnrollment(Enrollment):
 
 
 class AutoAdd(Enrollment):
+    ACTIVE_STATUS = "A"
     school = ForeignKey(School, on_delete=CASCADE)
     subject = ForeignKey(Subject, on_delete=CASCADE)
     created_at = DateTimeField(auto_now_add=True)
@@ -855,6 +856,32 @@ class AutoAdd(Enrollment):
                 fields=["school", "subject", "user", "role"], name="unique_auto_add"
             )
         ]
+
+    def __str__(self):
+        return f"{self.user} as {self.role} for {self.subject} in {self.school}"
+
+    def check_employment_status(self):
+        query = """
+                SELECT employement_status
+                FROM employee_general
+                WHERE pennkey = :pennkey
+                """
+        pennkey = self.user.username
+        cursor = execute_query(query, {"pennkey": pennkey})
+        for status in cursor:
+            status = next(iter(status))
+            if status != self.ACTIVE_STATUS:
+                logger.warning(
+                    f"User {self.user} no longer active. Removing auto-add {self}..."
+                )
+                self.delete()
+
+    @classmethod
+    def clear_inactive_employees(cls):
+        logger.info("Clearing inactive employees from auto-adds...")
+        auto_adds = cls.objects.all()
+        for auto_add in auto_adds:
+            auto_add.check_employment_status()
 
 
 class Request(Model):
@@ -945,6 +972,13 @@ class Request(Model):
                 sis_course_id = section.get_canvas_sis_id()
                 create_course_section(name, sis_course_id, canvas_course)
 
+    @staticmethod
+    def get_auto_adds(school: School, subject: Subject) -> list[AutoAdd]:
+        auto_adds = AutoAdd.objects.filter(school=school, subject=subject)
+        for auto_add in auto_adds:
+            auto_add.check_employment_status()
+        return list(AutoAdd.objects.filter(school=school, subject=subject))
+
     def get_enrollments(self) -> list[SectionEnrollment]:
         section = self.section
         instructors = section.instructors.all()
@@ -959,7 +993,7 @@ class Request(Model):
         additional_enrollments = list(self.additional_enrollments.all())
         school = section.school
         subject = section.subject
-        auto_adds = list(AutoAdd.objects.filter(school=school, subject=subject))
+        auto_adds = self.get_auto_adds(school, subject)
         enrollments = instructor_enrollments + additional_enrollments + auto_adds
         return enrollments
 

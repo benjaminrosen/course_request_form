@@ -1,11 +1,11 @@
-import { getElementByEnrollmentCount } from "./enrollment_count.js";
-import { getSiblings, getNext, isButton } from "./enrollment_user.js";
+import { getElementByRowCount } from "./row_count.js";
+import { getSiblings, getNext, isButton } from "./user_row.js";
 
 function handlePennkeyEnter(event) {
   if (event.key == "Enter") {
     const siblings = getSiblings(event.target);
     const button = getNext(siblings.filter((element) => isButton(element)));
-    const input = getElementByEnrollmentCount("id_user");
+    const input = getElementByRowCount("id_user");
     input.blur();
     button.click();
   }

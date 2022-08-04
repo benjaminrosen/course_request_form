@@ -1,9 +1,20 @@
 {% extends "form/base.html" %}
+{% load static %}
 {% block content %}
     <h2>Auto-adds</h2>
-    <p>
-        <button>+ Create auto-add</button>
-    </p>
+    <div id="id_auto_add_form">
+        <input type="text"
+               id="id_additional_enrollments"
+               name="additional_enrollments"
+               value="[{}]"
+               hidden/>
+        <button id="id_create_auto_add"
+                hx-get="{% url "create_auto_add" %}"
+                hx-target="this"
+                hx-swap="beforebegin">
+            + Create auto-add
+        </button>
+    </div>
     <table>
         <tr>
             <th>User</th>
@@ -17,3 +28,6 @@
         {% endfor %}
     </table>
 {% endblock content %}
+{% block js %}
+    <script type="module" src="{% static "js/auto_add.js" %}"></script>
+{% endblock js %}

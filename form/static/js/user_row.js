@@ -1,4 +1,4 @@
-import { getIntegerFromString } from "./enrollment_count.js";
+import { getIntegerFromString } from "./row_count.js";
 
 export function getNext(array) {
   return array.values().next().value;
@@ -29,9 +29,9 @@ function getPennkeyAndRole(element) {
   return { pennkey, role };
 }
 
-export function getEnrollmentUserValues(target) {
-  const enrollmentCount = getIntegerFromString(target.id);
+export function getRowValues(target) {
+  const rowCount = getIntegerFromString(target.id);
   const { pennkey, role } = getPennkeyAndRole(target);
-  const hxVals = JSON.stringify({ enrollmentCount, pennkey, role });
+  const hxVals = JSON.stringify({ rowCount, pennkey, role });
   target.setAttribute("hx-vals", hxVals);
 }

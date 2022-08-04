@@ -7,7 +7,7 @@ from django.forms.widgets import CheckboxSelectMultiple, Select, TextInput
 from form.canvas import get_current_term, get_next_term, get_user_canvas_sites
 from form.terms import CURRENT_TERM, NEXT_TERM
 
-from .models import Request, SectionEnrollment, Subject
+from .models import AutoAdd, Request, SectionEnrollment, Subject
 
 
 class RequestForm(ModelForm):
@@ -96,6 +96,14 @@ class SectionEnrollmentForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["role"].widget.choices = self.CanvasRoleDisplay.choices
+
+
+class AutoAddForm(ModelForm):
+    class Meta:
+        model = AutoAdd
+        fields = "__all__"
+        widgets = {"user": TextInput}
+        labels = {"user": "Pennkey"}
 
 
 class SyncSectionForm(Form):

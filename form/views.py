@@ -22,7 +22,7 @@ from form.templatetags.template_filters import get_term
 from form.terms import CURRENT_TERM, NEXT_TERM
 from form.utils import get_sort_value
 
-from .forms import RequestForm, SectionEnrollmentForm, SyncSectionForm
+from .forms import AutoAddForm, RequestForm, SectionEnrollmentForm, SyncSectionForm
 from .models import (
     AutoAdd,
     Enrollment,
@@ -682,3 +682,44 @@ class AutoAddListView(ListView):
     fields = "__all__"
     template_name = "form/auto_add.html"
     context_object_name = "auto_adds"
+
+
+class AutoAddCreateView(TemplateView):
+    template_name = "form/auto_add_form.html"
+
+    @staticmethod
+    def get_pennkey(user_display: str) -> str:
+        pennkey_start = user_display.find("(") + 1
+        pennkey_end = user_display.find(")")
+        return user_display[pennkey_start:pennkey_end]
+
+    @staticmethod
+    def get_role(role: str) -> str:
+        return AutoAdd.CanvasRole[role.upper()].name
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        values = self.request.GET
+        print(values)
+        new_row_count = values["rowCount"]
+        editing = "pennkey" in values and "role" in values
+        if editing:
+            pennkey = self.get_pennkey(values["pennkey"])
+            role = self.get_role(values["role"])
+            form_data = {
+                "user": pennkey,
+                "role": role,
+            }
+            form = AutoAddForm(form_data)
+            form.auto_id = f"id_%s_{new_row_count}"
+        else:
+            new_row_count = int(new_row_count) + 1
+            form = AutoAddForm(auto_id=f"id_%s_{new_row_count}")
+        div_id = f"id_create_auto_add_{new_row_count}"
+        button_id = f"id_load_user_{new_row_count}"
+        remove_button_id = f"id_remove_{new_row_count}"
+        context["div_id"] = div_id
+        context["button_id"] = button_id
+        context["remove_button_id"] = remove_button_id
+        context["form"] = form
+        return context
