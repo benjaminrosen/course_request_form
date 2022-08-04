@@ -1,0 +1,15 @@
+{% load static %}
+<div id="{{ div_id }}">
+        {{ form.as_p }}
+    <p>
+        <button id="{{ button_id }}"
+                type="button"
+                hx-get="{% url "create_auto_add" %}"
+                hx-target="#{{ div_id }}"
+                hx-swap="outerHTML">
+            Load user
+        </button>
+        {% include "form/remove_button.html" %}
+    </p>
+    {% if error %}{{ form.user.errors }}{% endif %}
+</div>
