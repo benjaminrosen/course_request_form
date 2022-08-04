@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
     <h2>Auto-adds</h2>
-    <div id="id_auto_add_form">
+    <div id="id_auto_adds_form">
         <input type="text"
                id="id_additional_enrollments"
                name="additional_enrollments"
@@ -29,5 +29,5 @@
     </table>
 {% endblock content %}
 {% block js %}
-    <script type="module" src="{% static "js/auto_add.js" %}"></script>
+    <script type="module" src="{% static "js/auto_add/auto_add.js" %}"></script>
 {% endblock js %}

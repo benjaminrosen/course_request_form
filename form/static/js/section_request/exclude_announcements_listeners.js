@@ -8,13 +8,13 @@ function setExcludeAnnouncementsDisplay(displayValue) {
 export function addExcludeAnnouncementsListeners() {
   const proxyRequester = document.getElementById("id_proxy_requester");
   if (proxyRequester) {
-    proxyRequester.addEventListener("change", (event) =>
+    proxyRequester.addEventListener("change", () =>
       setExcludeAnnouncementsDisplay("none")
     );
   }
   const copyFromCourse = document.getElementById("id_copy_from_course");
   if (copyFromCourse) {
-    copyFromCourse.addEventListener("change", (event) =>
+    copyFromCourse.addEventListener("change", () =>
       setExcludeAnnouncementsDisplay("block")
     );
   }

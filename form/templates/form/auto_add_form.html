@@ -1,7 +1,8 @@
 {% load static %}
 <div id="{{ div_id }}">
-        {{ form.as_p }}
     <p>
+        {{ form.user.label_tag }}
+        {{ form.user }}
         <button id="{{ button_id }}"
                 type="button"
                 hx-get="{% url "create_auto_add" %}"
@@ -9,7 +10,19 @@
                 hx-swap="outerHTML">
             Load user
         </button>
-        {% include "form/remove_button.html" %}
     </p>
+    <p>
+        {{ form.role.label_tag }}
+        {{ form.role }}
+    </p>
+    <p>
+        {{ form.subject.label_tag }}
+        {{ form.subject }}
+    </p>
+    <p>
+        {{ form.school.label_tag }}
+        {{ form.school }}
+    </p>
+    <p>{% include "form/remove_button.html" %}</p>
     {% if error %}{{ form.user.errors }}{% endif %}
 </div>

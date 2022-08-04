@@ -15,10 +15,10 @@ export function handleEnabledInput(input) {
   if (!input) {
     return;
   }
-  input.addEventListener("focus", (event) => {
+  input.addEventListener("focus", () => {
     document.addEventListener("keypress", handlePennkeyEnter);
   });
-  input.addEventListener("blur", (event) => {
+  input.addEventListener("blur", () => {
     document.removeEventListener("keypress", handlePennkeyEnter);
   });
   if (input.value) {

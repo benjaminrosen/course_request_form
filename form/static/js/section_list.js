@@ -1,6 +1,6 @@
 import { addSectionListObserver } from "./section_observer.js";
 
-function handleTermChange(event) {
+function handleTermChange() {
   const submitButton = document.getElementById("id_submit");
   submitButton.click();
 }

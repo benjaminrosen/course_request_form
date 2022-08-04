@@ -1,9 +1,8 @@
 import {
   getAdditionalEnrollments,
-  getExistingEnrollments,
   getPennkey,
 } from "./additional_enrollments_observer.js";
-import { getElementByRowCount } from "./row_count.js";
+import { getElementByRowCount, getExistingRows } from "./row_count.js";
 import { getSiblings, getNext, isSelect } from "./user_row.js";
 import { handleRemoveEnrollment } from "./remove_button.js";
 
@@ -25,7 +24,7 @@ function addAnotherEnrollment(enrollment, existingEnrollments) {
 }
 
 function setAdditionalEnrollmentValue(enrollment) {
-  const existingEnrollments = getExistingEnrollments();
+  const existingEnrollments = getExistingRows("id_additional_enrollments");
   if (isBlank(existingEnrollments)) {
     addFirstEnrollment(enrollment);
   } else {

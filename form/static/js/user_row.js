@@ -20,6 +20,11 @@ export function getSiblings(element) {
   return [...element.parentElement.children];
 }
 
+export function getPennkey(input) {
+  const regExp = /\(([^)]+)\)/;
+  return regExp.exec(input.value)[1];
+}
+
 function getPennkeyAndRole(element) {
   const siblings = getSiblings(element);
   const input = siblings.filter((element) => isInput(element));

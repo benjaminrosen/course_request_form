@@ -1,6 +1,11 @@
 export function getIntegerFromString(string) {
   return parseInt(string.match(/\d+/)[0]);
 }
+export function getExistingRows(hiddenInputId) {
+  const hiddenInput = document.getElementById(hiddenInputId);
+  let existingRows = hiddenInput.value;
+  return JSON.parse(existingRows);
+}
 
 export function getRowCount(idPrefix) {
   let elements = [...document.querySelectorAll(`[id^='${idPrefix}']`)];

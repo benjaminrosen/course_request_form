@@ -1,4 +1,4 @@
-function handleTextChange(event) {
+function handleTextChange() {
   const form = document.getElementById("id_form");
   form.setAttribute("action", `${form.action}?{input.value}`);
 }
