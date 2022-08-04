@@ -525,7 +525,7 @@ class SectionEnrollmentView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         values = self.request.GET
-        new_enrollment_count = values["enrollmentCount"]
+        new_enrollment_count = values["rowCount"]
         editing = "pennkey" in values and "role" in values
         if editing:
             pennkey = self.get_pennkey(values["pennkey"])
@@ -555,7 +555,7 @@ class EnrollmentUserView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         values = self.request.GET
-        enrollment_count = values["enrollmentCount"]
+        enrollment_count = values["rowCount"]
         context["enrollment_count"] = enrollment_count
         div_id = f"id_enrollment_user_{enrollment_count}"
         context["div_id"] = div_id
