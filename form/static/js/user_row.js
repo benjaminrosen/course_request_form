@@ -16,8 +16,12 @@ export function isButton(element) {
   return element.tagName == "BUTTON";
 }
 
-export function getSiblings(element) {
-  return [...element.parentElement.children];
+export function getSiblings(element, nested) {
+  if (!nested) {
+    return [...element.parentElement.children];
+  }
+  const elements = [...element.parentElement.parentElement.children];
+  return elements.map(element => [...element.children]).flat()
 }
 
 export function getPennkey(input) {
@@ -26,7 +30,7 @@ export function getPennkey(input) {
 }
 
 function getPennkeyAndRole(element) {
-  const siblings = getSiblings(element);
+  const siblings = getSiblings(element, true);
   const input = siblings.filter((element) => isInput(element));
   const select = siblings.filter((element) => isSelect(element));
   const pennkey = getNext(input).value;
