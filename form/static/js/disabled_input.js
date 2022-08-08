@@ -1,7 +1,4 @@
-import {
-  getAdditionalEnrollments,
-  getPennkey,
-} from "./additional_enrollments_observer.js";
+import { getPennkey } from "./user_row.js";
 import { getElementByRowCount, getExistingRows } from "./row_count.js";
 import { getSiblings, getNext, isSelect } from "./user_row.js";
 import { handleRemoveEnrollment } from "./remove_button.js";
@@ -9,6 +6,10 @@ import { handleRemoveEnrollment } from "./remove_button.js";
 function isBlank(value) {
   const object = value[0];
   return !Object.keys(object).length;
+}
+
+export function getAdditionalEnrollments() {
+  return document.getElementById("id_additional_enrollments");
 }
 
 function addFirstEnrollment(enrollment) {

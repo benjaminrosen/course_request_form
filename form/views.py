@@ -576,12 +576,10 @@ class EnrollmentUserView(TemplateView):
             context["form"] = form
             context["error"] = True
             return context
-        base = "additional_enrollment"
-        base_id = f"id_{base}"
-        pennkey_name = f"{base}_pennkey_{enrollment_count}"
-        pennkey_id = f"{base_id}_pennkey_{enrollment_count}"
-        role_name = f"{base}_role_{enrollment_count}"
-        role_id = f"{base_id}_role_{enrollment_count}"
+        pennkey_name = f"pennkey_{enrollment_count}"
+        pennkey_id = f"id_pennkey_{enrollment_count}"
+        role_name = f"role_{enrollment_count}"
+        role_id = f"id_role_{enrollment_count}"
         edit_button_id = f"id_edit_{enrollment_count}"
         remove_button_id = f"id_remove_{enrollment_count}"
         context["enrollment_count"] = enrollment_count
@@ -700,7 +698,6 @@ class AutoAddCreateView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         values = self.request.GET
-        print(values)
         new_row_count = values["rowCount"]
         editing = "pennkey" in values and "role" in values
         if editing:

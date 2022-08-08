@@ -1,9 +1,5 @@
-import {
-  getAdditionalEnrollments,
-  getDisabledButton,
-  getPennkey,
-} from "./additional_enrollments_observer.js";
-import { getExistingRows } from "./row_count.js"
+import { getPennkey } from "./user_row.js";
+import { getElementByRowCount, getExistingRows } from "./row_count.js"
 
 function isEquivalent(one, two) {
   one = Object.values(one);
@@ -30,13 +26,13 @@ function removeEnrollmentByPennkey(pennkey, enrollment, enrollments) {
     return !isEquivalent(enrollment, enrollments[index]);
   });
   newEnrollments = newEnrollments.length ? newEnrollments : [{}];
-  const additionalEnrollments = getAdditionalEnrollments();
+  const additionalEnrollments = document.getElementById("id_additional_enrollments");
   additionalEnrollments.value = JSON.stringify(newEnrollments);
 }
 
 export function handleRemoveEnrollment() {
-  const disabledButton = getDisabledButton();
-  const pennkey = getPennkey(disabledButton);
+  const disabledInput = getElementByRowCount("id_pennkey");
+  const pennkey = getPennkey(disabledInput);
   const existingEnrollments = getExistingRows("id_additional_enrollments");
   existingEnrollments.forEach((enrollment) =>
     removeEnrollmentByPennkey(pennkey, enrollment, existingEnrollments)
