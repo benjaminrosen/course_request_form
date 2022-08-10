@@ -1,5 +1,6 @@
 <button id="{{ remove_button_id }}"
-        hx-get="{% url "delete_enrollment_user" %}"
-        hx-target="#{{ div_id }}">
+        hx-get="{% url "delete_row" %}"
+        hx-target="#{{ div_id }}"
+        hx-swap="outerHTML">
     Remove
 </button>

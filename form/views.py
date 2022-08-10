@@ -594,7 +594,7 @@ class EnrollmentUserView(TemplateView):
         return context
 
 
-def delete_enrollment_user(request):
+def delete_row(request):
     return HttpResponse()
 
 

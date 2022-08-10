@@ -35,7 +35,7 @@ from form.views import (
     SyncSectionView,
     ToggleSchoolView,
     create_canvas_site_view,
-    delete_enrollment_user,
+    delete_row,
 )
 
 urlpatterns = [
@@ -60,7 +60,7 @@ urlpatterns = [
     ),
     path("enrollment-user", EnrollmentUserView.as_view(), name="enrollment_user"),
     path(
-        "enrollment-user/delete", delete_enrollment_user, name="delete_enrollment_user"
+        "enrollment-user/delete", delete_row, name="delete_row"
     ),
     path("create-canvas-site", create_canvas_site_view, name="create_canvas_site"),
     path("look-up-user", LookUpUserView.as_view(), name="look_up_user"),
