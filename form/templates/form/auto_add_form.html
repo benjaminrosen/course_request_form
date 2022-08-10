@@ -16,12 +16,12 @@
         {{ form.role }}
     </p>
     <p>
-        {{ form.subject.label_tag }}
-        {{ form.subject }}
-    </p>
-    <p>
         {{ form.school.label_tag }}
         {{ form.school }}
+    </p>
+    <p>
+        {{ form.subject.label_tag }}
+        {{ form.subject }}
     </p>
     <p>{% include "form/remove_button.html" %}</p>
     {% if error %}{{ form.user.errors }}{% endif %}
