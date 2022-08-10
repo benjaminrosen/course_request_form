@@ -709,35 +709,32 @@ class AutoAddCreateView(TemplateView):
         context["button_id"] = button_id
         remove_button_id = f"id_remove_{row_count}"
         context["remove_button_id"] = remove_button_id
-        if not pennkey:
-            form = AutoAddForm(auto_id=f"id_%s_{row_count}")
-            context["form"] = form
-        else:
+        form = AutoAddForm(auto_id=f"id_%s_{row_count}")
+        if pennkey:
+            form_data = {"user": pennkey}
+            form = AutoAddForm(form_data)
+            form.auto_id = f"id_%s_{row_count}"
             user = User.get_user(pennkey)
             if not user:
-                form_data = {"user": pennkey}
-                form = AutoAddForm(form_data)
-                context["form"] = form
-                form.auto_id = f"id_%s_{row_count}"
                 form.cleaned_data = dict()
                 error_text = (
                     f'User with pennkey "{pennkey}" not found. Please try a different'
                     " pennkey or leave a note below if you believe this one is correct."
                 )
                 form.errors["user"] = ErrorList([error_text])
-                context["form"] = form
                 context["error"] = True
-                return context
-            context["user"] = user
-            pennkey_name = f"pennkey_{row_count}"
-            pennkey_id = f"id_pennkey_{row_count}"
-            context["pennkey_name"] = pennkey_name
-            context["pennkey_id"] = pennkey_id
-            role_name = f"role_{row_count}"
-            role_id = f"id_role_{row_count}"
-            edit_button_id = f"id_edit_{row_count}"
-            context["role_name"] = role_name
-            context["role_id"] = role_id
-            context["edit_button_id"] = edit_button_id
-            context["role"] = values["role"].title()
+            else:
+                context["user"] = user
+                pennkey_name = f"pennkey_{row_count}"
+                pennkey_id = f"id_pennkey_{row_count}"
+                context["pennkey_name"] = pennkey_name
+                context["pennkey_id"] = pennkey_id
+                role_name = f"role_{row_count}"
+                role_id = f"id_role_{row_count}"
+                edit_button_id = f"id_edit_{row_count}"
+                context["role_name"] = role_name
+                context["role_id"] = role_id
+                context["edit_button_id"] = edit_button_id
+                context["role"] = values["role"].title()
+        context["form"] = form
         return context
