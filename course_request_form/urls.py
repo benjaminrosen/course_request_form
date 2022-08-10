@@ -17,7 +17,8 @@ from django.contrib import admin
 from django.urls import include, path
 
 from form.views import (
-    AutoAddCreateView,
+    AutoAddUserView,
+    AutoAddFormView,
     AutoAddListView,
     CopyFromCourseView,
     EnrollmentUserView,
@@ -59,13 +60,12 @@ urlpatterns = [
         "section-enrollment", SectionEnrollmentView.as_view(), name="section_enrollment"
     ),
     path("enrollment-user", EnrollmentUserView.as_view(), name="enrollment_user"),
-    path(
-        "enrollment-user/delete", delete_row, name="delete_row"
-    ),
+    path("delete-row", delete_row, name="delete_row"),
     path("create-canvas-site", create_canvas_site_view, name="create_canvas_site"),
     path("look-up-user", LookUpUserView.as_view(), name="look_up_user"),
     path("schools", SchoolListView.as_view(), name="schools"),
     path("toggle-school", ToggleSchoolView.as_view(), name="toggle_school"),
     path("auto-adds", AutoAddListView.as_view(), name="auto_adds"),
-    path("auto-adds/create", AutoAddCreateView.as_view(), name="create_auto_add"),
+    path("auto-adds-form", AutoAddFormView.as_view(), name="auto_add_form"),
+    path("auto-add-user", AutoAddUserView.as_view(), name="auto_add_user"),
 ]
