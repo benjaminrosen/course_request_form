@@ -724,7 +724,7 @@ class AutoAddCreateView(TemplateView):
                 form.errors["user"] = ErrorList([error_text])
                 context["error"] = True
             else:
-                context["user"] = user
+                context["auto_add_user"] = user
                 pennkey_name = f"pennkey_{row_count}"
                 pennkey_id = f"id_pennkey_{row_count}"
                 context["pennkey_name"] = pennkey_name

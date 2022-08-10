@@ -1,8 +1,13 @@
 {% load static %}
 <div id="{{ div_id }}">
     <p>
+        {% if auto_add_user %}
+        <label for="{{ pennkey_id }}">User:</label>
+        <input id="{{ pennkey_id }}" name={{ pennkey_name }} type="text" value="{{ auto_add_user }}" disabled/>
+        {% else %}
         {{ form.user.label_tag }}
         {{ form.user }}
+        {% endif %}
         <button id="{{ button_id }}"
                 type="button"
                 hx-get="{% url "create_auto_add" %}"
