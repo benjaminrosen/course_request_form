@@ -1,33 +1,12 @@
-{% if form %}
-    {% include "form/auto_add_form.html" with form=form %}
-{% else %}
-    <div id="{{ div_id }}">
-        <p>
-            <label for="{{ pennkey_id }}">User:</label>
-            <input id="{{ pennkey_id }}" name={{ pennkey_name }} type="text" value="{{ auto_add_user }}" disabled/>
-            <label for="{{ role_id }}">Role:</label>
-            <select id="{{ role_id }}" name="{{ role_name }}" disabled>
-                <option>
-                    {{ role }}
-                </option>
-            </select>
-            <select id="{{ school_id }}" name="{{ school_name }}" disabled>
-                <option>
-                    {{ school }}
-                </option>
-            </select>
-            <select id="{{ subject_id }}" name="{{ subject_name }}" disabled>
-                <option>
-                    {{ subject }}
-                </option>
-            </select>
-            <button id="{{ edit_button_id }}"
-                    hx-get="{% url "auto_add_form" %}"
-                    hx-target="#{{ div_id }}"
-                    hx-swap="outerHTML">
-                Edit
-            </button>
-            {% include "form/remove_button.html" %}
-        </p>
-    </div>
-{% endif %}
+<div id="{{ div_id }}">
+    <p id="id_auto_add_user">
+        <label for="{{ pennkey_id }}">User:</label>
+        <input id="{{ pennkey_id }}" name={{ pennkey_name }} type="text" value="{{ auto_add_user }}" disabled/>
+        <button id="{{ edit_button_id }}"
+                hx-get="{% url "auto_add_form" %}"
+                hx-target="#id_auto_add_user"
+                hx-swap="outerHTML">
+            Edit
+        </button>
+    </p>
+</div>

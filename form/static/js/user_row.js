@@ -38,9 +38,24 @@ function getPennkeyAndRole(element) {
   return { pennkey, role };
 }
 
-export function getRowValues(target) {
+function getSchoolAndSubject(element) {
+  const siblings = getSiblings(element, true);
+  const schoolSelect = siblings.filter((element) => isSelect(element) && element.name.includes("school"));
+  const subjectSelect = siblings.filter((element) => isSelect(element) && element.name.includes("subject"));
+  const school = getNext(schoolSelect).value;
+  const subject = getNext(subjectSelect).value;
+  return { school, subject };
+}
+
+export function getRowValues(target, includeSchoolAndSubject) {
   const rowCount = getIntegerFromString(target.id);
   const { pennkey, role } = getPennkeyAndRole(target);
-  const hxVals = JSON.stringify({ rowCount, pennkey, role });
+  const pennkeyAndRole = { rowCount, pennkey, role };
+  let values = pennkeyAndRole;
+  if (includeSchoolAndSubject) {
+    const schoolAndSubject = getSchoolAndSubject(target);
+    values = { ...pennkeyAndRole, ...schoolAndSubject };
+  }
+  const hxVals = JSON.stringify(values);
   target.setAttribute("hx-vals", hxVals);
 }

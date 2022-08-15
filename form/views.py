@@ -751,27 +751,12 @@ class AutoAddUserView(TemplateView):
             return context
         pennkey_name = f"pennkey_{row_count}"
         pennkey_id = f"id_pennkey_{row_count}"
-        role_name = f"role_{row_count}"
-        role_id = f"id_role_{row_count}"
-        school_name = f"school_{row_count}"
-        school_id = f"id_school_{row_count}"
-        subject_name = f"subject_{row_count}"
-        subject_id = f"id_subject_{row_count}"
         edit_button_id = f"id_edit_{row_count}"
         remove_button_id = f"id_remove_{row_count}"
         context["row_count"] = row_count
         context["pennkey_name"] = pennkey_name
         context["pennkey_id"] = pennkey_id
-        context["role_name"] = role_name
-        context["role_id"] = role_id
-        context["school_name"] = school_name
-        context["school_id"] = school_id
-        context["subject_name"] = subject_name
-        context["subject_id"] = subject_id
         context["edit_button_id"] = edit_button_id
         context["remove_button_id"] = remove_button_id
         context["auto_add_user"] = user
-        context["role"] = values["role"].title()
-        context["school"] = values["school"]
-        context["subject"] = values["subject"]
         return context

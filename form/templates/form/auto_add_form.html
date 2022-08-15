@@ -1,19 +1,19 @@
 {% load static %}
 <div id="{{ div_id }}">
-    <p>
+    <p id="id_auto_add_user">
         {{ form.user.label_tag }}
         {{ form.user }}
         <button id="{{ button_id }}"
                 type="button"
                 hx-get="{% url "auto_add_user" %}"
-                hx-target="#{{ div_id }}"
+                hx-target="#id_auto_add_user"
                 hx-swap="outerHTML">
-            Load user
+            Validate user
         </button>
-    </p>
-    <p>
-        {{ form.role.label_tag }}
-        {{ form.role }}
+        <p>
+            {{ form.role.label_tag }}
+            {{ form.role }}
+        </p>
     </p>
     <p>
         {{ form.school.label_tag }}
@@ -25,4 +25,5 @@
     </p>
     <p>{% include "form/remove_button.html" %}</p>
     {% if error %}{{ form.user.errors }}{% endif %}
+    <button type="button">Submit</button>
 </div>
