@@ -1,4 +1,4 @@
-import { getPennkey } from "./user_row.js";
+import { getPennkeyFromUser } from "./user_row.js";
 import { getElementByRowCount, getExistingRows } from "./row_count.js"
 
 function isEquivalent(one, two) {
@@ -32,7 +32,7 @@ function removeEnrollmentByPennkey(pennkey, enrollment, enrollments) {
 
 export function handleRemoveEnrollment() {
   const disabledInput = getElementByRowCount("id_pennkey");
-  const pennkey = getPennkey(disabledInput);
+  const pennkey = getPennkeyFromUser(disabledInput);
   const existingEnrollments = getExistingRows("id_additional_enrollments");
   existingEnrollments.forEach((enrollment) =>
     removeEnrollmentByPennkey(pennkey, enrollment, existingEnrollments)

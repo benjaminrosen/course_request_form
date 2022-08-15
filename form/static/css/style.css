@@ -137,3 +137,7 @@ input[type="number"] {
   border-radius: 6px;
   padding: 6px;
 }
+
+[id^="id_target_"] {
+  display: inline;
+}

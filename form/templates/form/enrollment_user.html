@@ -1,23 +1,8 @@
-{% if form %}
-    {% include "form/section_enrollment.html" with form=form %}
-{% else %}
-    <div id="{{ div_id }}">
-        <p>
-            <label for="{{ pennkey_id }}">User:</label>
-            <input id="{{ pennkey_id }}" name={{ pennkey_name }} type="text" value="{{ enrollment_user }}" disabled/>
-            <label for="{{ role_id }}">Role:</label>
-            <select id="{{ role_id }}" name="{{ role_name }}" disabled>
-                <option>
-                    {{ role }}
-                </option>
-            </select>
-            <button id="{{ edit_button_id }}"
-                    hx-get="{% url "section_enrollment" %}"
-                    hx-target="#{{ div_id }}"
-                    hx-swap="outerHTML">
-                Edit
-            </button>
-            {% include "form/remove_button.html" %}
-        </p>
-    </div>
-{% endif %}
+<label for="{{ pennkey_id }}">User:</label>
+<input id="{{ pennkey_id }}" name={{ pennkey_name }} type="text" value="{{ enrollment_user }}" disabled/>
+<button id="{{ edit_button_id }}"
+        hx-get="{% url "section_enrollment" %}"
+        hx-target="#{{ swap_id }}"
+        hx-swap="innerHTML">
+    Edit
+</button>

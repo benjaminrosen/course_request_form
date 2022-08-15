@@ -9,8 +9,7 @@ function addListeners() {
   const loadOrEditButton = loadUserButton || editUserButton;
   const enabledInput = getElementByRowCount("id_user");
   const disabledInput = getElementByRowCount("id_pennkey");
-  const includeSchoolAndSubject = window.location.pathname.includes("auto-adds");
-  handleLoadOrEditButton(loadOrEditButton, includeSchoolAndSubject);
+  handleLoadOrEditButton(loadOrEditButton);
   handleEnabledInput(enabledInput);
   handleDisabledInput(disabledInput);
 }

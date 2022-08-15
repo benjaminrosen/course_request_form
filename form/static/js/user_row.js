@@ -24,38 +24,21 @@ export function getSiblings(element, nested) {
   return elements.map(element => [...element.children]).flat()
 }
 
-export function getPennkey(input) {
+export function getPennkeyFromUser(input) {
   const regExp = /\(([^)]+)\)/;
   return regExp.exec(input.value)[1];
 }
 
-function getPennkeyAndRole(element) {
+function getPennkeyInput(element) {
   const siblings = getSiblings(element, true);
   const input = siblings.filter((element) => isInput(element));
-  const select = siblings.filter((element) => isSelect(element));
-  const pennkey = getNext(input).value;
-  const role = getNext(select).value;
-  return { pennkey, role };
+  return getNext(input).value;
 }
 
-function getSchoolAndSubject(element) {
-  const siblings = getSiblings(element, true);
-  const schoolSelect = siblings.filter((element) => isSelect(element) && element.name.includes("school"));
-  const subjectSelect = siblings.filter((element) => isSelect(element) && element.name.includes("subject"));
-  const school = getNext(schoolSelect).value;
-  const subject = getNext(subjectSelect).value;
-  return { school, subject };
-}
-
-export function getRowValues(target, includeSchoolAndSubject) {
+export function getRowValues(target) {
   const rowCount = getIntegerFromString(target.id);
-  const { pennkey, role } = getPennkeyAndRole(target);
-  const pennkeyAndRole = { rowCount, pennkey, role };
-  let values = pennkeyAndRole;
-  if (includeSchoolAndSubject) {
-    const schoolAndSubject = getSchoolAndSubject(target);
-    values = { ...pennkeyAndRole, ...schoolAndSubject };
-  }
+  const pennkey = getPennkeyInput(target);
+  const values = { rowCount, pennkey };
   const hxVals = JSON.stringify(values);
   target.setAttribute("hx-vals", hxVals);
 }

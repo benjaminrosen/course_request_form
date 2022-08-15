@@ -540,9 +540,11 @@ class SectionEnrollmentView(TemplateView):
             new_enrollment_count = int(new_enrollment_count) + 1
             form = SectionEnrollmentForm(auto_id=f"id_%s_{new_enrollment_count}")
         div_id = f"id_enrollment_user_{new_enrollment_count}"
+        swap_id = f"id_target_{new_enrollment_count}"
         button_id = f"id_load_user_{new_enrollment_count}"
         remove_button_id = f"id_remove_{new_enrollment_count}"
         context["div_id"] = div_id
+        context["swap_id"] = swap_id
         context["button_id"] = button_id
         context["remove_button_id"] = remove_button_id
         context["form"] = form
@@ -558,7 +560,9 @@ class EnrollmentUserView(TemplateView):
         enrollment_count = values["rowCount"]
         context["enrollment_count"] = enrollment_count
         div_id = f"id_enrollment_user_{enrollment_count}"
+        swap_id = f"id_target_{enrollment_count}"
         context["div_id"] = div_id
+        context["swap_id"] = swap_id
         pennkey = values["pennkey"]
         user = User.get_user(pennkey)
         if not user:
@@ -578,19 +582,14 @@ class EnrollmentUserView(TemplateView):
             return context
         pennkey_name = f"pennkey_{enrollment_count}"
         pennkey_id = f"id_pennkey_{enrollment_count}"
-        role_name = f"role_{enrollment_count}"
-        role_id = f"id_role_{enrollment_count}"
         edit_button_id = f"id_edit_{enrollment_count}"
         remove_button_id = f"id_remove_{enrollment_count}"
         context["enrollment_count"] = enrollment_count
         context["pennkey_name"] = pennkey_name
         context["pennkey_id"] = pennkey_id
-        context["role_name"] = role_name
-        context["role_id"] = role_id
         context["edit_button_id"] = edit_button_id
         context["remove_button_id"] = remove_button_id
         context["enrollment_user"] = user
-        context["role"] = values["role"].title()
         return context
 
 

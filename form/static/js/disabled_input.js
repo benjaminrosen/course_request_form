@@ -1,4 +1,4 @@
-import { getPennkey } from "./user_row.js";
+import { getPennkeyFromUser } from "./user_row.js";
 import { getElementByRowCount, getExistingRows } from "./row_count.js";
 import { getSiblings, getNext, isSelect } from "./user_row.js";
 import { handleRemoveEnrollment } from "./remove_button.js";
@@ -44,7 +44,7 @@ export function handleDisabledInput(input) {
   if (!input) {
     return;
   }
-  const pennkey = getPennkey(input);
+  const pennkey = getPennkeyFromUser(input);
   const role = getRole(input);
   const enrollmentUser = { user: pennkey, role: role };
   const removeButton = getElementByRowCount("id_remove");
