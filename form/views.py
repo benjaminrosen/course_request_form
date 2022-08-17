@@ -695,16 +695,13 @@ class AutoAddFormView(TemplateView):
         context = super().get_context_data(**kwargs)
         values = self.request.GET
         row_count = values["rowCount"]
-        editing = "pennkey" in values and "role" in values
+        editing = "pennkey" in values
         if editing:
             pennkey = self.get_pennkey(values["pennkey"])
-            role = self.get_role(values["role"])
-            form_data = {
-                "user": pennkey,
-                "role": role,
-            }
+            form_data = {"user": pennkey}
             form = AutoAddForm(form_data)
             form.auto_id = f"id_%s_{row_count}"
+            context["editing"] = True
         else:
             row_count = int(row_count) + 1
             form = AutoAddForm(auto_id=f"id_%s_{row_count}")
