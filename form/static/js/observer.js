@@ -17,6 +17,6 @@ function addListeners() {
 export function addObserver(formId) {
   const autoAddObserver = new MutationObserver(addListeners);
   const formDiv = document.getElementById(formId);
-  const mutationConfig = { childList: true };
+  const mutationConfig = { childList: true, subtree: true };
   autoAddObserver.observe(formDiv, mutationConfig);
 }
