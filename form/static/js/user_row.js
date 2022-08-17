@@ -17,10 +17,10 @@ export function isButton(element) {
 }
 
 export function getSiblings(element, nested) {
+  const elements = [...element.parentElement.parentElement.children]
   if (!nested) {
-    return [...element.parentElement.children];
+    return elements;
   }
-  const elements = [...element.parentElement.parentElement.children];
   return elements.map(element => [...element.children]).flat()
 }
 

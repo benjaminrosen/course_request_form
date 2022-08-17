@@ -1,12 +1,25 @@
-<div id="{{ div_id }}">
-    <p id="id_auto_add_user">
-        <label for="{{ pennkey_id }}">User:</label>
-        <input id="{{ pennkey_id }}" name={{ pennkey_name }} type="text" value="{{ auto_add_user }}" disabled/>
-        <button id="{{ edit_button_id }}"
-                hx-get="{% url "auto_add_form" %}"
-                hx-target="#id_auto_add_user"
-                hx-swap="outerHTML">
-            Edit
-        </button>
-    </p>
-</div>
+<label for="{{ pennkey_id }}">
+    {% if error %}
+        Pennkey:
+    {% else %}
+        User:
+    {% endif %}
+</label>
+<input id="{{ user_id }}" name={{ pennkey_name }} type="text" value="{{ auto_add_user }}" {% if not error %}disabled{% endif %}/>
+{% if error %}
+    <button id="{{ button_id }}"
+            type="button"
+            hx-get="{% url "auto_add_user" %}"
+            hx-target="#id_auto_add_user"
+            hx-swap="innerHTML">
+        Validate user
+    </button>
+{% else %}
+    <button id="{{ edit_button_id }}"
+            hx-get="{% url "auto_add_form" %}"
+            hx-target="#id_auto_add_user"
+            hx-swap="innerHTML">
+        Edit
+    </button>
+{% endif %}
+{% if error %}<p>{{ form.user.errors }}</p>{% endif %}

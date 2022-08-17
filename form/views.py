@@ -732,6 +732,8 @@ class AutoAddUserView(TemplateView):
         div_id = f"id_auto_add_user_{row_count}"
         context["div_id"] = div_id
         pennkey = values["pennkey"]
+        user_id = f"id_user_{row_count}"
+        context["user_id"] = user_id
         user = User.get_user(pennkey)
         if not user:
             button_id = f"id_load_user_{row_count}"
@@ -749,12 +751,10 @@ class AutoAddUserView(TemplateView):
             context["error"] = True
             return context
         pennkey_name = f"pennkey_{row_count}"
-        pennkey_id = f"id_pennkey_{row_count}"
         edit_button_id = f"id_edit_{row_count}"
         remove_button_id = f"id_remove_{row_count}"
         context["row_count"] = row_count
         context["pennkey_name"] = pennkey_name
-        context["pennkey_id"] = pennkey_id
         context["edit_button_id"] = edit_button_id
         context["remove_button_id"] = remove_button_id
         context["auto_add_user"] = user
