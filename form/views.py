@@ -526,16 +526,13 @@ class SectionEnrollmentView(TemplateView):
         context = super().get_context_data(**kwargs)
         values = self.request.GET
         new_enrollment_count = values["rowCount"]
-        editing = "pennkey" in values and "role" in values
+        editing = "pennkey" in values
         if editing:
             pennkey = self.get_pennkey(values["pennkey"])
-            role = self.get_role(values["role"])
-            form_data = {
-                "user": pennkey,
-                "role": role,
-            }
+            form_data = {"user": pennkey}
             form = SectionEnrollmentForm(form_data)
             form.auto_id = f"id_%s_{new_enrollment_count}"
+            context["editing"] = True
         else:
             new_enrollment_count = int(new_enrollment_count) + 1
             form = SectionEnrollmentForm(auto_id=f"id_%s_{new_enrollment_count}")
