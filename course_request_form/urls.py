@@ -17,9 +17,10 @@ from django.contrib import admin
 from django.urls import include, path
 
 from form.views import (
-    AutoAddUserView,
     AutoAddFormView,
     AutoAddListView,
+    AutoAddSubjectsView,
+    AutoAddUserView,
     CopyFromCourseView,
     EnrollmentUserView,
     ExcludeAnnouncementsView,
@@ -68,4 +69,5 @@ urlpatterns = [
     path("auto-adds", AutoAddListView.as_view(), name="auto_adds"),
     path("auto-adds-form", AutoAddFormView.as_view(), name="auto_add_form"),
     path("auto-add-user", AutoAddUserView.as_view(), name="auto_add_user"),
+    path("auto-add-subjects", AutoAddSubjectsView.as_view(), name="auto_add_subjects"),
 ]

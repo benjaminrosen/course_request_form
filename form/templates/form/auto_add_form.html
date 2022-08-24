@@ -27,12 +27,28 @@
             {{ form.role }}
         </p>
         <p>
-            {{ form.school.label_tag }}
-            {{ form.school }}
+            <label for="{{ school_id }}">School:</label>
+            <select id="{{ school_id }}"
+                    name="school"
+                    required
+                    hx-get="{% url "auto_add_subjects" %}"
+                    hx-trigger="change"
+                    hx-target="#subjects"
+                    hx-swap="innerHTML">
+                {% for value, name in form.fields.school.choices %}
+                    <option value="{{ value }}">
+                        {{ name }}
+                    </option>
+                {% endfor %}
+            </select>
         </p>
-        <p>
-            {{ form.subject.label_tag }}
-            {{ form.subject }}
+        <p id="subjects">
+            <label for="{{ subject_id }}">Subject:</label>
+            <select id="{{ subject_id }}" name="subject" disabled>
+                <option>
+                    -- Please choose a School --
+                </option>
+            </select>
         </p>
         <p>{% include "form/remove_button.html" %}</p>
         <button type="button">Submit</button>

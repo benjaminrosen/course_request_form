@@ -1,0 +1,17 @@
+{% if subjects %}
+    <label for="{{ subject_id }}">Subject:</label>
+    <select id="{{ subject_id }}" name="subject" required>
+        {% for value, name in subjects %}
+            <option value="{{ value }}">
+                {{ name }}
+            </option>
+        {% endfor %}
+    </select>
+{% else %}
+    <label for="{{ subject_id }}">Subject:</label>
+    <select id="{{ subject_id }}" name="subject" disabled>
+        <option>
+            -- Please choose a School --
+        </option>
+    </select>
+{% endif %}

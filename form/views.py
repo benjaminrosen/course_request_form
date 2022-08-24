@@ -708,9 +708,11 @@ class AutoAddFormView(TemplateView):
         div_id = f"id_auto_add_user_{row_count}"
         button_id = f"id_load_user_{row_count}"
         remove_button_id = f"id_remove_{row_count}"
+        school_id = f"id_school_{row_count}"
         context["div_id"] = div_id
         context["button_id"] = button_id
         context["remove_button_id"] = remove_button_id
+        context["school_id"] = school_id
         context["form"] = form
         return context
 
@@ -752,4 +754,20 @@ class AutoAddUserView(TemplateView):
         context["edit_button_id"] = edit_button_id
         context["remove_button_id"] = remove_button_id
         context["auto_add_user"] = user
+        return context
+
+
+class AutoAddSubjectsView(TemplateView):
+    template_name = "form/auto_add_subjects.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        school_code = self.request.GET["school"]
+        school = School.get_school(school_code)
+        if not school:
+            return context
+        subjects = [
+            (subject.subject_code, str(subject)) for subject in school.get_subjects()
+        ]
+        context["subjects"] = subjects
         return context
